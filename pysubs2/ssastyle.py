@@ -1,0 +1,2 @@
+class SSAStyle(object):
+    pass
