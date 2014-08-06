@@ -9,7 +9,7 @@ TIMESTAMP = re.compile(r"(\d{1,2}):(\d{2}):(\d{2})[.,](\d{2,3})")
 
 Times = namedtuple("Times", ["h", "m", "s", "ms"])
 
-def time(h=0, m=0, s=0, ms=0, frames=None, fps=None):
+def make_time(h=0, m=0, s=0, ms=0, frames=None, fps=None):
     """
     Convert time to milliseconds.
 

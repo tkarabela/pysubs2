@@ -15,8 +15,7 @@ Contents:
 .. automodule:: pysubs2
    :members:
 
-.. autoclass:: pysubs2.SSAFile
-   :members:
+.. automodule:: pysubs2.ssafile
 
 .. autoclass:: pysubs2.SSAEvent
    :members:
