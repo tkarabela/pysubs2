@@ -159,7 +159,8 @@ class SSAFile(MutableSequence):
             # The file might be a pipe and we need to read it twice,
             # so just buffer everything.
             text = fp.read()
-            format_ = autodetect_format(text)
+            fragment = text[:10000]
+            format_ = autodetect_format(fragment)
             fp = io.StringIO(text)
 
         impl = get_format_class(format_)
