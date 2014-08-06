@@ -2,6 +2,8 @@ from .common import Color
 
 
 class SSAStyle(object):
+    DEFAULT_STYLE = None
+
     DEFAULT_VALUES = {
         "fontname": "Arial",
         "fontsize": 20.0,
@@ -50,3 +52,6 @@ class SSAStyle(object):
 
     def __ne__(self, other):
         return not self == other
+
+
+SSAStyle.DEFAULT_STYLE = SSAStyle()
