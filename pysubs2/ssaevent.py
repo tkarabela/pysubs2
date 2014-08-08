@@ -1,35 +1,42 @@
-from functools import total_ordering
-
-
-@total_ordering
 class SSAEvent(object):
-    DEFAULT_VALUES = {
-        "start": 0,
-        "end": 10000,
-        "text": "",
-        "marked": False, # SSA only
-        "layer": 0, # ASS only
-        "style": "Default",
-        "name": "",
-        "marginl": 0,
-        "marginr": 0,
-        "marginv": 0,
-        "effect": "",
-        "type": "Dialogue"}
+    """A SubStation Event, ie. one subtitle"""
+
+    FIELDS = frozenset([
+        "start", "end", "text", "marked", "layer", "style",
+        "name", "marginl", "marginr", "marginv", "effect", "type"
+    ])
 
     def __init__(self, **fields):
-        for k, v in self.DEFAULT_VALUES.items():
-            setattr(self, k, v)
+        self.start = 0 #: Subtitle start time (in milliseconds)
+        self.end = 10000 #: Subtitle end time (in milliseconds)
+        self.text = "" #: Text of subtitle (with SubStation override tags)
+        self.marked = False #: (SSA only)
+        self.layer = 0 #: Layer number, 0 is the lowest layer (ASS only)
+        self.style = "Default" #: Style name
+        self.name = "" #: Actor name
+        self.marginl = 0 #: Left margin
+        self.marginr = 0 #: Right margin
+        self.marginv = 0 #: Vertical margin
+        self.effect = "" #: Line effect
+        self.type = "Dialogue" #: Line type (Dialogue/Comment)
 
         for k, v in fields.items():
-            if k in self.DEFAULT_VALUES:
+            if k in self.FIELDS:
                 setattr(self, k, v)
             else:
-                raise ValueError("No field named %r" % k)
+                raise ValueError("SSAEvent has no field named %r" % k)
 
     @property
     def duration(self):
+        """Subtitle duration (in milliseconds)"""
         return self.end - self.start
+
+    @duration.setter
+    def duration(self, ms):
+        if ms >= 0:
+            self.end = self.start + ms
+        else:
+            raise ValueError("Subtitle duration cannot be negative")
 
     @property
     def is_comment(self):
@@ -43,14 +50,30 @@ class SSAEvent(object):
             self.type = "Dialogue"
 
     def copy(self):
-        e = SSAEvent()
-        for k in self.DEFAULT_VALUES:
-            setattr(e, k, getattr(self, k))
-        return e
+        return SSAEvent(**{k: getattr(self, k) for k in self.FIELDS})
+
+    def equals(self, other):
+        """Field-based equality for SSAEvents"""
+        if isinstance(other, SSAEvent):
+            return all(getattr(self, k) == getattr(other, k) for k in self.FIELDS)
+        else:
+            raise TypeError("Cannot compare to non-SSAEvent object")
 
     def __eq__(self, other):
         # XXX document this
         return self.start == other.start and self.end == other.end
 
+    def __ne__(self, other):
+        return self.start != other.start or self.end != other.end
+
     def __lt__(self, other):
         return (self.start, self.end) < (other.start, other.end)
+
+    def __le__(self, other):
+        return (self.start, self.end) <= (other.start, other.end)
+
+    def __gt__(self, other):
+        return (self.start, self.end) > (other.start, other.end)
+
+    def __ge__(self, other):
+        return (self.start, self.end) >= (other.start, other.end)

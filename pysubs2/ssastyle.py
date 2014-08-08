@@ -4,51 +4,53 @@ from .common import Color
 class SSAStyle(object):
     DEFAULT_STYLE = None
 
-    DEFAULT_VALUES = {
-        "fontname": "Arial",
-        "fontsize": 20.0,
-        "primarycolor": Color(255, 255, 255, 0),
-        "secondarycolor": Color(255, 0, 0, 0),
-        "tertiarycolor": Color(0, 0, 0, 0),
-        "outlinecolor": Color(0, 0, 0, 0),
-        "backcolor": Color(0, 0, 0, 0),
-        "bold": False,
-        "italic": False,
-        "underline": False, # ASS only
-        "strikeout": False, # ASS only
-        "scalex": 100.0, # ASS only
-        "scaley": 100.0, # ASS only
-        "spacing": 0.0, # ASS only
-        "angle": 0.0, # ASS only
-        "borderstyle": 1,
-        "outline": 2.0,
-        "shadow": 2.0,
-        "alignment": 2, # ASS semantics, SSA is different
-        "marginl": 10,
-        "marginr": 10,
-        "marginv": 10,
-        "alphalevel": 0, # unused in SSA, not present in ASS...
-        "encoding": 1}
+    FIELDS = frozenset([
+        "fontname", "fontsize", "primarycolor", "secondarycolor",
+        "tertiarycolor", "outlinecolor", "backcolor",
+        "bold", "italic", "underline", "strikeout",
+        "scalex", "scaley", "spacing", "angle", "borderstyle",
+        "outline", "shadow", "alignment",
+        "marginl", "marginr", "marginv", "alphalevel", "encoding"
+    ])
 
     def __init__(self, **fields):
-        for k, v in self.DEFAULT_VALUES.items():
-            setattr(self, k, v)
+        self.fontname = "Arial"
+        self.fontsize = 20.0
+        self.primarycolor = Color(255, 255, 255, 0)
+        self.secondarycolor = Color(255, 0, 0, 0)
+        self.tertiarycolor = Color(0, 0, 0, 0)
+        self.outlinecolor = Color(0, 0, 0, 0)
+        self.backcolor = Color(0, 0, 0, 0)
+        self.bold = False
+        self.italic = False
+        self.underline = False # ASS only
+        self.strikeout = False # ASS only
+        self.scalex = 100.0 # ASS only
+        self.scaley = 100.0 # ASS only
+        self.spacing = 0.0 # ASS only
+        self.angle = 0.0 # ASS only
+        self.borderstyle = 1
+        self.outline = 2.0
+        self.shadow = 2.0
+        self.alignment = 2 # ASS semantics, SSA is different
+        self.marginl = 10
+        self.marginr = 10
+        self.marginv = 10
+        self.alphalevel = 0 # unused in SSA, not present in ASS...
+        self.encoding = 1
 
         for k, v in fields.items():
-            if k in self.DEFAULT_VALUES:
+            if k in self.FIELDS:
                 setattr(self, k, v)
             else:
-                raise ValueError("No field named %r" % k)
+                raise ValueError("SSAStyle has no field named %r" % k)
 
     def copy(self):
-        s = SSAStyle()
-        for k in self.DEFAULT_VALUES:
-            setattr(s, k, getattr(self, k))
-        return s
+        return SSAStyle(**{k: getattr(self, k) for k in self.FIELDS})
 
     def __eq__(self, other):
         # XXX document this
-        return all(getattr(self, k) == getattr(other, k) for k in self.DEFAULT_VALUES)
+        return all(getattr(self, k) == getattr(other, k) for k in self.FIELDS)
 
     def __ne__(self, other):
         return not self == other
