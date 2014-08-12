@@ -43,6 +43,7 @@ Working with styles
 from collections import MutableSequence, OrderedDict
 import io
 from io import open
+from itertools import starmap
 import os.path
 from .formats import autodetect_format, get_format_class, get_format_identifier
 from .ssaevent import SSAEvent
@@ -167,7 +168,8 @@ class SSAFile(MutableSequence):
         subs = cls() # an empty subtitle file
         subs.format = format_
         subs.fps = fps
-        return impl.from_file(subs, fp, format_, fps=fps, **kwargs)
+        impl.from_file(subs, fp, format_, fps=fps, **kwargs)
+        return subs
 
     def save(self, path, encoding="utf-8", format_=None, fps=None, **kwargs):
         """
@@ -229,7 +231,7 @@ class SSAFile(MutableSequence):
 
         """
         impl = get_format_class(format_)
-        return impl.to_file(self, fp, format_, fps=fps, **kwargs)
+        impl.to_file(self, fp, format_, fps=fps, **kwargs)
 
     # ------------------------------------------------------------------------
     # Retiming subtitles
@@ -253,6 +255,19 @@ class SSAFile(MutableSequence):
 
     def import_styles(self, subs, overwrite=True):
         pass # XXX implement
+
+    # ------------------------------------------------------------------------
+    # Helper methods
+    # ------------------------------------------------------------------------
+
+    def equals(self, other):
+        """Equality of two SSAFiles. Mostly only useful in unit tests."""
+        if isinstance(other, SSAFile):
+            return self.info == other.info and self.styles == other.styles and \
+                    len(self.events) == len(other.events) and \
+                    all(starmap(SSAEvent.equals, zip(self.events, other.events)))
+        else:
+            raise TypeError("Cannot compare to non-SSAFile object")
 
     # ------------------------------------------------------------------------
     # MutableSequence implementation
