@@ -22,7 +22,7 @@ def ms_to_timestamp(ms):
 class SubripFormat(FormatBase):
     @classmethod
     def guess_format(cls, text):
-        if "[Script Info]" or "[V4+ Styles]" in text:
+        if "[Script Info]" in text or "[V4+ Styles]" in text:
             # disambiguation vs. SSA/ASS
             return None
 
