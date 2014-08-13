@@ -4,6 +4,17 @@ from ..ssastyle import SSAStyle
 
 OVERRIDE_SEQUENCE = re.compile(r"{[^}]*}")
 
+def is_valid_field_content(s):
+    """
+    Returns True if string s can be stored in a SubStation field.
+
+    Fields are written in CSV-like manner, thus commas and/or newlines
+    are not acceptable in the string.
+
+    """
+    return "\n" not in s and "," not in s
+
+
 def parse_tags(text, style=SSAStyle(), styles={}):
     """
     Split text into fragments with computed SSAStyles.

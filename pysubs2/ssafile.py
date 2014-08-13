@@ -1,3 +1,6 @@
+from __future__ import print_function, unicode_literals, division
+from .formats.substation import is_valid_field_content
+
 """
 ``SSAFile`` --- a subtitle file
 ===============================
@@ -238,30 +241,113 @@ class SSAFile(MutableSequence):
     # ------------------------------------------------------------------------
 
     def shift(self, h=0, m=0, s=0, ms=0, frames=None, fps=None):
+        """
+        Shift all subtitles by constant time amount.
+
+        Shift may be time-based (the default) or frame-based. In the latter
+        case, specify both frames and fps. h, m, s, ms will be ignored.
+
+        Arguments:
+            h, m, s, ms: Integer or float values, may be positive or negative.
+            frames (int): When specified, must be an integer number of frames.
+                May be positive or negative. fps must be also specified.
+            fps (float): When specified, must be a positive number.
+
+        """
+        # XXX what exceptions are raised?
         delta = make_time(h=h, m=m, s=s, ms=ms, frames=frames, fps=fps)
         for line in self:
             line.start += delta
             line.end += delta
 
     def transform_framerate(self, in_fps, out_fps):
-        pass # XXX implement
+        """
+        Rescale all timestamps by ratio of in_fps/out_fps.
+
+        Can be used to fix files converted from frame-based to time-based
+        with wrongly assumed framerate.
+
+        Arguments:
+            in_fps (float)
+            out_fps (float)
+
+        Returns:
+            None
+
+        Raises:
+            ValueError: Non-positive framerate given.
+
+        """
+        if in_fps <= 0 or out_fps <= 0:
+            raise ValueError("Framerates must be positive, cannot transform %f -> %f" % (in_fps, out_fps))
+
+        ratio = in_fps / out_fps
+        for line in self:
+            line.start = int(round(line.start * ratio))
+            line.end = int(round(line.end * ratio))
 
     # ------------------------------------------------------------------------
     # Working with styles
     # ------------------------------------------------------------------------
 
     def rename_style(self, old_name, new_name):
-        pass # XXX implement
+        """
+        Rename a style, including references to it.
+
+        Arguments:
+            old_name (str): Style to be renamed.
+            new_name (str): New name for the style.
+
+        Raises:
+            KeyError: No style named old_name.
+            ValueError: new_name is not a legal name (cannot use commas)
+                or new_name is taken.
+
+        """
+        if old_name not in self.styles:
+            raise KeyError("Style %r not found" % old_name)
+        if new_name in self.styles:
+            raise ValueError("There is already a style called %r" % new_name)
+        if not is_valid_field_content(new_name):
+            raise ValueError("%r is not a valid name" % new_name)
+
+        self.styles[new_name] = self.styles[old_name]
+        del self.styles[old_name]
+
+        for line in self:
+            # XXX also handle \r override tag
+            if line.style == old_name:
+                line.style = new_name
 
     def import_styles(self, subs, overwrite=True):
-        pass # XXX implement
+        """
+        Merge in styles from other SSAFile.
+
+        Arguments:
+            subs (SSAFile): Subtitle file imported from.
+            overwrite (bool): On name conflict, use style from the other file
+                (default: True).
+
+        """
+        if not isinstance(subs, SSAFile):
+            raise TypeError("Must supply an SSAFile.")
+
+        for name, style in subs.styles.items():
+            if name not in self.styles or overwrite:
+                self.styles[name] = style
 
     # ------------------------------------------------------------------------
     # Helper methods
     # ------------------------------------------------------------------------
 
     def equals(self, other):
-        """Equality of two SSAFiles. Mostly only useful in unit tests."""
+        """
+        Equality of two SSAFiles.
+
+        Compares :attr:`SSAFile.info`, :attr:`SSAFile.styles` and :attr:`SSAFile.events`.
+        Useful mostly in unit tests.
+
+        """
         if isinstance(other, SSAFile):
             return self.info == other.info and self.styles == other.styles and \
                     len(self.events) == len(other.events) and \
