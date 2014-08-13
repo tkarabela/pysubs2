@@ -1,4 +1,5 @@
 from .formatbase import FormatBase
+from .microdvd import MicroDVDFormat
 from .subrip import SubripFormat
 
 
@@ -13,7 +14,7 @@ FORMAT_IDENTIFIER_TO_FORMAT_CLASS = {
     "srt": SubripFormat,
     "ass": FormatBase,
     "ssa": FormatBase,
-    "microdvd": FormatBase
+    "microdvd": MicroDVDFormat
 }
 
 def get_format_class(format_):
