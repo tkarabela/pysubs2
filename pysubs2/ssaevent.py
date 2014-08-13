@@ -1,3 +1,6 @@
+from .formats.substation import OVERRIDE_SEQUENCE
+
+
 class SSAEvent(object):
     """A SubStation Event, ie. one subtitle"""
 
@@ -28,7 +31,12 @@ class SSAEvent(object):
 
     @property
     def duration(self):
-        """Subtitle duration (in milliseconds)"""
+        """
+        Subtitle duration in milliseconds (read/write property).
+
+        Writing to this property adjusts :attr:`SSAEvent.end`.
+        Setting negative durations raises :exc:`ValueError`.
+        """
         return self.end - self.start
 
     @duration.setter
@@ -40,6 +48,12 @@ class SSAEvent(object):
 
     @property
     def is_comment(self):
+        """
+        When true, the subtitle is a comment, ie. not visible (read/write property).
+
+        Setting this property is equivalent to changing
+        :attr:`SSAEvent.type` to ``Dialogue`` or ``Comment``.
+        """
         return self.type == "Comment"
 
     @is_comment.setter
@@ -48,6 +62,25 @@ class SSAEvent(object):
             self.type = "Comment"
         else:
             self.type = "Dialogue"
+
+    @property
+    def plaintext(self):
+        """
+        Subtitle text as multi-line string with no tags (read/write property).
+
+        Writing to this property replaces :attr:`SSAEvent.text` with given plain
+        text. Newlines are converted to ``\\N`` tags.
+        """
+        text = self.text
+        text = OVERRIDE_SEQUENCE.sub("", text)
+        text = text.replace(r"\h", " ")
+        text = text.replace(r"\n", "\n")
+        text = text.replace(r"\N", "\n")
+        return text
+
+    @plaintext.setter
+    def plaintext(self, text):
+        self.text = text.replace("\n", r"\N")
 
     def copy(self):
         return SSAEvent(**{k: getattr(self, k) for k in self.FIELDS})
