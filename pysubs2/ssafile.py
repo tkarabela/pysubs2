@@ -1,54 +1,11 @@
 from __future__ import print_function, unicode_literals, division
-from .formats.substation import is_valid_field_content
-
-"""
-``SSAFile`` --- a subtitle file
-===============================
-
-.. autoclass:: pysubs2.SSAFile
-
-
-Reading and writing subtitles
------------------------------
-
-Using file
-~~~~~~~~~~
-
-.. automethod:: SSAFile.load
-.. automethod:: SSAFile.save
-
-Using string
-~~~~~~~~~~~~
-
-.. automethod:: SSAFile.from_string
-.. automethod:: SSAFile.to_string
-
-Using file object
-~~~~~~~~~~~~~~~~~
-
-.. automethod:: SSAFile.from_file
-.. automethod:: SSAFile.to_file
-
-Retiming subtitles
-------------------
-
-.. automethod:: SSAFile.shift
-.. automethod:: SSAFile.transform_framerate
-
-Working with styles
--------------------
-
-.. automethod:: SSAFile.rename_style
-.. automethod:: SSAFile.import_styles
-
-"""
-
 from collections import MutableSequence, OrderedDict
 import io
 from io import open
 from itertools import starmap
 import os.path
 from .formats import autodetect_format, get_format_class, get_format_identifier
+from .formats.substation import is_valid_field_content
 from .ssaevent import SSAEvent
 from .ssastyle import SSAStyle
 from .time import make_time
@@ -67,11 +24,11 @@ class SSAFile(MutableSequence):
          "Collisions": "Normal"}.items())
 
     def __init__(self):
-        self.events = []
-        self.styles = self.DEFAULT_STYLES.copy()
-        self.info = self.DEFAULT_INFO.copy()
-        self.fps = None
-        self.format = None
+        self.events = [] #: List of :class:`SSAEvent` instances.
+        self.styles = self.DEFAULT_STYLES.copy() #: Dict of :class:`SSAStyle` instances.
+        self.info = self.DEFAULT_INFO.copy() #: String metadata.
+        self.fps = None #: Framerate used for reading the file, if applicable.
+        self.format = None #: Format used for reading the file, if applicable.
 
     # ------------------------------------------------------------------------
     # I/O methods

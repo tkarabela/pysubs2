@@ -15,10 +15,60 @@ Contents:
 .. automodule:: pysubs2
    :members:
 
-.. automodule:: pysubs2.ssafile
+``SSAFile`` --- a subtitle file
+-------------------------------
+
+.. autoclass:: pysubs2.SSAFile
+   :members: events, styles, info, fps, format
+
+Reading and writing subtitles
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Using path to file
+++++++++++++++++++
+
+.. automethod:: SSAFile.load
+.. automethod:: SSAFile.save
+
+Using string
+++++++++++++
+
+.. automethod:: SSAFile.from_string
+.. automethod:: SSAFile.to_string
+
+Using file object
++++++++++++++++++
+
+.. automethod:: SSAFile.from_file
+.. automethod:: SSAFile.to_file
+
+Retiming subtitles
+~~~~~~~~~~~~~~~~~~
+
+.. automethod:: SSAFile.shift
+.. automethod:: SSAFile.transform_framerate
+
+Working with styles
+~~~~~~~~~~~~~~~~~~~
+
+.. automethod:: SSAFile.rename_style
+.. automethod:: SSAFile.import_styles
+
+
+``SSAEvent`` --- one subtitle
+-----------------------------
 
 .. autoclass:: pysubs2.SSAEvent
    :members:
+
+``SSAStyle`` --- a subtitle style
+---------------------------------
+
+.. autoclass:: pysubs2.SSAStyle
+   :members:
+
+``pysubs2.time`` --- time-related utilities
+-------------------------------------------
 
 .. automodule:: pysubs2.time
    :members:
@@ -29,4 +79,3 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-

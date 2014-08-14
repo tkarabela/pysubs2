@@ -13,7 +13,7 @@ def make_time(h=0, m=0, s=0, ms=0, frames=None, fps=None):
     """
     Convert time to milliseconds.
 
-    See `pysubs2.time.times_to_ms()` and `pysubs2.time.frames_to_ms()`.
+    See :func:`pysubs2.time.times_to_ms()` and :func:`pysubs2.time.frames_to_ms()`.
 
     """
     if frames is None and fps is None:
