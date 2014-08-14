@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 from .common import Color
 
 
@@ -46,11 +47,14 @@ class SSAStyle(object):
                 raise ValueError("SSAStyle has no field named %r" % k)
 
     def copy(self):
-        return SSAStyle(**{k: getattr(self, k) for k in self.FIELDS})
+        return SSAStyle(**self.as_dict())
+
+    def as_dict(self):
+        return {field: getattr(self, field) for field in self.FIELDS}
 
     def __eq__(self, other):
         # XXX document this
-        return all(getattr(self, k) == getattr(other, k) for k in self.FIELDS)
+        return self.as_dict() == other.as_dict()
 
     def __ne__(self, other):
         return not self == other

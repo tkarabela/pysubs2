@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 from .formats.substation import OVERRIDE_SEQUENCE
 
 
@@ -83,12 +84,15 @@ class SSAEvent(object):
         self.text = text.replace("\n", r"\N")
 
     def copy(self):
-        return SSAEvent(**{k: getattr(self, k) for k in self.FIELDS})
+        return SSAEvent(**self.as_dict())
+
+    def as_dict(self):
+        return {field: getattr(self, field) for field in self.FIELDS}
 
     def equals(self, other):
         """Field-based equality for SSAEvents"""
         if isinstance(other, SSAEvent):
-            return all(getattr(self, k) == getattr(other, k) for k in self.FIELDS)
+            return self.as_dict() == other.as_dict()
         else:
             raise TypeError("Cannot compare to non-SSAEvent object")
 
