@@ -2,7 +2,7 @@ from __future__ import unicode_literals, print_function
 
 from functools import partial
 import re
-import six
+from ..common import text_type
 from ..exceptions import UnknownFPSError
 from ..ssaevent import SSAEvent
 from ..ssastyle import SSAStyle
@@ -82,7 +82,7 @@ class MicroDVDFormat(FormatBase):
             return True
 
         # insert an artificial first line telling the framerate
-        subs.insert(0, SSAEvent(start=0, end=0, text=six.text_type(fps)))
+        subs.insert(0, SSAEvent(start=0, end=0, text=text_type(fps)))
 
         for line in (ev for ev in subs if not ev.is_comment):
             text = "|".join(line.plaintext.splitlines())
