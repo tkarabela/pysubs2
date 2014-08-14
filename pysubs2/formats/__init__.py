@@ -1,20 +1,23 @@
 from .formatbase import FormatBase
 from .microdvd import MicroDVDFormat
 from .subrip import SubripFormat
+from .jsonformat import JSONFormat
 
 
 FILE_EXTENSION_TO_FORMAT_IDENTIFIER = {
     ".srt": "srt",
     ".ass": "ass",
     ".ssa": "ssa",
-    ".sub": "microdvd"
+    ".sub": "microdvd",
+    ".json": "json"
 }
 
 FORMAT_IDENTIFIER_TO_FORMAT_CLASS = {
     "srt": SubripFormat,
     "ass": FormatBase,
     "ssa": FormatBase,
-    "microdvd": MicroDVDFormat
+    "microdvd": MicroDVDFormat,
+    "json": JSONFormat
 }
 
 def get_format_class(format_):
@@ -37,4 +40,4 @@ def autodetect_format(content):
     elif not formats:
         raise ValueError("No suitable formats")
     else:
-        raise ValueError("Multipe suitable formats") # XXX raise sth better
+        raise ValueError("Multiple suitable formats") # XXX raise sth better
