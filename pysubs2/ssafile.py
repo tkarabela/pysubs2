@@ -349,7 +349,10 @@ class SSAFile(MutableSequence):
 
         """
         if isinstance(other, SSAFile):
-            return self.info == other.info and self.styles == other.styles and \
+            # Note: OrderedDict is order-sensitive in __eq__,
+            # which is unwanted here, hence conversion to plain dict
+            return dict(**self.info) == dict(**other.info) and \
+                    dict(**self.styles) == dict(**other.styles) and \
                     len(self.events) == len(other.events) and \
                     all(starmap(SSAEvent.equals, zip(self.events, other.events)))
         else:
