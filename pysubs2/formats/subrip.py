@@ -32,15 +32,18 @@ class SubripFormat(FormatBase):
 
     @classmethod
     def from_file(cls, subs, fp, format_, **kwargs):
+        timestamps = [] # (start, end)
+        following_lines = [] # contains lists of lines following each timestamp
+
         for line in fp:
             stamps = TIMESTAMP.findall(line)
             if len(stamps) == 2: # timestamp line
                 start, end = map(timestamp_to_ms, stamps)
-                subs.append(SSAEvent(start=start, end=end))
-                subs[-1]._lines = []
+                timestamps.append((start, end))
+                following_lines.append([])
             else:
-                if not subs: continue # first timestamp line not yet read
-                subs[-1]._lines.append(line)
+                if timestamps:
+                    following_lines[-1].append(line)
 
         def prepare_text(lines):
             s = "".join(lines).strip()
@@ -55,9 +58,8 @@ class SubripFormat(FormatBase):
             s = re.sub(r"\n", r"\N", s) # convert newlines
             return s
 
-        for ev in subs:
-            ev.text = prepare_text(ev._lines)
-            del ev._lines
+        subs.events = [SSAEvent(start=start, end=end, text=prepare_text(lines))
+                       for (start, end), lines in zip(timestamps, following_lines)]
 
     @classmethod
     def to_file(cls, subs, fp, format_, **kwargs):
