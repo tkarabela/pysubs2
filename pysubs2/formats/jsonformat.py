@@ -14,7 +14,7 @@ class JSONFormat(FormatBase):
             return "json"
 
     @classmethod
-    def from_file(cls, subs, fp, format_, fps=None, **kwargs):
+    def from_file(cls, subs, fp, format_, **kwargs):
         data = json.load(fp)
 
         subs.info.clear()
@@ -32,7 +32,7 @@ class JSONFormat(FormatBase):
         subs.events = [SSAEvent(**fields) for fields in data["events"]]
 
     @classmethod
-    def to_file(cls, subs, fp, format_, fps=None, **kwargs):
+    def to_file(cls, subs, fp, format_, **kwargs):
         data = {
             "info": dict(**subs.info),
             "styles": {name: sty.as_dict() for name, sty in subs.styles.items()},

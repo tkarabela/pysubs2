@@ -23,7 +23,7 @@ class FormatBase(object):
             pysubs2.UnknownFPSError: Framerate was not provided and cannot
                 be detected.
         """
-        raise NotImplementedError("Writing is not supported for this format")
+        raise NotImplementedError("Parsing is not supported for this format")
 
     @classmethod
     def to_file(cls, subs, fp, format_, **kwargs):
@@ -48,7 +48,7 @@ class FormatBase(object):
             pysubs2.UnknownFPSError: Framerate was not provided and
                 ``subs.fps is None``.
         """
-        raise NotImplementedError("Parsing is not supported for this format")
+        raise NotImplementedError("Writing is not supported for this format")
 
     @classmethod
     def guess_format(self, text):
