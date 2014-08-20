@@ -2,8 +2,9 @@ from __future__ import print_function, unicode_literals, division
 from collections import MutableSequence, OrderedDict
 import io
 from io import open
-from itertools import starmap
+from itertools import starmap, chain
 import os.path
+import logging
 from .formats import autodetect_format, get_format_class, get_format_identifier
 from .formats.substation import is_valid_field_content
 from .ssaevent import SSAEvent
@@ -17,15 +18,14 @@ class SSAFile(MutableSequence):
 
     """
 
-    DEFAULT_STYLES = OrderedDict({"Default": SSAStyle()}.items())
-    DEFAULT_INFO = OrderedDict(
-        {"WrapStyle": "0",
-         "ScaledBorderAndShadow": "yes",
-         "Collisions": "Normal"}.items())
+    DEFAULT_INFO = OrderedDict([
+        ("WrapStyle", "0"),
+        ("ScaledBorderAndShadow", "yes"),
+        ("Collisions", "Normal")])
 
     def __init__(self):
         self.events = [] #: List of :class:`SSAEvent` instances.
-        self.styles = self.DEFAULT_STYLES.copy() #: Dict of :class:`SSAStyle` instances.
+        self.styles = OrderedDict([("Default", SSAStyle.DEFAULT_STYLE.copy())]) #: Dict of :class:`SSAStyle` instances.
         self.info = self.DEFAULT_INFO.copy() #: String metadata.
         self.fps = None #: Framerate used for reading the file, if applicable.
         self.format = None #: Format used for reading the file, if applicable.
@@ -302,16 +302,52 @@ class SSAFile(MutableSequence):
         Equality of two SSAFiles.
 
         Compares :attr:`SSAFile.info`, :attr:`SSAFile.styles` and :attr:`SSAFile.events`.
-        Useful mostly in unit tests.
+        Order of entries in OrderedDicts does not matter. "ScriptInfo" key in info is
+        considered an implementation detail and thus ignored.
+
+        Useful mostly in unit tests. Differences are logged at DEBUG level.
 
         """
+
         if isinstance(other, SSAFile):
-            # Note: OrderedDict is order-sensitive in __eq__,
-            # which is unwanted here, hence conversion to plain dict
-            return dict(**self.info) == dict(**other.info) and \
-                    dict(**self.styles) == dict(**other.styles) and \
-                    len(self.events) == len(other.events) and \
-                    all(starmap(SSAEvent.equals, zip(self.events, other.events)))
+            for key in set(chain(self.info.keys(), other.info.keys())) - {"ScriptInfo"}:
+                sv, ov = self.info.get(key), other.info.get(key)
+                if sv is None:
+                    logging.debug("%r missing in self.info", key)
+                    return False
+                elif ov is None:
+                    logging.debug("%r missing in other.info", key)
+                    return False
+                elif sv != ov:
+                    logging.debug("info %r differs (self=%r, other=%r)", key, sv, ov)
+                    return False
+
+            for key in set(chain(self.styles.keys(), other.styles.keys())):
+                sv, ov = self.styles.get(key), other.styles.get(key)
+                if sv is None:
+                    logging.debug("%r missing in self.styles", key)
+                    return False
+                elif ov is None:
+                    logging.debug("%r missing in other.styles", key)
+                    return False
+                elif sv != ov:
+                    for k in sv.FIELDS:
+                        if getattr(sv, k) != getattr(ov, k): logging.debug("difference in field %r", k)
+                    logging.debug("style %r differs (self=%r, other=%r)", key, sv.as_dict(), ov.as_dict())
+                    return False
+
+            if len(self) != len(other):
+                logging.debug("different # of subtitles (self=%d, other=%d)", len(self), len(other))
+                return False
+
+            for i, (se, oe) in enumerate(zip(self.events, other.events)):
+                if not se.equals(oe):
+                    for k in se.FIELDS:
+                        if getattr(se, k) != getattr(oe, k): logging.debug("difference in field %r", k)
+                    logging.debug("event %d differs (self=%r, other=%r)", i, se.as_dict(), oe.as_dict())
+                    return False
+
+            return True
         else:
             raise TypeError("Cannot compare to non-SSAFile object")
 
