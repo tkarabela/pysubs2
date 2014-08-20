@@ -1,4 +1,4 @@
-from __future__ import print_function, division
+from __future__ import print_function, division, unicode_literals
 import re
 from numbers import Number
 from .formatbase import FormatBase
@@ -181,20 +181,20 @@ class SubstationFormat(FormatBase):
             elif inside_info_section:
                 if line.startswith(";"): continue # skip comments
                 try:
-                    k, v = line.split(": ", maxsplit=1)
+                    k, v = line.split(": ", 1)
                     subs.info[k] = v
                 except ValueError:
                     pass
             elif line.startswith("Style:"):
-                _, rest = line.split(": ", maxsplit=1)
+                _, rest = line.split(": ", 1)
                 buf = rest.strip().split(",")
                 name, raw_fields = buf[0], buf[1:] # splat workaround for Python 2.7
                 field_dict = {f: string_to_field(f, v) for f, v in zip(STYLE_FIELDS[format_], raw_fields)}
                 sty = SSAStyle(**field_dict)
                 subs.styles[name] = sty
             elif line.startswith("Dialogue:") or line.startswith("Comment:"):
-                ev_type, rest = line.split(": ", maxsplit=1)
-                raw_fields = rest.strip().split(",", maxsplit=len(EVENT_FIELDS[format_])-1)
+                ev_type, rest = line.split(": ", 1)
+                raw_fields = rest.strip().split(",", len(EVENT_FIELDS[format_])-1)
                 field_dict = {f: string_to_field(f, v) for f, v in zip(EVENT_FIELDS[format_], raw_fields)}
                 field_dict["type"] = ev_type
                 ev = SSAEvent(**field_dict)
@@ -204,7 +204,7 @@ class SubstationFormat(FormatBase):
     @classmethod
     def to_file(cls, subs, fp, format_, header_notice=NOTICE, **kwargs):
         print("[Script Info]", file=fp)
-        for line in header_notice.splitlines(keepends=False):
+        for line in header_notice.splitlines(False):
             print(";", line, file=fp)
 
         subs.info["ScriptInfo"] = "v4.00+" if format_ == "ass" else "v4.00"
