@@ -1,5 +1,8 @@
 from __future__ import unicode_literals
 import re
+from .time import ms_to_str
+from .common import PY3
+
 
 class SSAEvent(object):
     """A SubStation Event, ie. one subtitle"""
@@ -114,3 +117,9 @@ class SSAEvent(object):
 
     def __ge__(self, other):
         return (self.start, self.end) >= (other.start, other.end)
+
+    def __repr__(self):
+        s = "<SSAEvent type={self.type} start={start} end={end} text='{self.text}'>".format(
+                self=self, start=ms_to_str(self.start), end=ms_to_str(self.end))
+        if not PY3: s = s.encode("utf-8")
+        return s

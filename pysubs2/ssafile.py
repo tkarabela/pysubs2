@@ -9,7 +9,8 @@ from .formats import autodetect_format, get_format_class, get_format_identifier
 from .formats.substation import is_valid_field_content
 from .ssaevent import SSAEvent
 from .ssastyle import SSAStyle
-from .time import make_time
+from .time import make_time, ms_to_str
+from .common import PY3
 
 
 class SSAFile(MutableSequence):
@@ -350,6 +351,17 @@ class SSAFile(MutableSequence):
             return True
         else:
             raise TypeError("Cannot compare to non-SSAFile object")
+
+    def __repr__(self):
+        if self.events:
+            max_time = max(ev.end for ev in self)
+            s = "<SSAFile with %d events and %d styles, last timestamp %s>" % \
+                    (len(self), len(self.styles), ms_to_str(max_time))
+        else:
+            s = "<SSAFile with 0 events and %d styles>" % len(self.styles)
+
+        if not PY3: s = s.encode("utf-8")
+        return s
 
     # ------------------------------------------------------------------------
     # MutableSequence implementation

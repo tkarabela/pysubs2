@@ -1,5 +1,5 @@
 from __future__ import unicode_literals
-from .common import Color
+from .common import Color, PY3
 
 
 class SSAStyle(object):
@@ -58,6 +58,15 @@ class SSAStyle(object):
 
     def __ne__(self, other):
         return not self == other
+
+    def __repr__(self):
+        s = "<SSAStyle "
+        s += "%rpx " % self.fontsize
+        if self.bold: s += "bold "
+        if self.italic: s += "italic "
+        s += "'%s'>" % self.fontname
+        if not PY3: s = s.encode("utf-8")
+        return s
 
 
 SSAStyle.DEFAULT_STYLE = SSAStyle()
