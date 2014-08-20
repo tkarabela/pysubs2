@@ -2,7 +2,7 @@ from .formatbase import FormatBase
 from .microdvd import MicroDVDFormat
 from .subrip import SubripFormat
 from .jsonformat import JSONFormat
-
+from .substation import SubstationFormat
 
 FILE_EXTENSION_TO_FORMAT_IDENTIFIER = {
     ".srt": "srt",
@@ -14,8 +14,8 @@ FILE_EXTENSION_TO_FORMAT_IDENTIFIER = {
 
 FORMAT_IDENTIFIER_TO_FORMAT_CLASS = {
     "srt": SubripFormat,
-    "ass": FormatBase,
-    "ssa": FormatBase,
+    "ass": SubstationFormat,
+    "ssa": SubstationFormat,
     "microdvd": MicroDVDFormat,
     "json": JSONFormat
 }

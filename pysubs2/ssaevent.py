@@ -1,9 +1,9 @@
 from __future__ import unicode_literals
-from .formats.substation import OVERRIDE_SEQUENCE
-
+import re
 
 class SSAEvent(object):
     """A SubStation Event, ie. one subtitle"""
+    OVERRIDE_SEQUENCE = re.compile(r"{[^}]*}")
 
     FIELDS = frozenset([
         "start", "end", "text", "marked", "layer", "style",
@@ -73,7 +73,7 @@ class SSAEvent(object):
         text. Newlines are converted to ``\\N`` tags.
         """
         text = self.text
-        text = OVERRIDE_SEQUENCE.sub("", text)
+        text = self.OVERRIDE_SEQUENCE.sub("", text)
         text = text.replace(r"\h", " ")
         text = text.replace(r"\n", "\n")
         text = text.replace(r"\N", "\n")
