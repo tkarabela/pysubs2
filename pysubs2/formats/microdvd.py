@@ -63,7 +63,7 @@ class MicroDVDFormat(FormatBase):
             subs.append(ev)
 
     @classmethod
-    def to_file(cls, subs, fp, format_, fps=None, **kwargs):
+    def to_file(cls, subs, fp, format_, fps=None, write_fps_declaration=True, **kwargs):
         if fps is None:
             fps = subs.fps
 
@@ -82,7 +82,8 @@ class MicroDVDFormat(FormatBase):
             return True
 
         # insert an artificial first line telling the framerate
-        subs.insert(0, SSAEvent(start=0, end=0, text=text_type(fps)))
+        if write_fps_declaration:
+            subs.insert(0, SSAEvent(start=0, end=0, text=text_type(fps)))
 
         for line in (ev for ev in subs if not ev.is_comment):
             text = "|".join(line.plaintext.splitlines())
@@ -98,4 +99,5 @@ class MicroDVDFormat(FormatBase):
             print("{%d}{%d}%s" % (start, end, text), file=fp)
 
         # remove the artificial framerate-telling line
-        subs.pop(0)
+        if write_fps_declaration:
+            subs.pop(0)
