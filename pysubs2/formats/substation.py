@@ -15,7 +15,7 @@ def ass_to_ssa_alignment(i):
 def ssa_to_ass_alignment(i):
     return SSA_ALIGNMENT.index(i) + 1
 
-SECTION_HEADING = re.compile(r"^ *\[[^\]]+\]")
+SECTION_HEADING = re.compile(r"^.{,3}\[[^\]]+\]") # allow for UTF-8 BOM, which is 3 bytes
 
 STYLE_FORMAT_LINE = {
     "ass": "Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic,"

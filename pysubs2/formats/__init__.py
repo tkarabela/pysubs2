@@ -28,6 +28,14 @@ def get_format_identifier(ext):
     # XXX throw specific exception
     return FILE_EXTENSION_TO_FORMAT_IDENTIFIER[ext]
 
+def get_file_extension(format_):
+    # XXX throw something better
+    for ext, f in FILE_EXTENSION_TO_FORMAT_IDENTIFIER.items():
+        if f == format_:
+            return ext
+
+    raise ValueError()
+
 def autodetect_format(content):
     formats = set()
     for impl in FORMAT_IDENTIFIER_TO_FORMAT_CLASS.values():
