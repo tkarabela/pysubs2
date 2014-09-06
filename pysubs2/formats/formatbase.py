@@ -1,11 +1,22 @@
 class FormatBase(object):
     """
     Base class for subtitle format implementations.
+
+    How to implement a new subtitle format:
+
+    1. Create a subclass of FormatBase and override the methods you want to support.
+    2. Decide on a format identifier, like the ``"srt"`` or ``"microdvd"`` already used in the library.
+    3. Add your identifier and class to :data:`pysubs2.formats.FORMAT_IDENTIFIER_TO_FORMAT_CLASS`.
+    4. (optional) Add your file extension and class to :data:`pysubs2.formats.FILE_EXTENSION_TO_FORMAT_IDENTIFIER`.
+
+    After finishing these steps, you can call :meth:`SSAFile.load()` and :meth:`SSAFile.save()` with your
+    format, including autodetection from content and file extension (if you provided these).
+
     """
     @classmethod
     def from_file(cls, subs, fp, format_, **kwargs):
         """
-        Load subtitle file into empty SSAFile.
+        Load subtitle file into an empty SSAFile.
 
         If the parser autodetects framerate, set it as ``subs.fps``.
 
@@ -20,7 +31,7 @@ class FormatBase(object):
             None
 
         Raises:
-            pysubs2.UnknownFPSError: Framerate was not provided and cannot
+            pysubs2.exceptions.UnknownFPSError: Framerate was not provided and cannot
                 be detected.
         """
         raise NotImplementedError("Parsing is not supported for this format")
@@ -28,7 +39,7 @@ class FormatBase(object):
     @classmethod
     def to_file(cls, subs, fp, format_, **kwargs):
         """
-        Write SSAFile into file.
+        Write SSAFile into a file.
 
         If you need framerate and it is not passed in keyword arguments,
         use ``subs.fps``.
@@ -45,7 +56,7 @@ class FormatBase(object):
             None
 
         Raises:
-            pysubs2.UnknownFPSError: Framerate was not provided and
+            pysubs2.exceptions.UnknownFPSError: Framerate was not provided and
                 ``subs.fps is None``.
         """
         raise NotImplementedError("Writing is not supported for this format")

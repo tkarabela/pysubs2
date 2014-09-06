@@ -2,7 +2,11 @@ from collections import namedtuple
 import sys
 
 class Color(namedtuple("Color", "r g b a")):
-    """8-bit RGB color with alpha channel"""
+    """
+    (r, g, b, a) namedtuple for 8-bit RGB color with alpha channel.
+
+    All values are ints from 0 to 255.
+    """
     pass # XXX add range check
 
 #: Version of the pysubs2 library.

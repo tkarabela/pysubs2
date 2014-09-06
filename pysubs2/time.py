@@ -4,7 +4,7 @@ from collections import namedtuple
 import re
 
 
-#: Matches both SubStation and SubRip timestamps.
+#: Pattern that matches both SubStation and SubRip timestamps.
 TIMESTAMP = re.compile(r"(\d{1,2}):(\d{2}):(\d{2})[.,](\d{2,3})")
 
 Times = namedtuple("Times", ["h", "m", "s", "ms"])
@@ -13,7 +13,17 @@ def make_time(h=0, m=0, s=0, ms=0, frames=None, fps=None):
     """
     Convert time to milliseconds.
 
-    See :func:`pysubs2.time.times_to_ms()` and :func:`pysubs2.time.frames_to_ms()`.
+    See :func:`pysubs2.time.times_to_ms()`. When both frames and fps are specified,
+    :func:`pysubs2.time.frames_to_ms()` is called instead.
+
+    Raises:
+        ValueError: Invalid fps, or one of frames/fps is missing.
+
+    Example:
+        >>> make_time(s=1.5)
+        1500
+        >>> make_time(frames=50, fps=25)
+        2000
 
     """
     if frames is None and fps is None:
@@ -25,7 +35,7 @@ def make_time(h=0, m=0, s=0, ms=0, frames=None, fps=None):
 
 def timestamp_to_ms(groups):
     """
-    Convert groups from pysubs.time.TIMESTAMP match to milliseconds.
+    Convert groups from :data:`pysubs2.time.TIMESTAMP` match to milliseconds.
     
     Example:
         >>> timestamp_to_ms(TIMESTAMP.match("0:00:00.42").groups())
@@ -44,7 +54,7 @@ def times_to_ms(h=0, m=0, s=0, ms=0):
     Convert hours, minutes, seconds to milliseconds.
     
     Arguments may be positive or negative, int or float,
-    need not be normalized (s=120 is okay).
+    need not be normalized (``s=120`` is okay).
     
     Returns:
         Number of milliseconds (rounded to int).
@@ -104,8 +114,8 @@ def ms_to_times(ms):
             Should be non-negative.
     
     Returns:
-        Tuple (h, m, s, ms) of ints (actually, pysubs.times.Times namedtuple).
-        Invariants: ms in range(1000), s in range(60), m in range(60).
+        Named tuple (h, m, s, ms) of ints.
+        Invariants: ``ms in range(1000) and s in range(60) and m in range(60)``
     
     """
     ms = int(round(ms))
@@ -118,8 +128,8 @@ def ms_to_str(ms, fractions=False):
     """
     Prettyprint milliseconds to [-]H:MM:SS[.mmm]
     
-    Handles huge and/or negative times. Non-negative times with fractions=True
-    are matched by pysubs.time.TIMESTAMP.
+    Handles huge and/or negative times. Non-negative times with ``fractions=True``
+    are matched by :data:`pysubs2.time.TIMESTAMP`.
     
     Arguments:
         ms: Number of milliseconds (int, float or other numeric class).

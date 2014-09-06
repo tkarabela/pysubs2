@@ -7,6 +7,7 @@ import os.path as op
 import io
 from io import open
 import sys
+from textwrap import dedent
 from .formats import get_file_extension
 from .time import make_time
 from .ssafile import SSAFile
@@ -40,7 +41,20 @@ def change_ext(path, ext):
 
 class Pysubs2CLI(object):
     def __init__(self):
-        parser = self.parser = argparse.ArgumentParser(prog="pysubs2")
+        parser = self.parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
+                                                       prog="pysubs2",
+                                                       description=dedent("""
+                                                       The pysubs2 CLI for processing subtitle files.
+                                                       https://github.com/tkarabela/pysubs2
+                                                       """),
+                                                       epilog=dedent("""
+                                                       usage examples:
+                                                         pysubs2 --to srt *.ass
+                                                         pysubs2 --to microdvd --fps 23.976 *.ass
+                                                         pysubs2 --shift 0.3s *.srt
+                                                         pysubs2 --shift 0.3s <my_file.srt >retimed_file.srt
+                                                         pysubs2 --shift-back 0.3s --output-dir retimed *.srt
+                                                         pysubs2 --transform-framerate 25 23.976 *.srt"""))
 
         parser.add_argument("files", nargs="*", metavar="FILE",
                             help="Input subtitle files. Can be in SubStation Alpha (*.ass, *.ssa), SubRip (*.srt) or "

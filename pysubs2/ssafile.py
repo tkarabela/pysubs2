@@ -17,6 +17,18 @@ class SSAFile(MutableSequence):
     """
     Subtitle file in SubStation Alpha format.
 
+    This class has a list-like interface which exposes :attr:`SSAFile.events`,
+    list of subtitles in the file::
+
+        subs = SSAFile.load("subtitles.srt")
+
+        for line in subs:
+            print(line.text)
+
+        subs.insert(0, SSAEvent(start=0, end=make_time(s=2.5), text="New first subtitle"))
+
+        del subs[0]
+
     """
 
     DEFAULT_INFO = OrderedDict([
@@ -25,11 +37,11 @@ class SSAFile(MutableSequence):
         ("Collisions", "Normal")])
 
     def __init__(self):
-        self.events = [] #: List of :class:`SSAEvent` instances.
+        self.events = [] #: List of :class:`SSAEvent` instances, ie. individual subtitles.
         self.styles = OrderedDict([("Default", SSAStyle.DEFAULT_STYLE.copy())]) #: Dict of :class:`SSAStyle` instances.
-        self.info = self.DEFAULT_INFO.copy() #: String metadata.
-        self.fps = None #: Framerate used for reading the file, if applicable.
-        self.format = None #: Format used for reading the file, if applicable.
+        self.info = self.DEFAULT_INFO.copy() #: Dict with textual metadata, ie. ``[Script Info]``.
+        self.fps = None #: Framerate used when reading the file, if applicable.
+        self.format = None #: Format of source subtitle file, if applicable, eg. ``"srt"``.
 
     # ------------------------------------------------------------------------
     # I/O methods
@@ -58,9 +70,16 @@ class SSAFile(MutableSequence):
         Returns:
             SSAFile
 
+        Raises:
+            IOError
+            UnicodeDecodeError
+            pysubs2.exceptions.UnknownFPSError
+            pysubs2.exceptions.UnknownFormatIdentifierError
+            pysubs2.exceptions.FormatAutodetectionError
+
         Note:
             pysubs2 may autodetect subtitle format and/or framerate. These
-            values are set as :attr:`SSAFile.format` and :attr:`SSAfile.fps`
+            values are set as :attr:`SSAFile.format` and :attr:`SSAFile.fps`
             attributes.
 
         Example:
@@ -154,6 +173,13 @@ class SSAFile(MutableSequence):
                 frame-based to time-based conversions.
             kwargs: Extra options for the writer.
 
+        Raises:
+            IOError
+            UnicodeEncodeError
+            pysubs2.exceptions.UnknownFPSError
+            pysubs2.exceptions.UnknownFormatIdentifierError
+            pysubs2.exceptions.UnknownFileExtensionError
+
         """
         if format_ is None:
             ext = os.path.splitext(path)[1].lower()
@@ -231,9 +257,6 @@ class SSAFile(MutableSequence):
             in_fps (float)
             out_fps (float)
 
-        Returns:
-            None
-
         Raises:
             ValueError: Non-positive framerate given.
 
@@ -256,7 +279,7 @@ class SSAFile(MutableSequence):
 
         Arguments:
             old_name (str): Style to be renamed.
-            new_name (str): New name for the style.
+            new_name (str): New name for the style (must be unused).
 
         Raises:
             KeyError: No style named old_name.
@@ -366,8 +389,12 @@ class SSAFile(MutableSequence):
         return s
 
     # ------------------------------------------------------------------------
-    # MutableSequence implementation
+    # MutableSequence implementation + sort()
     # ------------------------------------------------------------------------
+
+    def sort(self):
+        """Sort subtitles time-wise, in-place."""
+        self.events.sort()
 
     def __getitem__(self, item):
         return self.events[item]

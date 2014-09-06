@@ -5,9 +5,25 @@ from .common import PY3
 
 
 class SSAEvent(object):
-    """A SubStation Event, ie. one subtitle"""
+    """
+    A SubStation Event, ie. one subtitle.
+
+    In SubStation, each subtitle consists of multiple "fields" like Start, End and Text.
+    These are exposed as attributes (note that they are lowercase; see :attr:`SSAEvent.FIELDS` for a list).
+    Additionaly, there are some convenience properties like :attr:`SSAEvent.plaintext` or :attr:`SSAEvent.duration`.
+
+    This class defines an ordering with respect to (start, end) timestamps.
+
+    .. tip :: Use :func:`pysubs2.make_time()` to get times in milliseconds.
+
+    Example::
+
+        >>> ev = SSAEvent(start=make_time(s=1), end=make_time(s=2.5), text="Hello World!")
+
+    """
     OVERRIDE_SEQUENCE = re.compile(r"{[^}]*}")
 
+    #: All fields in SSAEvent.
     FIELDS = frozenset([
         "start", "end", "text", "marked", "layer", "style",
         "name", "marginl", "marginr", "marginv", "effect", "type"
@@ -56,7 +72,7 @@ class SSAEvent(object):
         When true, the subtitle is a comment, ie. not visible (read/write property).
 
         Setting this property is equivalent to changing
-        :attr:`SSAEvent.type` to ``Dialogue`` or ``Comment``.
+        :attr:`SSAEvent.type` to ``"Dialogue"`` or ``"Comment"``.
         """
         return self.type == "Comment"
 
@@ -98,13 +114,14 @@ class SSAEvent(object):
         self.end += delta
 
     def copy(self):
+        """Return a copy of the SSAEvent."""
         return SSAEvent(**self.as_dict())
 
     def as_dict(self):
         return {field: getattr(self, field) for field in self.FIELDS}
 
     def equals(self, other):
-        """Field-based equality for SSAEvents"""
+        """Field-based equality for SSAEvents."""
         if isinstance(other, SSAEvent):
             return self.as_dict() == other.as_dict()
         else:
