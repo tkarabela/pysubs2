@@ -138,14 +138,14 @@ class Pysubs2CLI(object):
             output_format = args.output_format or subs.format
             subs.to_file(outfile, output_format, args.fps)
 
-        sys.exit(0 if errors == 0 else 1)
+        return (0 if errors == 0 else 1)
 
     @staticmethod
     def process(subs, args):
         if args.shift is not None:
             subs.shift(ms=args.shift)
         elif args.shift_back is not None:
-            subs.shift(ms=-args.shift)
+            subs.shift(ms=-args.shift_back)
         elif args.transform_framerate is not None:
             in_fps, out_fps = args.transform_framerate
             subs.transform_framerate(in_fps, out_fps)

@@ -1,7 +1,7 @@
 from .ssafile import SSAFile
 from .ssaevent import SSAEvent
 from .ssastyle import SSAStyle
-from . import time, formats
+from . import time, formats, cli
 from .exceptions import *
 from .common import Color, VERSION
 
