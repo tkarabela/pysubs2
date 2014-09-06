@@ -211,8 +211,10 @@ class SSAFile(MutableSequence):
                 May be positive or negative. fps must be also specified.
             fps (float): When specified, must be a positive number.
 
+        Raises:
+            ValueError: Invalid fps or missing number of frames.
+
         """
-        # XXX what exceptions are raised?
         delta = make_time(h=h, m=m, s=s, ms=ms, frames=frames, fps=fps)
         for line in self:
             line.start += delta

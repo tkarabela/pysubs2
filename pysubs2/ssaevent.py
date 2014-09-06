@@ -1,6 +1,6 @@
 from __future__ import unicode_literals
 import re
-from .time import ms_to_str
+from .time import ms_to_str, make_time
 from .common import PY3
 
 
@@ -85,6 +85,17 @@ class SSAEvent(object):
     @plaintext.setter
     def plaintext(self, text):
         self.text = text.replace("\n", r"\N")
+
+    def shift(self, h=0, m=0, s=0, ms=0, frames=None, fps=None):
+        """
+        Shift start and end times.
+
+        See :meth:`SSAFile.shift()` for full description.
+
+        """
+        delta = make_time(h=h, m=m, s=s, ms=ms, frames=frames, fps=fps)
+        self.start += delta
+        self.end += delta
 
     def copy(self):
         return SSAEvent(**self.as_dict())

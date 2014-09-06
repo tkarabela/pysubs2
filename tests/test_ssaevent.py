@@ -1,3 +1,5 @@
+from nose.tools import assert_raises
+
 from pysubs2 import SSAEvent, make_time
 
 def test_repr_dialogue():
@@ -10,3 +12,58 @@ def test_repr_comment():
     ev.is_comment = True
     ref = "<SSAEvent type=Comment start=0:01:30 end=0:01:35 text='Hello\\Nworld!'>"
     assert repr(ev) == ref
+
+def test_duration():
+    e = SSAEvent(start=0, end=10)
+    assert e.duration == 10
+
+    e.duration = 20
+    assert e.start == 0 and e.end == 20
+
+    e.duration = 5
+    assert e.start == 0 and e.end == 5
+
+    e.duration = 0
+    assert e.start == 0 and e.end == 0
+
+    with assert_raises(ValueError):
+        e.duration = -20
+
+def test_plaintext():
+    e = SSAEvent(text=r"First\NSecond\NThird\hline{with hidden text}")
+    assert e.plaintext == "First\nSecond\nThird line"
+
+    e.plaintext = "My\n Text "
+    assert e.text == r"My\N Text "
+
+    # SubStation has no way to escape braces, thus this wart
+    text = "My text{with braces}"
+    e.plaintext = text
+    assert e.plaintext != text
+
+def test_shift():
+    e = SSAEvent(start=0, end=10)
+
+    with assert_raises(ValueError):
+        e.shift(frames=5)
+
+    with assert_raises(ValueError):
+        e.shift(fps=23.976)
+
+    with assert_raises(ValueError):
+        e.shift(frames=5, fps=-1)
+
+    e2 = e.copy(); e2.shift(ms=5)
+    assert e2 == SSAEvent(start=5, end=15)
+
+    e2 = e.copy(); e2.shift(ms=-5)
+    assert e2 == SSAEvent(start=-5, end=5)
+
+    e2 = e.copy(); e2.shift(frames=1, fps=100.0)
+    assert e2 == SSAEvent(start=10, end=20)
+
+    e2 = e.copy(); e2.shift(frames=-1, fps=100.0)
+    assert e2 == SSAEvent(start=-10, end=0)
+
+    e2 = e.copy(); e2.shift(h=1, m=-60, s=2, ms=-2000)
+    assert e2 == e

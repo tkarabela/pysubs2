@@ -18,8 +18,10 @@ def make_time(h=0, m=0, s=0, ms=0, frames=None, fps=None):
     """
     if frames is None and fps is None:
         return times_to_ms(h, m, s, ms)
-    else:
+    elif frames is not None and fps is not None:
         return frames_to_ms(frames, fps)
+    else:
+        raise ValueError("Both fps and frames must be specified")
 
 def timestamp_to_ms(groups):
     """
