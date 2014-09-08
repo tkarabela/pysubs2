@@ -27,7 +27,7 @@ Now that we have a real file on the harddrive, let's import pysubs2 and load it.
     >>> subs
     <SSAFile with 2 events and 1 styles, last timestamp 0:02:00>
 
-.. tip:: pysubs2 is written with Python 3 in mind, meaning that it speaks Unicode. By default, it uses UTF-8 when reading and writing files. Use ``encoding`` keyword argument in case you need something else.
+.. tip:: pysubs2 is written with Python 3 in mind, meaning that it speaks Unicode. By default, it uses UTF-8 when reading and writing files. Use the ``encoding`` keyword argument in case you need something else.
 
 Now we have a subtitle file, the :class:`pysubs2.SSAFile` object. It has two "events", ie. subtitles. You can treat ``subs`` as a list:
 
@@ -47,14 +47,16 @@ Let's have a look at the timestamps.
     >>> subs[1].start
     60000
 
-That is 60,000 milliseconds, or one minute. pysubs2 uses plain :class:`int` milliseconds for time. Since you probably don't want to convert all times to milliseconds by hand, there is a handy function called :func:`pysubs2.make_time()`.
+That is 60,000 milliseconds, or one minute. pysubs2 uses plain :class:`int` milliseconds for time. Since you probably don't want to convert all times to milliseconds by hand, there is a handy function called :func:`pysubs2.make_time()`. You can use this function to give times in minutes and seconds, but also in frames.
 
-    >>> subs[1].start = pysubs2.make_time(s=2)
-    >>> subs[1].start = pysubs2.make_time(frame=50, fps=25)
+    >>> subs[1].start == pysubs2.make_time(s=2)
+    True
+    >>> subs[1].start == pysubs2.make_time(frame=50, fps=25)
+    True
 
-You can use this function to give times in minutes and seconds, but also in frames.
+.. tip:: :class:`pysubs2.SSAEvent` objects define ordering with respect to time, meaning you can sort them chronologically. There is :meth:`pysubs2.SSAFile.sort()` method for this purpose.
 
-Let's write a function to retime a subtitle file by shifting all times by a constant!
+Let's write a function to retime a subtitle file by adding a constant to all timestamps!
 
     >>> def shift(subs, ms):
     ...     for line in subs:
@@ -80,7 +82,7 @@ Let's add one more style, with italics, and let the second subtitle have it.
     >>> subs.styles["MyStyle"] = my_style
     >>> subs[1].style = "MyStyle"
 
-Notice that the subtitle object (:class:`pysubs2.SSAEvent`) and style object (:class:`pysubs2.SSAStyle`) aren't really connected. Instead, styles are referred to by their name in the :attr:`pysubs2.SSAFile.styles` dictionary.
+Notice that the subtitle object (:class:`pysubs2.SSAEvent`) and the style object (:class:`pysubs2.SSAStyle`) aren't really connected. Instead, styles are referred to by their name in the :attr:`pysubs2.SSAFile.styles` dictionary.
 
 .. tip:: This means that renaming a style is a little difficult, because you also have to fix all references to the old name. The :meth:`pysubs2.SSAFile.rename_style()` method does what's needed behind the scenes.
 

@@ -16,8 +16,10 @@ pysubs2 works with Python 3 and 2.7. It’s available under the MIT license (see
 
 To install pysubs2, just use `pip <https://pypi.python.org/pypi/pip>`_: ``pip install pysubs2``. You can also clone `the GitHub repository <https://github.com/tkarabela/pysubs2/>`_ and install via ``python setup.py install``.
 
+If you find a bug or have something to say, please let me know `via GitHub <https://github.com/tkarabela/pysubs2/issues>`_ or email (tkarabela at seznam dot cz). Your feedback is much appreciated. Thanks!
 
-If you find a bug or have something to say, please let me know via `GitHub <https://github.com/tkarabela/pysubs2/issues>`_ or email (tkarabela at seznam dot cz). Your feedback is much appreciated. Thanks!
+Documentation
+-------------
 
 .. toctree::
    :maxdepth: 2

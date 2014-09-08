@@ -99,8 +99,7 @@ Misc methods
 ``pysubs2.formats`` --- subtitle format implementations
 -------------------------------------------------------
 
-.. note:: This submodule contains pysubs2 internals. It's mostly of interest if you're looking to implement
-          a subtitle format not supported by the library.
+.. note:: This submodule contains pysubs2 internals. It's mostly of interest if you're looking to implement a subtitle format not supported by the library. In that case, have a look at :class:`pysubs2.formats.FormatBase`.
 
 .. autofunction:: pysubs2.formats.substation.parse_tags
 

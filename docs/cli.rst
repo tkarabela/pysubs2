@@ -6,7 +6,7 @@ Do you want to convert subtitle files from one format to another, or do simple r
 There are two ways to use the CLI:
 
 1. Using the ``pysubs2.py`` script which should have been installed on your system along with pysubs2, or
-2. by executing the pysubs2 module: ``python -m pysubs``.
+2. by executing the pysubs2 module: ``python -m pysubs2``.
 
 See ``pysubs2.py --help`` for usage. Here are some examples::
 
