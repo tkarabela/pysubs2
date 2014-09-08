@@ -10,7 +10,7 @@ class Color(namedtuple("Color", "r g b a")):
     pass # XXX add range check
 
 #: Version of the pysubs2 library.
-VERSION = "0.2.0-prealpha"
+VERSION = "0.2.0"
 
 
 PY3 = sys.version_info.major == 3

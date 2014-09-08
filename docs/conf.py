@@ -31,8 +31,6 @@ import pysubs2
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
-    'sphinx.ext.doctest',
-    'sphinx.ext.coverage',
     'sphinxcontrib.napoleon'
 ]
 
