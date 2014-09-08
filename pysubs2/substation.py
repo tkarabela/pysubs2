@@ -2,10 +2,10 @@ from __future__ import print_function, division, unicode_literals
 import re
 from numbers import Number
 from .formatbase import FormatBase
-from ..ssaevent import SSAEvent
-from ..ssastyle import SSAStyle
-from ..common import text_type, Color
-from ..time import make_time, ms_to_times, timestamp_to_ms, TIMESTAMP
+from .ssaevent import SSAEvent
+from .ssastyle import SSAStyle
+from .common import text_type, Color
+from .time import make_time, ms_to_times, timestamp_to_ms, TIMESTAMP
 
 SSA_ALIGNMENT = (1, 2, 3, 9, 10, 11, 5, 6, 7)
 

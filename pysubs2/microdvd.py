@@ -2,13 +2,13 @@ from __future__ import unicode_literals, print_function
 
 from functools import partial
 import re
-from ..common import text_type
-from ..exceptions import UnknownFPSError
-from ..ssaevent import SSAEvent
-from ..ssastyle import SSAStyle
+from .common import text_type
+from .exceptions import UnknownFPSError
+from .ssaevent import SSAEvent
+from .ssastyle import SSAStyle
 from .formatbase import FormatBase
 from .substation import parse_tags
-from ..time import ms_to_frames, frames_to_ms
+from .time import ms_to_frames, frames_to_ms
 
 #: Matches a MicroDVD line.
 MICRODVD_LINE = re.compile(r" *\{ *(\d+) *\} *\{ *(\d+) *\}(.+)")

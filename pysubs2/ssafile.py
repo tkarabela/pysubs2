@@ -6,7 +6,7 @@ from itertools import starmap, chain
 import os.path
 import logging
 from .formats import autodetect_format, get_format_class, get_format_identifier
-from .formats.substation import is_valid_field_content
+from .substation import is_valid_field_content
 from .ssaevent import SSAEvent
 from .ssastyle import SSAStyle
 from .time import make_time, ms_to_str

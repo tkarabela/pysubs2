@@ -3,7 +3,7 @@ from .microdvd import MicroDVDFormat
 from .subrip import SubripFormat
 from .jsonformat import JSONFormat
 from .substation import SubstationFormat
-from ..exceptions import *
+from .exceptions import *
 
 #: Dict mapping file extensions to format identifiers.
 FILE_EXTENSION_TO_FORMAT_IDENTIFIER = {

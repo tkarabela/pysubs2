@@ -2,10 +2,10 @@ from __future__ import print_function, unicode_literals
 
 import re
 from .formatbase import FormatBase
-from ..ssaevent import SSAEvent
-from ..ssastyle import SSAStyle
+from .ssaevent import SSAEvent
+from .ssastyle import SSAStyle
 from .substation import parse_tags
-from ..time import ms_to_times, make_time, TIMESTAMP, timestamp_to_ms
+from .time import ms_to_times, make_time, TIMESTAMP, timestamp_to_ms
 
 #: Largest timestamp allowed in SubRip, ie. 99:59:59,999.
 MAX_REPRESENTABLE_TIME = make_time(h=100) - 1

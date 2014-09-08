@@ -3,12 +3,13 @@
 
 from distutils.core import setup
 from textwrap import dedent
+from pysubs2 import VERSION
 
 setup(
     name = "pysubs2",
     packages = ["pysubs2"],
     scripts = ["scripts/pysubs2.py"],
-    version = "0.2.0",
+    version = VERSION,
     author = "Tomas Karabela",
     author_email = "tkarabela@seznam.cz",
     url = "https://github.com/tkarabela/pysubs2",

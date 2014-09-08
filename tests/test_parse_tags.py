@@ -1,5 +1,5 @@
 from pysubs2 import SSAStyle
-from pysubs2.formats.substation import parse_tags
+from pysubs2.substation import parse_tags
 
 def test_no_tags():
     text = "Hello, world!"

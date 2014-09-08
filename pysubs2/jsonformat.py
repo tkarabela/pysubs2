@@ -1,9 +1,9 @@
 from __future__ import unicode_literals, print_function
 
 import json
-from ..common import Color, PY3
-from ..ssaevent import SSAEvent
-from ..ssastyle import SSAStyle
+from .common import Color, PY3
+from .ssaevent import SSAEvent
+from .ssastyle import SSAStyle
 from .formatbase import FormatBase
 
 
