@@ -49,12 +49,12 @@ class Pysubs2CLI(object):
                                                        """),
                                                        epilog=dedent("""
                                                        usage examples:
-                                                         pysubs2 --to srt *.ass
-                                                         pysubs2 --to microdvd --fps 23.976 *.ass
-                                                         pysubs2 --shift 0.3s *.srt
-                                                         pysubs2 --shift 0.3s <my_file.srt >retimed_file.srt
-                                                         pysubs2 --shift-back 0.3s --output-dir retimed *.srt
-                                                         pysubs2 --transform-framerate 25 23.976 *.srt"""))
+                                                         python -m pysubs2 --to srt *.ass
+                                                         python -m pysubs2 --to microdvd --fps 23.976 *.ass
+                                                         python -m pysubs2 --shift 0.3s *.srt
+                                                         python -m pysubs2 --shift 0.3s <my_file.srt >retimed_file.srt
+                                                         python -m pysubs2 --shift-back 0.3s --output-dir retimed *.srt
+                                                         python -m pysubs2 --transform-framerate 25 23.976 *.srt"""))
 
         parser.add_argument("files", nargs="*", metavar="FILE",
                             help="Input subtitle files. Can be in SubStation Alpha (*.ass, *.ssa), SubRip (*.srt) or "

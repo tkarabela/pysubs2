@@ -1,22 +1,17 @@
 Using pysubs2 from the Command Line
 ===================================
 
-Do you want to convert subtitle files from one format to another, or do simple retiming? You can use pysubs2 CLI.
+Do you want to convert subtitle files from one format to another, or do simple retiming? You can use pysubs2 CLI, which is invoked by executing the pysubs2 module: ``python -m pysubs2``.
 
-There are two ways to use the CLI:
+See ``python -m pysubs2 --help`` for usage. Here are some examples::
 
-1. Using the ``pysubs2.py`` script which should have been installed on your system along with pysubs2, or
-2. by executing the pysubs2 module: ``python -m pysubs2``.
-
-See ``pysubs2.py --help`` for usage. Here are some examples::
-
-    pysubs2.py --to srt *.ass
-    pysubs2.py --to microdvd --fps 23.976 *.ass
-    pysubs2.py --shift 0.3s *.srt
-    pysubs2.py --shift 0.3s <my_file.srt >retimed_file.srt
-    pysubs2.py --shift-back 0.3s --output-dir retimed *.srt
-    pysubs2.py --transform-framerate 25 23.976 *.srt
+    python -m pysubs2 --to srt *.ass
+    python -m pysubs2 --to microdvd --fps 23.976 *.ass
+    python -m pysubs2 --shift 0.3s *.srt
+    python -m pysubs2 --shift 0.3s <my_file.srt >retimed_file.srt
+    python -m pysubs2 --shift-back 0.3s --output-dir retimed *.srt
+    python -m pysubs2 --transform-framerate 25 23.976 *.srt
 
 .. warning::
     
-    By default, the script works in-place; original files are overwritten. You can use the ``-o/--output-dir`` option to specify output directory or process files in single-file mode (``pysubs2.py <infile >outfile``).
+    By default, the script works in-place; original files are overwritten. You can use the ``-o/--output-dir`` option to specify output directory or process files in single-file mode (``python -m pysubs2 <infile >outfile``).

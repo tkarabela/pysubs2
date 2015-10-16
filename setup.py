@@ -8,7 +8,6 @@ from pysubs2 import VERSION
 setup(
     name = "pysubs2",
     packages = ["pysubs2"],
-    scripts = ["scripts/pysubs2.py"],
     version = VERSION,
     author = "Tomas Karabela",
     author_email = "tkarabela@seznam.cz",
