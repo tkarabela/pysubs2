@@ -73,7 +73,7 @@ def ssa_rgb_to_color(s):
     r = x & 0xff
     g = (x >> 8) & 0xff
     b = (x >> 16) & 0xff
-    return Color(r, b, g, 0)
+    return Color(r, b, g)
 
 def is_valid_field_content(s):
     """
