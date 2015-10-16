@@ -329,7 +329,7 @@ class SSAFile(MutableSequence):
         Equality of two SSAFiles.
 
         Compares :attr:`SSAFile.info`, :attr:`SSAFile.styles` and :attr:`SSAFile.events`.
-        Order of entries in OrderedDicts does not matter. "ScriptInfo" key in info is
+        Order of entries in OrderedDicts does not matter. "ScriptType" key in info is
         considered an implementation detail and thus ignored.
 
         Useful mostly in unit tests. Differences are logged at DEBUG level.
@@ -337,7 +337,7 @@ class SSAFile(MutableSequence):
         """
 
         if isinstance(other, SSAFile):
-            for key in set(chain(self.info.keys(), other.info.keys())) - {"ScriptInfo"}:
+            for key in set(chain(self.info.keys(), other.info.keys())) - {"ScriptType"}:
                 sv, ov = self.info.get(key), other.info.get(key)
                 if sv is None:
                     logging.debug("%r missing in self.info", key)

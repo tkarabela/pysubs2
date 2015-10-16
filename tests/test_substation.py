@@ -16,7 +16,7 @@ WrapStyle: 0
 ScaledBorderAndShadow: yes
 Collisions: Normal
 My Custom Info: Some: Test, String.
-ScriptInfo: v4.00+
+ScriptType: v4.00+
 
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
@@ -39,7 +39,7 @@ WrapStyle: 0
 ScaledBorderAndShadow: yes
 Collisions: Normal
 My Custom Info: Some: Test, String.
-ScriptInfo: v4.00
+ScriptType: v4.00
 
 [V4 Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, TertiaryColour, BackColour, Bold, Italic, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, AlphaLevel, Encoding

@@ -125,7 +125,7 @@ It's better to save the file as ASS so that style information isn't lost.
     WrapStyle: 0
     ScaledBorderAndShadow: yes
     Collisions: Normal
-    ScriptInfo: v4.00+
+    ScriptType: v4.00+
 
     [V4+ Styles]
     Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding

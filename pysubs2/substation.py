@@ -213,7 +213,7 @@ class SubstationFormat(FormatBase):
         for line in header_notice.splitlines(False):
             print(";", line, file=fp)
 
-        subs.info["ScriptInfo"] = "v4.00+" if format_ == "ass" else "v4.00"
+        subs.info["ScriptType"] = "v4.00+" if format_ == "ass" else "v4.00"
         for k, v in subs.info.items():
             print(k, v, sep=": ", file=fp)
 
