@@ -66,14 +66,14 @@ def ass_rgba_to_color(s):
     g = (x >> 8) & 0xff
     b = (x >> 16) & 0xff
     a = (x >> 24) & 0xff
-    return Color(r, b, g, a)
+    return Color(r, g, b, a)
 
 def ssa_rgb_to_color(s):
     x = int(s)
     r = x & 0xff
     g = (x >> 8) & 0xff
     b = (x >> 16) & 0xff
-    return Color(r, b, g)
+    return Color(r, g, b)
 
 def is_valid_field_content(s):
     """

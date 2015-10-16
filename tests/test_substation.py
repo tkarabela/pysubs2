@@ -4,7 +4,8 @@ pysubs2.formats.substation tests
 """
 
 from __future__ import unicode_literals
-from pysubs2 import SSAFile, SSAEvent, SSAStyle, make_time
+from pysubs2 import SSAFile, SSAEvent, SSAStyle, make_time, Color
+from pysubs2.substation import color_to_ass_rgba, color_to_ssa_rgb, ass_rgba_to_color, ssa_rgb_to_color
 
 SIMPLE_ASS_REF = """
 [Script Info]
@@ -74,3 +75,14 @@ def test_simple_read():
 
     assert ref.equals(subs1)
     assert ref.equals(subs2)
+
+def test_color_parsing():
+    solid_color = Color(r=1, g=2, b=3)
+    transparent_color = Color(r=1, g=2, b=3, a=4)
+
+    assert ssa_rgb_to_color(color_to_ssa_rgb(solid_color)) == solid_color
+    assert ass_rgba_to_color(color_to_ass_rgba(solid_color)) == solid_color
+    assert ass_rgba_to_color(color_to_ass_rgba(transparent_color)) == transparent_color
+
+    assert ass_rgba_to_color("&HAABBCCDD") == Color(r=0xDD, g=0xCC, b=0xBB, a=0xAA)
+    assert color_to_ass_rgba(Color(r=0xDD, g=0xCC, b=0xBB, a=0xAA)) == "&HAABBCCDD"
