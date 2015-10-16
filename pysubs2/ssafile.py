@@ -39,7 +39,8 @@ class SSAFile(MutableSequence):
     def __init__(self):
         self.events = [] #: List of :class:`SSAEvent` instances, ie. individual subtitles.
         self.styles = OrderedDict([("Default", SSAStyle.DEFAULT_STYLE.copy())]) #: Dict of :class:`SSAStyle` instances.
-        self.info = self.DEFAULT_INFO.copy() #: Dict with textual metadata, ie. ``[Script Info]``.
+        self.info = self.DEFAULT_INFO.copy() #: Dict with script metadata, ie. ``[Script Info]``.
+        self.aegisub_project = OrderedDict() #: Dict with Aegisub project, ie. ``[Aegisub Project Garbage]``.
         self.fps = None #: Framerate used when reading the file, if applicable.
         self.format = None #: Format of source subtitle file, if applicable, eg. ``"srt"``.
 

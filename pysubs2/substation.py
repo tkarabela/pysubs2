@@ -169,20 +169,26 @@ class SubstationFormat(FormatBase):
                 return v
 
         subs.info.clear()
+        subs.aegisub_project.clear()
         subs.styles.clear()
 
         inside_info_section = False
+        inside_aegisub_section = False
 
         for line in fp:
             line = line.strip()
 
             if SECTION_HEADING.match(line):
                 inside_info_section = "Info" in line
-            elif inside_info_section:
+                inside_aegisub_section = "Aegisub" in line
+            elif inside_info_section or inside_aegisub_section:
                 if line.startswith(";"): continue # skip comments
                 try:
                     k, v = line.split(": ", 1)
-                    subs.info[k] = v
+                    if inside_info_section:
+                        subs.info[k] = v
+                    elif inside_aegisub_section:
+                        subs.aegisub_project[k] = v
                 except ValueError:
                     pass
             elif line.startswith("Style:"):
@@ -210,6 +216,11 @@ class SubstationFormat(FormatBase):
         subs.info["ScriptInfo"] = "v4.00+" if format_ == "ass" else "v4.00"
         for k, v in subs.info.items():
             print(k, v, sep=": ", file=fp)
+
+        if subs.aegisub_project:
+            print("\n[Aegisub Project Garbage]", file=fp)
+            for k, v in subs.aegisub_project.items():
+                print(k, v, sep=": ", file=fp)
 
         def field_to_string(f, v):
             if f in {"start", "end"}:

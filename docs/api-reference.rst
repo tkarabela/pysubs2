@@ -29,7 +29,7 @@ pysubs2 is built around *SubStation Alpha*, the native subtitle format of `Aegis
 -------------------------------
 
 .. autoclass:: pysubs2.SSAFile
-   :members: events, styles, info, fps, format
+   :members: events, styles, info, fps, format, aegisub_project
 
 Reading and writing subtitles
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
