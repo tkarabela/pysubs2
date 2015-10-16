@@ -1,6 +1,6 @@
 test:
-	nosetests-3.4
-	nosetests-2.7
+	nosetests3
+	nosetests
 
 doc:
 	cd docs; $(MAKE) html
