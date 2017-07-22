@@ -17,7 +17,8 @@ pysubs2 is built around *SubStation Alpha*, the native subtitle format of `Aegis
 
 **MicroDVD** --- .sub files, format identifier is ``"microdvd"``.
 
-**MPL2** --- .txt files, format identifier is ``"mpl2"``. Time-based format similar to MicroDVD.
+**MPL2** --- Time-based format similar to MicroDVD, format identifier is ``"mpl2"``. To save subtitles in MPL2 format,
+use ``subs.save("subtitles.txt", format_="mpl2")``.
 
 **JSON**-serialized internal representation, which amounts to ASS. Format identifier is ``"json"``.
 

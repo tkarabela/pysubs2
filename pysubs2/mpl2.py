@@ -37,4 +37,13 @@ class MPL2Format(FormatBase):
 
     @classmethod
     def to_file(cls, subs, fp, format_, **kwargs):
-        raise NotImplementedError("Saving MPL2 subtitles is not supported")
+
+        # TODO handle italics
+        for line in subs:
+            if line.is_comment:
+                continue
+
+            print("[{start}][{end}] {text}".format(start=int(line.start // 100),
+                                                   end=int(line.end // 100),
+                                                   text=line.plaintext.replace("\n", "|")),
+                  file=fp)
