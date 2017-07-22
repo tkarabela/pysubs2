@@ -3,41 +3,38 @@
 from __future__ import print_function, division, unicode_literals
 import re
 
-from pysubs2.time import times_to_ms
+from .time import times_to_ms
 from .formatbase import FormatBase
 from .ssaevent import SSAEvent
 
 
 # thanks to http://otsaloma.io/gaupol/doc/api/aeidon.files.mpl2_source.html
-MPL2_FORMAT = re.compile(r"^(?um)\[(-?\d+)\]\[(-?\d+)\](.*?)$")
-
-
-class TXTGenericFormat(FormatBase):
-    @classmethod
-    def guess_format(cls, text):
-        if MPL2_FORMAT.match(text):
-            return "mpl2"
+MPL2_FORMAT = re.compile(r"^(?um)\[(-?\d+)\]\[(-?\d+)\](.*)")
 
 
 class MPL2Format(FormatBase):
     @classmethod
     def guess_format(cls, text):
-        return TXTGenericFormat.guess_format(text)
+        if MPL2_FORMAT.search(text):
+            return "mpl2"
 
     @classmethod
     def from_file(cls, subs, fp, format_, **kwargs):
         def prepare_text(lines):
             out = []
             for s in lines.split("|"):
+                s = s.strip()
+
                 if s.startswith("/"):
-                    out.append(r"{\i1}%s{\i0}" % s[1:])
-                    continue
+                    # line beginning with '/' is in italics
+                    s = r"{\i1}%s{\i0}" % s[1:].strip()
+
                 out.append(s)
-            return "".join(out)
+            return "\\N".join(out)
 
         subs.events = [SSAEvent(start=times_to_ms(s=float(start) / 10), end=times_to_ms(s=float(end) / 10),
                        text=prepare_text(text)) for start, end, text in MPL2_FORMAT.findall(fp.getvalue())]
 
     @classmethod
     def to_file(cls, subs, fp, format_, **kwargs):
-        raise NotImplemented
+        raise NotImplementedError("Saving MPL2 subtitles is not supported")
