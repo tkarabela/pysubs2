@@ -6,11 +6,12 @@ pysubs2
 
 pysubs2 is a Python library for editing subtitle files.
 It’s based on *SubStation Alpha*, the native format of
-`Aegisub <http://www.aegisub.org/>`_; it also supports *SubRip* and
-*MicroDVD* formats. There is a small CLI tool for batch conversion and retiming.
+`Aegisub <http://www.aegisub.org/>`_; it also supports *SubRip*,
+*MicroDVD* and *MPL2* formats. There is a small CLI tool for batch conversion and retiming.
 
 .. code:: bash
 
+    $ pip install pysubs2
     $ python -m pysubs2 --shift 0.3s *.srt
     $ python -m pysubs2 --to srt *.ass
 
@@ -23,6 +24,6 @@ It’s based on *SubStation Alpha*, the native format of
         line.text = "{\\be1}" + line.text
     subs.save("my_subtitles_edited.ass")
 
-To learn more, please `see the documentation <http://pythonhosted.org/pysubs2>`_.
+To learn more, please `see the documentation <http://pysubs2.readthedocs.io>`_.
 
 pysubs2 is licensed under the MIT license (see LICENSE.txt).
