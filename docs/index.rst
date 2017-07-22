@@ -12,7 +12,7 @@ pysubs2 is a Python library for editing subtitle files. It’s based on *SubStat
         line.text = "{\\be1}" + line.text
     subs.save("my_subtitles_edited.ass")
 
-pysubs2 works with Python 3 and 2.7. It’s available under the MIT license (see bottom of the page).
+pysubs2 works with Python 2.7 and 3.3+. It’s available under the MIT license (see bottom of the page).
 
 To install pysubs2, just use `pip <https://pypi.python.org/pypi/pip>`_: ``pip install pysubs2``. You can also clone `the GitHub repository <https://github.com/tkarabela/pysubs2/>`_ and install via ``python setup.py install``.
 

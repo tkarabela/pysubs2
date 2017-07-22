@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+**0.2.2** --- released on 2017-07-22
+
+- Support for MPL2 subtitle format, patch by pannal (https://github.com/pannal)
+- Dropped support for Python 3.2
+
 **0.2.1** --- released on 2015-10-17
 
 - CLI can now be invoked by ``python -m pysubs2`` only; broken ``pysubs2.py`` script has been removed (Issue #1).
