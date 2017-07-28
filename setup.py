@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from distutils.core import setup
+try:
+    from setuptools import setup
+except ImportError:
+    from distutils.core import setup
 from textwrap import dedent
 from pysubs2 import VERSION
 
@@ -48,4 +51,5 @@ setup(
         "Operating System :: OS Independent",
         "License :: OSI Approved :: MIT License"
         ],
+    entry_points={'console_scripts': ['pysubs2 = pysubs2.cli:__main__']}
     )
