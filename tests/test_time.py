@@ -33,7 +33,6 @@ def test_timestamp():
     assert TIMESTAMP.match("1:23:45,6789").groups() == ("1", "23", "45", "678") # at most 3 frac digits matched
     
     # rejected stamps
-    assert TIMESTAMP.match("-1:23:45.67") is None
     assert TIMESTAMP.match("12:45:67") is None
     assert TIMESTAMP.match("100:23:45,678") is None
     assert TIMESTAMP.match("1:23:45,") is None
