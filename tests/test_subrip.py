@@ -117,3 +117,26 @@ def test_read_bad_tags():
 
     subs = SSAFile.from_string(text)
     assert subs.equals(ref)
+
+def test_empty_subtitles():
+    # regression test for issue #11
+
+    text = dedent("""
+    392
+    00:29:27,46 --> 00:29:29,83
+    I'm Liza Minnelli..
+
+    393
+    00:00:00,00 --> 00:00:00,00
+
+    394
+    00:00:00,00 --> 00:00:00,00
+    """)
+
+    ref = SSAFile()
+    ref.append(SSAEvent(start=make_time(m=29, s=27, ms=460), end=make_time(m=29, s=29, ms=830), text="I'm Liza Minnelli.."))
+    ref.append(SSAEvent(start=0, end=0, text=""))
+    ref.append(SSAEvent(start=0, end=0, text=""))
+
+    subs = SSAFile.from_string(text)
+    assert subs.equals(ref)
