@@ -1,6 +1,12 @@
 Release Notes
 =============
 
+**0.2.3** --- released on 2018-04-14
+
+- Added a CLI script ``pysubs2``, patch by Piotr Staroszczyk (https://github.com/oczkers)
+- Loading a SRT file with empty subtitles behaves more correctly (Issue #11)
+- Using the library from Python 2 is easier due to less pedantic ``str``/``unicode`` checks (Issue #12)
+
 **0.2.2** --- released on 2017-07-22
 
 - Support for MPL2 subtitle format, patch by pannal (https://github.com/pannal)
