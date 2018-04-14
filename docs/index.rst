@@ -1,7 +1,15 @@
 pysubs2
 =======
 
-pysubs2 is a Python library for editing subtitle files. It’s based on *SubStation Alpha*, the native format of `Aegisub <http://www.aegisub.org/>`_; it also supports *SubRip* and *MicroDVD* formats. There is a small CLI tool for batch conversion and retiming.
+pysubs2 is a Python library for editing subtitle files. It’s based on *SubStation Alpha*,
+the native format of `Aegisub <http://www.aegisub.org/>`_; it also supports *SubRip*, *MicroDVD* and *MPL2* formats.
+There is a small CLI tool for batch conversion and retiming.
+
+::
+
+    $ pip install pysubs2
+    $ pysubs2 --shift 0.3s *.srt
+    $ pysubs2 --to srt *.ass
 
 ::
 
@@ -14,9 +22,11 @@ pysubs2 is a Python library for editing subtitle files. It’s based on *SubStat
 
 pysubs2 works with Python 2.7 and 3.3+. It’s available under the MIT license (see bottom of the page).
 
-To install pysubs2, just use `pip <https://pypi.python.org/pypi/pip>`_: ``pip install pysubs2``. You can also clone `the GitHub repository <https://github.com/tkarabela/pysubs2/>`_ and install via ``python setup.py install``.
+To install pysubs2, just use `pip <https://pypi.python.org/pypi/pip>`_: ``pip install pysubs2``.
+You can also clone `the GitHub repository <https://github.com/tkarabela/pysubs2/>`_ and install via ``python setup.py install``.
 
-If you find a bug or have something to say, please let me know `via GitHub <https://github.com/tkarabela/pysubs2/issues>`_ or email (tkarabela at seznam dot cz). Your feedback is much appreciated. Thanks!
+If you find a bug or have something to say, please let me know `via GitHub <https://github.com/tkarabela/pysubs2/issues>`_ or
+email (tkarabela at seznam dot cz). Your feedback is much appreciated. Thanks!
 
 Documentation
 -------------
@@ -35,7 +45,7 @@ License
 
 ::
 
-    Copyright (c) 2014-2017 Tomas Karabela
+    Copyright (c) 2014-2018 Tomas Karabela
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal

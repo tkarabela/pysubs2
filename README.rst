@@ -12,8 +12,8 @@ It’s based on *SubStation Alpha*, the native format of
 .. code:: bash
 
     $ pip install pysubs2
-    $ python -m pysubs2 --shift 0.3s *.srt
-    $ python -m pysubs2 --to srt *.ass
+    $ pysubs2 --shift 0.3s *.srt
+    $ pysubs2 --to srt *.ass
 
 .. code:: python
 

@@ -20,8 +20,8 @@ setup(
     long_description = dedent(r"""\
         pysubs2 is a Python library for editing subtitle files.
         It’s based on *SubStation Alpha*, the native format of
-        `Aegisub <http://www.aegisub.org/>`_; it also supports *SubRip* and
-        *MicroDVD* formats. There is a small CLI tool for batch conversion
+        `Aegisub <http://www.aegisub.org/>`_; it also supports *SubRip*,
+        *MicroDVD* and *MPL2* formats. There is a small CLI tool for batch conversion
         and retiming.
 
         ::
