@@ -24,5 +24,7 @@ PY3 = sys.version_info.major == 3
 
 if PY3:
     text_type = str
+    binary_string_type = bytes
 else:
     text_type = unicode
+    binary_string_type = str

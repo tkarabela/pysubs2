@@ -7,6 +7,8 @@ from __future__ import unicode_literals
 from textwrap import dedent
 from pysubs2 import SSAFile, SSAEvent, SSAStyle, make_time, Color
 from pysubs2.substation import color_to_ass_rgba, color_to_ssa_rgb, ass_rgba_to_color, ssa_rgb_to_color
+from nose.tools import assert_raises
+import sys
 
 SIMPLE_ASS_REF = """
 [Script Info]
@@ -127,3 +129,38 @@ def test_aegisub_project_garbage():
         Active Line: 2""")
 
     assert garbage_section in subs.to_string("ass")
+
+def test_ascii_str_fields():
+    # see issue #12
+    STYLE_NAME = b"top-style"
+
+    subs = SSAFile()
+    line = SSAEvent(style=STYLE_NAME)
+    subs.events.append(line)
+    style = SSAStyle()
+    subs.styles[STYLE_NAME] = style
+
+    if sys.version_info.major == 2:
+        # in Python 2, saving subtitles with non-unicode fields is tolerated
+        # as long as they do not fall outside of ASCII range
+        subs.to_string("ass")
+    else:
+        # in Python 3, we are strict and enforce Unicode
+        with assert_raises(TypeError):
+            subs.to_string("ass")
+
+def test_non_ascii_str_fields():
+    # see issue #12
+    STYLE_NAME = "my-style"
+    FONT_NAME = b"NonAsciiString\xff"
+
+    subs = SSAFile()
+    line = SSAEvent(style=STYLE_NAME)
+    subs.events.append(line)
+    style = SSAStyle(fontname=FONT_NAME)
+    subs.styles[STYLE_NAME] = style
+
+    # in all Pythons, saving subtitles with non-unicode fields
+    # fails when they are not in ASCII range
+    with assert_raises(TypeError):
+        subs.to_string("ass")
