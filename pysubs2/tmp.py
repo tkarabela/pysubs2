@@ -5,7 +5,7 @@ from .formatbase import FormatBase
 from .ssaevent import SSAEvent
 from .ssastyle import SSAStyle
 from .substation import parse_tags
-from .time import ms_to_times, make_time, tmptimestamp_to_ms 
+from .time import ms_to_times, make_time, tmptimestamp_to_ms
 
 #: Pattern that matches TMP timestamp
 TMPTIMESTAMP = re.compile(r"(\d{1,2}):(\d{2}):(\d{2})")
@@ -83,6 +83,6 @@ class TmpFormat(FormatBase):
             #end = ms_to_timestamp(line.end)
             text = prepare_text(line.text, subs.styles.get(line.style, SSAStyle.DEFAULT_STYLE))
 
-            print("%d" % i, file=fp) # Python 2.7 compat
-            print(start, text, end="\n", file=fp)
+            #print("%d" % i, file=fp) # Python 2.7 compat
+            print(start + ":" + text, end="\n", file=fp)
             #print(text, end="\n\n", file=fp)
