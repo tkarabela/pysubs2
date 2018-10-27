@@ -1,8 +1,23 @@
 pysubs2
 =======
 
-.. image:: https://travis-ci.org/tkarabela/pysubs2.svg?branch=master
+
+.. image:: https://img.shields.io/travis/tkarabela/pysubs2/master.svg?style=flat-square
+    :alt: pysubs2 build master branch
     :target: https://travis-ci.org/tkarabela/pysubs2
+.. image:: https://img.shields.io/pypi/v/pysubs2.svg?style=flat-square
+    :alt: PyPI - Version
+    :target: https://pypi.org/project/pysubs2/
+.. image:: https://img.shields.io/pypi/status/pysubs2.svg?style=flat-square
+    :alt: PyPI - Status
+    :target: https://pypi.org/project/pysubs2/
+.. image:: https://img.shields.io/pypi/pyversions/pysubs2.svg?style=flat-square
+    :alt: PyPI - Python Version
+    :target: https://pypi.org/project/pysubs2/
+.. image:: https://img.shields.io/pypi/l/pysubs2.svg?style=flat-square
+    :alt: PyPI - License
+    :target: LICENSE.txt
+
 
 pysubs2 is a Python library for editing subtitle files.
 It’s based on *SubStation Alpha*, the native format of
@@ -26,4 +41,4 @@ It’s based on *SubStation Alpha*, the native format of
 
 To learn more, please `see the documentation <http://pysubs2.readthedocs.io>`_.
 
-pysubs2 is licensed under the MIT license (see LICENSE.txt).
+pysubs2 is licensed under the MIT license (see `LICENSE.txt <LICENSE.txt>`_).
