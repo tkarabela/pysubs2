@@ -145,7 +145,12 @@ class SubstationFormat(FormatBase):
 
         def string_to_field(f, v):
             if f in {"start", "end"}:
-                return timestamp_to_ms(TIMESTAMP.match(v).groups())
+                if v.startswith("-"):
+                    # handle negative timestamps
+                    v = v[1:]
+                    return -timestamp_to_ms(TIMESTAMP.match(v).groups())
+                else:
+                    return timestamp_to_ms(TIMESTAMP.match(v).groups())
             elif "color" in f:
                 if format_ == "ass":
                     return ass_rgba_to_color(v)
