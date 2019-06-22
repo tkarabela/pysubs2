@@ -1,6 +1,17 @@
 Release Notes
 =============
 
+**0.2.4** --- released on 2019-06-23
+
+- Support for TMP subtitle format, patch by bkiziuk (https://github.com/bkiziuk)
+- Support for Python 3.7 thanks to cleaning up string escape issues,
+  patch by Spencer Berger (https://github.com/bergerspencer)
+- Added ``keep_unknown_html_tags`` parser option for passing through HTML tags in SubRip files (Issue #26)
+- SubStation files with negative timestamps no longer break the parser (Issue #28)
+- SubStation files with no whitespace in info sections are handled correctly (Issue #14),
+  patch by Joshua Avalon (https://github.com/joshuaavalon)
+- Updated badges in GitHub readme, patch by Eray Erdin (https://github.com/erayerdin)
+
 **0.2.3** --- released on 2018-04-14
 
 - Added a CLI script ``pysubs2``, patch by Piotr Staroszczyk (https://github.com/oczkers)
