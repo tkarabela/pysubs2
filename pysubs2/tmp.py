@@ -32,7 +32,7 @@ class TmpFormat(FormatBase):
             return None
 
         for line in text.splitlines():
-            if len(TMP_LINE.findall(line)) == 1:
+            if TMP_LINE.match(line) and len(TMP_LINE.findall(line)) == 1:
                 return "tmp"
 
     @classmethod
