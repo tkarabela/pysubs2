@@ -54,7 +54,7 @@ class TmpFormat(FormatBase):
 
         def prepare_text(lines):
             lines = lines.replace("|", r"\N")  # convert newlines
-            lines = re.sub(r"< *u *>", "{\\u1}", lines) # not r" for Python 2.7 compat, triggers unicodeescape
+            lines = re.sub(r"< *u *>", "{\\\\u1}", lines) # not r" for Python 2.7 compat, triggers unicodeescape
             lines = re.sub(r"< */? *[a-zA-Z][^>]*>", "", lines) # strip other HTML tags
             return lines
 
