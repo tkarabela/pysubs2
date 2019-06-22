@@ -31,7 +31,7 @@ class SubripFormat(FormatBase):
                 return "srt"
 
     @classmethod
-    def from_file(cls, subs, fp, format_, **kwargs):
+    def from_file(cls, subs, fp, format_, keep_unknown_html_tags=False, **kwargs):
         timestamps = [] # (start, end)
         following_lines = [] # contains lists of lines following each timestamp
 
@@ -62,7 +62,8 @@ class SubripFormat(FormatBase):
             s = re.sub(r"< */ *s *>", r"{\\s0}", s)
             s = re.sub(r"< *u *>", "{\\\\u1}", s) # not r" for Python 2.7 compat, triggers unicodeescape
             s = re.sub(r"< */ *u *>", "{\\\\u0}", s)
-            s = re.sub(r"< */? *[a-zA-Z][^>]*>", "", s) # strip other HTML tags
+            if not keep_unknown_html_tags:
+                s = re.sub(r"< */? *[a-zA-Z][^>]*>", "", s) # strip other HTML tags
             s = re.sub(r"\n", r"\\N", s) # convert newlines
             return s
 

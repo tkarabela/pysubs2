@@ -140,3 +140,30 @@ def test_empty_subtitles():
 
     subs = SSAFile.from_string(text)
     assert subs.equals(ref)
+
+def test_keep_unknown_html_tags():
+    # see issue #26
+    text = dedent("""\
+        1
+        00:00:10,500 --> 00:00:13,000
+        <i>Elephant's <sub>Little</sub> Dream</i>
+
+        2
+        00:00:15,000 --> 00:00:18,000
+        <font color="cyan">At the left we can see...</font>
+        """)
+
+    ref_default = SSAFile()
+    ref_default.append(SSAEvent(start=make_time(s=10.5), end=make_time(s=13), text="{\\i1}Elephant's Little Dream{\\i0}"))
+    ref_default.append(SSAEvent(start=make_time(s=15), end=make_time(s=18), text="At the left we can see..."))
+
+    ref_keep = SSAFile()
+    ref_keep.append(SSAEvent(start=make_time(s=10.5), end=make_time(s=13), text="{\\i1}Elephant's <sub>Little</sub> Dream{\\i0}"))
+    ref_keep.append(SSAEvent(start=make_time(s=15), end=make_time(s=18), text="<font color=\"cyan\">At the left we can see...</font>"))
+
+    subs_default = SSAFile.from_string(text)
+    subs_keep = SSAFile.from_string(text, keep_unknown_html_tags=True)
+
+    assert subs_default.equals(ref_default)
+    assert subs_keep.equals(ref_keep)
+    assert subs_keep.to_string("srt") == ref_keep.to_string("srt")
