@@ -188,7 +188,7 @@ class SubstationFormat(FormatBase):
                     if inside_info_section:
                         subs.info[k] = v.strip()
                     elif inside_aegisub_section:
-                        subs.aegisub_project[k] = v
+                        subs.aegisub_project[k] = v.strip()
                 except ValueError:
                     pass
             elif line.startswith("Style:"):
