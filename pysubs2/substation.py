@@ -60,20 +60,16 @@ def color_to_ass_rgba(c):
 def color_to_ssa_rgb(c):
     return "%d" % ((c.b << 16) | (c.g << 8) | c.r)
 
-def ass_rgba_to_color(s):
-    x = int(s[2:], base=16)
+def rgba_to_color(s):
+    if s[0] == '&':
+        x = int(s[2:], base=16)
+    else:
+        x = int(s)
     r = x & 0xff
     g = (x >> 8) & 0xff
     b = (x >> 16) & 0xff
     a = (x >> 24) & 0xff
     return Color(r, g, b, a)
-
-def ssa_rgb_to_color(s):
-    x = int(s)
-    r = x & 0xff
-    g = (x >> 8) & 0xff
-    b = (x >> 16) & 0xff
-    return Color(r, g, b)
 
 def is_valid_field_content(s):
     """
@@ -152,10 +148,7 @@ class SubstationFormat(FormatBase):
                 else:
                     return timestamp_to_ms(TIMESTAMP.match(v).groups())
             elif "color" in f:
-                if format_ == "ass":
-                    return ass_rgba_to_color(v)
-                else:
-                    return ssa_rgb_to_color(v)
+                return rgba_to_color(v)
             elif f in {"bold", "underline", "italic", "strikeout"}:
                 return v == "-1"
             elif f in {"borderstyle", "encoding", "marginl", "marginr", "marginv", "layer", "alphalevel"}:
