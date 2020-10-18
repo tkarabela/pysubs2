@@ -89,7 +89,8 @@ class SubripFormat(FormatBase):
 
         visible_lines = (line for line in subs if not line.is_comment)
 
-        for i, line in enumerate(visible_lines, 1):
+        lineno = 1
+        for line in visible_lines:
             start = ms_to_timestamp(line.start)
             end = ms_to_timestamp(line.end)
             try:
@@ -97,6 +98,7 @@ class SubripFormat(FormatBase):
             except ContentNotUsable:
                 continue
 
-            print("%d" % i, file=fp) # Python 2.7 compat
+            print("%d" % lineno, file=fp) # Python 2.7 compat
             print(start, "-->", end, file=fp)
             print(text, end="\n\n", file=fp)
+            lineno += 1

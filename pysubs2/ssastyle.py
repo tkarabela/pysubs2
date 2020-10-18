@@ -41,7 +41,6 @@ class SSAStyle(object):
         self.italic = False #: Italic
         self.underline = False #: Underline (ASS only)
         self.strikeout = False #: Strikeout (ASS only)
-        self.drawing = False #: Drawing (ASS only, see http://docs.aegisub.org/3.1/ASS_Tags/#drawing-tags
         self.scalex = 100.0 #: Horizontal scaling (ASS only)
         self.scaley = 100.0 #: Vertical scaling (ASS only)
         self.spacing = 0.0 #: Letter spacing (ASS only)
@@ -55,6 +54,12 @@ class SSAStyle(object):
         self.marginv = 10 #: Vertical margin (in pixels)
         self.alphalevel = 0 #: Old, unused SSA-only field
         self.encoding = 1 #: Charset
+
+        # The following attributes cannot be defined for SSA styles themselves,
+        # but can be used in override tags and thus are useful to keep here
+        # for the `pysubs2.substation.parse_tags()` interface which returns
+        # SSAStyles for text fragments.
+        self.drawing = False #: Drawing (ASS only override tag, see http://docs.aegisub.org/3.1/ASS_Tags/#drawing-tags)
 
         for k, v in fields.items():
             if k in self.FIELDS:

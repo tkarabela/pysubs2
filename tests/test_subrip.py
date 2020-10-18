@@ -167,3 +167,30 @@ def test_keep_unknown_html_tags():
     assert subs_default.equals(ref_default)
     assert subs_keep.equals(ref_keep)
     assert subs_keep.to_string("srt") == ref_keep.to_string("srt")
+
+def test_write_drawing():
+    # test for 7bde9a6c3a250cf0880a8a9fe31d1b6a69ff21a0
+    subs = SSAFile()
+
+    e1 = SSAEvent()
+    e1.start = 0
+    e1.end = 60000
+    e1.text = r"{\p1}m 0 0 l 100 0 100 100 0 100{\p0}test"
+
+    e2 = SSAEvent()
+    e2.start = 60000
+    e2.end = 120000
+    e2.text = "Subtitle number\\Ntwo."
+
+    subs.append(e1)
+    subs.append(e2)
+
+    ref = dedent("""\
+    1
+    00:01:00,000 --> 00:02:00,000
+    Subtitle number
+    two.
+    """)
+
+    text = subs.to_string("srt")
+    assert text.strip() == ref.strip()

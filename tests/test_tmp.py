@@ -52,5 +52,33 @@ def test_simple_read():
     subs = SSAFile.from_string(text)
     assert subs.equals(ref)
 
+def test_write_drawing():
+    subs = SSAFile()
 
+    e1 = SSAEvent()
+    e1.start = 0
+    e1.end = 60000
+    e1.text = r"{\p1}m 0 0 l 100 0 100 100 0 100{\p0}test"
 
+    e2 = SSAEvent()
+    e2.start = 60000
+    e2.end = 120000
+    e2.text = "ten--chars-ten-chars"
+
+    e3 = SSAEvent()
+    e3.start = 60000
+    e3.end = 120000
+    e3.text = "Invisible subtitle."
+    e3.is_comment = True
+
+    subs.append(e1)
+    subs.append(e2)
+    subs.append(e3)
+
+    ref = dedent("""\
+    00:00:00:
+    00:01:00:ten--chars-ten-chars
+    """)
+
+    text = subs.to_string("tmp")
+    assert text.strip() == ref.strip()

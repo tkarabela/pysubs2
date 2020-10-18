@@ -65,6 +65,7 @@ class TmpFormat(FormatBase):
     def to_file(cls, subs, fp, format_, **kwargs):
         def prepare_text(text, style):
             body = []
+            skip = False
             for fragment, sty in parse_tags(text, style, subs.styles):
                 fragment = fragment.replace(r"\h", " ")
                 fragment = fragment.replace(r"\n", "\n")
@@ -72,9 +73,13 @@ class TmpFormat(FormatBase):
                 if sty.italic: fragment = "<i>%s</i>" % fragment
                 if sty.underline: fragment = "<u>%s</u>" % fragment
                 if sty.strikeout: fragment = "<s>%s</s>" % fragment
+                if sty.drawing: skip = True
                 body.append(fragment)
 
-            return re.sub("\n+", "\n", "".join(body).strip())
+            if skip:
+                return ""
+            else:
+                return re.sub("\n+", "\n", "".join(body).strip())
 
         visible_lines = (line for line in subs if not line.is_comment)
 

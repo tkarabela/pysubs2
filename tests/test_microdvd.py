@@ -175,3 +175,15 @@ def test_writer_strips_tags():
     """)
     
     assert subs.to_string("microdvd", fps=1000) == f
+
+def test_write_drawing():
+    subs = SSAFile()
+    subs.append(SSAEvent(start=0, end=10, text=r"{\p1}m 0 0 l 100 0 100 100 0 100{\p0}test"))
+    subs.append(SSAEvent(start=10, end=20, text="Let me tell you."))
+
+    f = dedent("""\
+    {0}{0}1000
+    {10}{20}Let me tell you.
+    """)
+
+    assert subs.to_string("microdvd", fps=1000) == f
