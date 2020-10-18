@@ -135,6 +135,36 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 Dialogue: 0,0:00:00.00,0:00:05.00,Default,,0,0,0,,Test for new Aegisub Project section
 """
 
+HEX_COLOR_IN_SSA = """\
+[Script Info]
+;SrtEdit 6.3.2012.1001
+;Copyright(C) 2005-2012 Yuan Weiguo
+
+Title: 
+Original Script: 
+Original Translation: 
+Original Timing: 
+Original Editing: 
+Script Updated By: 
+Update Details: 
+ScriptType: v4.00
+Collisions: Normal
+PlayResX: 640
+PlayResY: 480
+Timer: 100.0000
+Synch Point: 
+WrapStyle: 0
+ScaledBorderAndShadow: no
+
+[V4 Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, TertiaryColour, BackColour, Bold, Italic, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, AlphaLevel, Encoding
+Style: Default,SimHei,30,&HFFFFFF,&H00FFFF,&H000000,&H000000,-1,0,1,2,3,2,20,20,20,0,1
+
+[Events]
+Format: Marked, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: Marked=0,0:01:30.30,0:01:35.30,Default,NTP,0000,0000,0000,!Effect,-脫逃-
+"""
+
 def build_ref():
     subs = SSAFile()
     subs.info["My Custom Info"] = "Some: Test, String."
@@ -233,3 +263,10 @@ def test_no_space_after_colon_in_metadata_section():
 
     assert ref.equals(subs)
     assert ref.aegisub_project == subs.aegisub_project
+
+def test_hex_color_in_ssa():
+    # see issue #32
+    subs = SSAFile.from_string(HEX_COLOR_IN_SSA)
+    style = subs.styles["Default"]
+    assert style.primarycolor == Color(r=0xff, g=0xff, b=0xff)
+    assert style.secondarycolor == Color(r=0xff, g=0xff, b=0x00)
