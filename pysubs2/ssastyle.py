@@ -1,8 +1,9 @@
-from __future__ import unicode_literals
-from .common import Color, PY3
+from typing import Dict, Any
+
+from .common import Color
 
 
-class SSAStyle(object):
+class SSAStyle:
     """
     A SubStation Style.
 
@@ -17,7 +18,7 @@ class SSAStyle(object):
     This class defines equality (equality of all fields).
 
     """
-    DEFAULT_STYLE = None
+    DEFAULT_STYLE: "SSAStyle" = None
 
     #: All fields in SSAStyle.
     FIELDS = frozenset([
@@ -29,64 +30,79 @@ class SSAStyle(object):
         "marginl", "marginr", "marginv", "alphalevel", "encoding"
     ])
 
-    def __init__(self, **fields):
-        self.fontname = "Arial" #: Font name
-        self.fontsize = 20.0 #: Font size (in pixels)
-        self.primarycolor = Color(255, 255, 255, 0) #: Primary color (:class:`pysubs2.Color` instance)
-        self.secondarycolor = Color(255, 0, 0, 0) #: Secondary color (:class:`pysubs2.Color` instance)
-        self.tertiarycolor = Color(0, 0, 0, 0) #: Tertiary color (:class:`pysubs2.Color` instance)
-        self.outlinecolor = Color(0, 0, 0, 0) #: Outline color (:class:`pysubs2.Color` instance)
-        self.backcolor = Color(0, 0, 0, 0) #: Back, ie. shadow color (:class:`pysubs2.Color` instance)
-        self.bold = False #: Bold
-        self.italic = False #: Italic
-        self.underline = False #: Underline (ASS only)
-        self.strikeout = False #: Strikeout (ASS only)
-        self.scalex = 100.0 #: Horizontal scaling (ASS only)
-        self.scaley = 100.0 #: Vertical scaling (ASS only)
-        self.spacing = 0.0 #: Letter spacing (ASS only)
-        self.angle = 0.0 #: Rotation (ASS only)
-        self.borderstyle = 1 #: Border style
-        self.outline = 2.0 #: Outline width (in pixels)
-        self.shadow = 2.0 #: Shadow depth (in pixels)
-        self.alignment = 2 #: Numpad-style alignment, eg. 7 is "top left" (that is, ASS alignment semantics)
-        self.marginl = 10 #: Left margin (in pixels)
-        self.marginr = 10 #: Right margin (in pixels)
-        self.marginv = 10 #: Vertical margin (in pixels)
-        self.alphalevel = 0 #: Old, unused SSA-only field
-        self.encoding = 1 #: Charset
+    def __init__(self,
+                 fontname: str = "Arial",
+                 fontsize: float = 20.0,
+                 primarycolor: Color = Color(255, 255, 255, 0),
+                 secondarycolor: Color = Color(255, 0, 0, 0),
+                 tertiarycolor: Color = Color(0, 0, 0, 0),
+                 outlinecolor: Color = Color(0, 0, 0, 0),
+                 backcolor: Color = Color(0, 0, 0, 0),
+                 bold: bool = False,
+                 italic: bool = False,
+                 underline: bool = False,
+                 strikeout: bool = False,
+                 scalex: float = 100.0,
+                 scaley: float = 100.0,
+                 spacing: float = 0.0,
+                 angle: float = 0.0,
+                 borderstyle: int = 1,
+                 outline: float = 2.0,
+                 shadow: float = 2.0,
+                 alignment: int = 2,
+                 marginl: int = 10,
+                 marginr: int = 10,
+                 marginv: int = 10,
+                 alphalevel: int = 0,
+                 encoding: int = 1):
+        self.fontname: str = fontname  #: Font name
+        self.fontsize: float = fontsize  #: Font size (in pixels)
+        self.primarycolor: Color = primarycolor  #: Primary color (:class:`pysubs2.Color` instance)
+        self.secondarycolor: Color = secondarycolor  #: Secondary color (:class:`pysubs2.Color` instance)
+        self.tertiarycolor: Color = tertiarycolor  #: Tertiary color (:class:`pysubs2.Color` instance)
+        self.outlinecolor: Color = outlinecolor  #: Outline color (:class:`pysubs2.Color` instance)
+        self.backcolor: Color = backcolor  #: Back, ie. shadow color (:class:`pysubs2.Color` instance)
+        self.bold: bool = bold  #: Bold
+        self.italic: bool = italic  #: Italic
+        self.underline: bool = underline  #: Underline (ASS only)
+        self.strikeout: bool = strikeout  #: Strikeout (ASS only)
+        self.scalex: float = scalex  #: Horizontal scaling (ASS only)
+        self.scaley: float = scaley  #: Vertical scaling (ASS only)
+        self.spacing: float = spacing  #: Letter spacing (ASS only)
+        self.angle: float = angle  #: Rotation (ASS only)
+        self.borderstyle: int = borderstyle  #: Border style
+        self.outline: float = outline  #: Outline width (in pixels)
+        self.shadow: float = shadow  #: Shadow depth (in pixels)
+        self.alignment: int = alignment  #: Numpad-style alignment, eg. 7 is "top left" (that is, ASS alignment semantics)
+        self.marginl: int = marginl  #: Left margin (in pixels)
+        self.marginr: int = marginr  #: Right margin (in pixels)
+        self.marginv: int = marginv  #: Vertical margin (in pixels)
+        self.alphalevel: int = alphalevel  #: Old, unused SSA-only field
+        self.encoding: int = encoding  #: Charset
 
         # The following attributes cannot be defined for SSA styles themselves,
         # but can be used in override tags and thus are useful to keep here
         # for the `pysubs2.substation.parse_tags()` interface which returns
         # SSAStyles for text fragments.
-        self.drawing = False #: Drawing (ASS only override tag, see http://docs.aegisub.org/3.1/ASS_Tags/#drawing-tags)
+        self.drawing: bool = False  #: Drawing (ASS only override tag, see http://docs.aegisub.org/3.1/ASS_Tags/#drawing-tags)
 
-        for k, v in fields.items():
-            if k in self.FIELDS:
-                setattr(self, k, v)
-            else:
-                raise ValueError("SSAStyle has no field named %r" % k)
-
-    def copy(self):
+    def copy(self) -> "SSAStyle":
         return SSAStyle(**self.as_dict())
 
-    def as_dict(self):
+    def as_dict(self) -> Dict[str, Any]:
         return {field: getattr(self, field) for field in self.FIELDS}
 
-    def __eq__(self, other):
+    def __eq__(self, other: "SSAStyle"):
         return self.as_dict() == other.as_dict()
 
-    def __ne__(self, other):
+    def __ne__(self, other: "SSAStyle"):
         return not self == other
 
     def __repr__(self):
-        s = "<SSAStyle "
-        s += "%rpx " % self.fontsize
-        if self.bold: s += "bold "
-        if self.italic: s += "italic "
-        s += "{!r}>".format(self.fontname)
-        if not PY3: s = s.encode("utf-8")
-        return s
+        return f"<SSAStyle {self.fontsize!r}px" \
+               f"{' bold' if self.bold else ''}" \
+               f"{' italic' if self.italic else ''}" \
+               f" {self.fontname!r}>"
 
 
 SSAStyle.DEFAULT_STYLE = SSAStyle()

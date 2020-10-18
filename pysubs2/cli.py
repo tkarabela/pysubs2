@@ -1,4 +1,3 @@
-from __future__ import unicode_literals, print_function
 import argparse
 import codecs
 import os
@@ -11,35 +10,35 @@ from textwrap import dedent
 from .formats import get_file_extension, FORMAT_IDENTIFIERS
 from .time import make_time
 from .ssafile import SSAFile
-from .common import PY3, VERSION
+from .common import VERSION
 
 
-def positive_float(s):
+def positive_float(s: str) -> float:
     x = float(s)
     if not x > 0:
         raise argparse.ArgumentTypeError("%r is not a positive number" % s)
     return x
 
-def character_encoding(s):
+def character_encoding(s: str) -> str:
     try:
         codecs.lookup(s)
         return s
     except LookupError:
         raise argparse.ArgumentError
 
-def time(s):
+def time(s: str):
     d = {}
     for v, k in re.findall(r"(\d*\.?\d*)(ms|m|s|h)", s):
         d[k] = float(v)
     return make_time(**d)
 
 
-def change_ext(path, ext):
+def change_ext(path: str, ext: str) -> str:
     base, _ = op.splitext(path)
     return base + ext
 
 
-class Pysubs2CLI(object):
+class Pysubs2CLI:
     def __init__(self):
         parser = self.parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
                                                        prog="pysubs2",
@@ -140,12 +139,8 @@ class Pysubs2CLI(object):
                     with open(outpath, "w", encoding=args.output_enc) as outfile:
                         subs.to_file(outfile, output_format, args.fps)
         else:
-            if PY3:
-                infile = io.TextIOWrapper(sys.stdin.buffer, args.input_enc)
-                outfile = io.TextIOWrapper(sys.stdout.buffer, args.output_enc)
-            else:
-                infile = io.TextIOWrapper(sys.stdin, args.input_enc)
-                outfile = io.TextIOWrapper(sys.stdout, args.output_enc)
+            infile = io.TextIOWrapper(sys.stdin.buffer, args.input_enc)
+            outfile = io.TextIOWrapper(sys.stdout.buffer, args.output_enc)
 
             subs = SSAFile.from_file(infile, args.input_format, args.fps)
             self.process(subs, args)

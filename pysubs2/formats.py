@@ -1,3 +1,5 @@
+from typing import Dict, Type
+
 from .formatbase import FormatBase
 from .microdvd import MicroDVDFormat
 from .subrip import SubripFormat
@@ -5,11 +7,11 @@ from .jsonformat import JSONFormat
 from .substation import SubstationFormat
 from .mpl2 import MPL2Format
 from .tmp import TmpFormat
-from .webtt import WebTTFormat
+from .webvtt import WebVTTFormat
 from .exceptions import *
 
 #: Dict mapping file extensions to format identifiers.
-FILE_EXTENSION_TO_FORMAT_IDENTIFIER = {
+FILE_EXTENSION_TO_FORMAT_IDENTIFIER: Dict[str, str] = {
     ".srt": "srt",
     ".ass": "ass",
     ".ssa": "ssa",
@@ -20,7 +22,7 @@ FILE_EXTENSION_TO_FORMAT_IDENTIFIER = {
 }
 
 #: Dict mapping format identifiers to implementations (FormatBase subclasses).
-FORMAT_IDENTIFIER_TO_FORMAT_CLASS = {
+FORMAT_IDENTIFIER_TO_FORMAT_CLASS: Dict[str, Type[FormatBase]] = {
     "srt": SubripFormat,
     "ass": SubstationFormat,
     "ssa": SubstationFormat,
@@ -28,26 +30,29 @@ FORMAT_IDENTIFIER_TO_FORMAT_CLASS = {
     "json": JSONFormat,
     "mpl2": MPL2Format,
     "tmp": TmpFormat,
-    "vtt": WebTTFormat,
+    "vtt": WebVTTFormat,
 }
 
 FORMAT_IDENTIFIERS = list(FORMAT_IDENTIFIER_TO_FORMAT_CLASS.keys())
 
-def get_format_class(format_):
+
+def get_format_class(format_: str) -> Type[FormatBase]:
     """Format identifier -> format class (ie. subclass of FormatBase)"""
     try:
         return FORMAT_IDENTIFIER_TO_FORMAT_CLASS[format_]
     except KeyError:
         raise UnknownFormatIdentifierError(format_)
 
-def get_format_identifier(ext):
+
+def get_format_identifier(ext: str) -> str:
     """File extension -> format identifier"""
     try:
         return FILE_EXTENSION_TO_FORMAT_IDENTIFIER[ext]
     except KeyError:
         raise UnknownFileExtensionError(ext)
 
-def get_file_extension(format_):
+
+def get_file_extension(format_: str) -> str:
     """Format identifier -> file extension"""
     if format_ not in FORMAT_IDENTIFIER_TO_FORMAT_CLASS:
         raise UnknownFormatIdentifierError(format_)
@@ -58,7 +63,8 @@ def get_file_extension(format_):
 
     raise RuntimeError("No file extension for format %r" % format_)
 
-def autodetect_format(content):
+
+def autodetect_format(content: str) -> str:
     """Return format identifier for given fragment or raise FormatAutodetectionError."""
     formats = set()
     for impl in FORMAT_IDENTIFIER_TO_FORMAT_CLASS.values():

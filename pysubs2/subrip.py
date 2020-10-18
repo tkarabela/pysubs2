@@ -1,5 +1,3 @@
-from __future__ import print_function, unicode_literals
-
 import re
 from .formatbase import FormatBase
 from .ssaevent import SSAEvent

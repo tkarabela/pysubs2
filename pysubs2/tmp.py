@@ -1,5 +1,3 @@
-from __future__ import print_function, unicode_literals
-
 import re
 from .formatbase import FormatBase
 from .ssaevent import SSAEvent
@@ -14,6 +12,7 @@ TMP_LINE = re.compile(r"(\d{1,2}:\d{2}:\d{2}):(.+)")
 
 #: Largest timestamp allowed in Tmp, ie. 99:59:59.
 MAX_REPRESENTABLE_TIME = make_time(h=100) - 1
+
 
 def ms_to_timestamp(ms):
     """Convert ms to 'HH:MM:SS'"""

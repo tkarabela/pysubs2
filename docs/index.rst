@@ -20,7 +20,7 @@ the native format of `Aegisub <http://www.aegisub.org/>`_; it also supports  *Su
         line.text = "{\\be1}" + line.text
     subs.save("my_subtitles_edited.ass")
 
-pysubs2 works with Python 2.7 and 3.4+. It’s available under the MIT license (see bottom of the page).
+pysubs2 works with Python 3.7 or newer. It’s available under the MIT license (see bottom of the page).
 
 To install pysubs2, just use `pip <https://pypi.python.org/pypi/pip>`_: ``pip install pysubs2``.
 You can also clone `the GitHub repository <https://github.com/tkarabela/pysubs2/>`_ and install via ``python setup.py install``.
@@ -43,9 +43,9 @@ Documentation
 License
 -------
 
-::
+.. code-block:: text
 
-    Copyright (c) 2014-2019 Tomas Karabela
+    Copyright (c) 2014-2020 Tomas Karabela
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal

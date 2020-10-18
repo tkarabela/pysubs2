@@ -3,7 +3,7 @@ from .subrip import SubripFormat
 from .time import make_time
 
 
-class WebTTFormat(SubripFormat):
+class WebVTTFormat(SubripFormat):
     TIMESTAMP = re.compile(r"(\d{0,4}:)?(\d{2}):(\d{2})\.(\d{2,3})")
 
     @staticmethod

@@ -1,8 +1,5 @@
-from __future__ import unicode_literals, print_function
-
 from functools import partial
 import re
-from .common import text_type
 from .exceptions import UnknownFPSError
 from .ssaevent import SSAEvent
 from .ssastyle import SSAStyle
@@ -86,7 +83,7 @@ class MicroDVDFormat(FormatBase):
 
         # insert an artificial first line telling the framerate
         if write_fps_declaration:
-            subs.insert(0, SSAEvent(start=0, end=0, text=text_type(fps)))
+            subs.insert(0, SSAEvent(start=0, end=0, text=str(fps)))
 
         for line in subs:
             if line.is_comment or is_drawing(line):

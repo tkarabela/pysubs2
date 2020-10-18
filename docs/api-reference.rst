@@ -1,8 +1,6 @@
 API Reference
 =============
 
-.. note:: The documentation is written from Python 3 point of view; a "string" means Unicode string.
-
 Supported input/output formats
 ------------------------------
 

@@ -1,7 +1,5 @@
-from __future__ import unicode_literals, print_function
-
 import json
-from .common import Color, PY3
+from .common import Color
 from .ssaevent import SSAEvent
 from .ssastyle import SSAStyle
 from .formatbase import FormatBase
@@ -39,8 +37,4 @@ class JSONFormat(FormatBase):
             "events": [ev.as_dict() for ev in subs.events]
         }
 
-        if PY3:
-            json.dump(data, fp)
-        else:
-            text = json.dumps(data, fp)
-            fp.write(unicode(text))
+        json.dump(data, fp)

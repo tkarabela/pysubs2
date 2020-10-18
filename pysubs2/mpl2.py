@@ -1,6 +1,3 @@
-# coding=utf-8
-
-from __future__ import print_function, division, unicode_literals
 import re
 
 from .time import times_to_ms

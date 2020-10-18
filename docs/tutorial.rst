@@ -27,7 +27,7 @@ Now that we have a real file on the harddrive, let's import pysubs2 and load it.
     >>> subs
     <SSAFile with 2 events and 1 styles, last timestamp 0:02:00>
 
-.. tip:: pysubs2 is written with Python 3 in mind, meaning that it speaks Unicode. By default, it uses UTF-8 when reading and writing files. Use the ``encoding`` keyword argument in case you need something else.
+.. tip:: By default, pysubs2 uses UTF-8 encoding when reading and writing files. Use the ``encoding`` keyword argument in case you need something else.
 
 Now we have a subtitle file, the :class:`pysubs2.SSAFile` object. It has two "events", ie. subtitles. You can treat ``subs`` as a list:
 

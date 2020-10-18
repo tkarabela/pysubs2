@@ -1,10 +1,9 @@
-from __future__ import print_function, division, unicode_literals
 import re
 from numbers import Number
 from .formatbase import FormatBase
 from .ssaevent import SSAEvent
 from .ssastyle import SSAStyle
-from .common import text_type, Color, PY3, binary_string_type
+from .common import Color
 from .time import make_time, ms_to_times, timestamp_to_ms, TIMESTAMP
 
 SSA_ALIGNMENT = (1, 2, 3, 9, 10, 11, 5, 6, 7)
@@ -233,19 +232,11 @@ class SubstationFormat(FormatBase):
             elif f == "marked":
                 return "Marked=%d" % v
             elif f == "alignment" and format_ == "ssa":
-                return text_type(ass_to_ssa_alignment(v))
+                return str(ass_to_ssa_alignment(v))
             elif isinstance(v, bool):
                 return "-1" if v else "0"
-            elif isinstance(v, (text_type, Number)):
-                return text_type(v)
-            elif not PY3 and isinstance(v, binary_string_type):
-                # A convenience feature, see issue #12 - accept non-unicode strings
-                # when they are ASCII; this is useful in Python 2, especially for non-text
-                # fields like style names, where requiring Unicode type seems too stringent
-                if all(ord(c) < 128 for c in v):
-                    return text_type(v)
-                else:
-                    raise TypeError("Encountered binary string with non-ASCII codepoint in SubStation field {!r} for line {!r} - please use unicode string instead of str".format(f, line))
+            elif isinstance(v, (str, Number)):
+                return str(v)
             elif isinstance(v, Color):
                 if format_ == "ass":
                     return color_to_ass_rgba(v)
