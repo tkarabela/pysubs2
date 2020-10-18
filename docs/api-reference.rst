@@ -25,9 +25,14 @@ you need to know the framerate (sometimes it is given in the first subtitle, whi
 **MPL2** --- Time-based format similar to MicroDVD, format identifier is ``"mpl2"``. To save subtitles in MPL2 format,
 use ``subs.save("subtitles.txt", format_="mpl2")``.
 
-**TMP** -- Time-based format, format identifier is ``"tmp"``. A very simple format which only specifies starting time
+**TMP** --- Time-based format, format identifier is ``"tmp"``. A very simple format which only specifies starting time
 for each subtitle, eg. ``0:00:13:This is a subtitle``. Subtitle length is calculated automatically based on character
 count. This older subtitle format is also referred to as "TMP Player" format.
+
+**WebVTT** --- Time-based format similar to SubRip, format identifier is ``"vtt"``. Currently implemented
+as a flavour of SubRip, with no extra support for WebVTT-specific features like styles or subtitle alignment.
+`Link to WebVTT specification <https://developer.mozilla.org/en-US/docs/Web/API/WebVTT_API>`_, official name is
+"Web Video Text Tracks Format".
 
 **JSON**-serialized internal representation, which amounts to ASS. Format identifier is ``"json"``.
 

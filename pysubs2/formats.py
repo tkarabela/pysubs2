@@ -5,6 +5,7 @@ from .jsonformat import JSONFormat
 from .substation import SubstationFormat
 from .mpl2 import MPL2Format
 from .tmp import TmpFormat
+from .webtt import WebTTFormat
 from .exceptions import *
 
 #: Dict mapping file extensions to format identifiers.
@@ -15,6 +16,7 @@ FILE_EXTENSION_TO_FORMAT_IDENTIFIER = {
     ".sub": "microdvd",
     ".json": "json",
     ".txt": "tmp",
+    ".vtt": "vtt",
 }
 
 #: Dict mapping format identifiers to implementations (FormatBase subclasses).
@@ -26,7 +28,10 @@ FORMAT_IDENTIFIER_TO_FORMAT_CLASS = {
     "json": JSONFormat,
     "mpl2": MPL2Format,
     "tmp": TmpFormat,
+    "vtt": WebTTFormat,
 }
+
+FORMAT_IDENTIFIERS = list(FORMAT_IDENTIFIER_TO_FORMAT_CLASS.keys())
 
 def get_format_class(format_):
     """Format identifier -> format class (ie. subclass of FormatBase)"""

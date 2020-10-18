@@ -21,14 +21,24 @@ def ms_to_timestamp(ms):
 
 
 class SubripFormat(FormatBase):
+    TIMESTAMP = TIMESTAMP
+
+    @staticmethod
+    def timestamp_to_ms(groups):
+        return timestamp_to_ms(groups)
+
     @classmethod
     def guess_format(cls, text):
         if "[Script Info]" in text or "[V4+ Styles]" in text:
             # disambiguation vs. SSA/ASS
             return None
 
+        if text.lstrip().startswith("WEBVTT"):
+            # disambiguation vs. WebVTT
+            return None
+
         for line in text.splitlines():
-            if len(TIMESTAMP.findall(line)) == 2:
+            if len(cls.TIMESTAMP.findall(line)) == 2:
                 return "srt"
 
     @classmethod
@@ -37,9 +47,9 @@ class SubripFormat(FormatBase):
         following_lines = [] # contains lists of lines following each timestamp
 
         for line in fp:
-            stamps = TIMESTAMP.findall(line)
+            stamps = cls.TIMESTAMP.findall(line)
             if len(stamps) == 2: # timestamp line
-                start, end = map(timestamp_to_ms, stamps)
+                start, end = map(cls.timestamp_to_ms, stamps)
                 timestamps.append((start, end))
                 following_lines.append([])
             else:

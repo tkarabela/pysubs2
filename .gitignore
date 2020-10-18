@@ -60,3 +60,6 @@ target/
 
 # PyCharm
 .idea/
+
+# temp dir
+temp/

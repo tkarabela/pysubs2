@@ -8,7 +8,7 @@ import io
 from io import open
 import sys
 from textwrap import dedent
-from .formats import get_file_extension
+from .formats import get_file_extension, FORMAT_IDENTIFIERS
 from .time import make_time
 from .ssafile import SSAFile
 from .common import PY3, VERSION
@@ -63,10 +63,10 @@ class Pysubs2CLI(object):
 
         parser.add_argument("-v", "--version", action="version", version="pysubs2 %s" % VERSION)
 
-        parser.add_argument("-f", "--from", choices=["ass", "ssa", "srt", "microdvd", "json"], dest="input_format",
+        parser.add_argument("-f", "--from", choices=FORMAT_IDENTIFIERS, dest="input_format",
                             help="By default, subtitle format is detected from the file. This option can be used to "
                                  "skip autodetection and force specific format. Generally, it should never be needed.")
-        parser.add_argument("-t", "--to", choices=["ass", "ssa", "srt", "microdvd", "json"], dest="output_format",
+        parser.add_argument("-t", "--to", choices=FORMAT_IDENTIFIERS, dest="output_format",
                             help="Convert subtitle files to given format. By default, each file is saved in its "
                                  "original format.")
         parser.add_argument("--input-enc", metavar="ENCODING", default="iso-8859-1", type=character_encoding,
