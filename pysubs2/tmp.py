@@ -37,8 +37,13 @@ class TmpFormat(FormatBase):
 
     @classmethod
     def from_file(cls, subs, fp, format_, **kwargs):
-        timestamps = [] # (start)
-        lines = [] # contains lists of lines following each timestamp
+        events = []
+
+        def prepare_text(text):
+            text = text.replace("|", r"\N")  # convert newlines
+            text = re.sub(r"< *u *>", "{\\\\u1}", text) # not r" for Python 2.7 compat, triggers unicodeescape
+            text = re.sub(r"< */? *[a-zA-Z][^>]*>", "", text) # strip other HTML tags
+            return text
 
         for line in fp:
             match = TMP_LINE.match(line)
@@ -47,19 +52,19 @@ class TmpFormat(FormatBase):
 
             start, text = match.groups()
             start = tmptimestamp_to_ms(TMPTIMESTAMP.match(start).groups())
-            #calculate endtime from starttime + 500 miliseconds + 67 miliseconds per each character (15 chars per second)
-            end = start + 500 + (len(line) * 67)
-            timestamps.append((start, end))
-            lines.append(text)
 
-        def prepare_text(lines):
-            lines = lines.replace("|", r"\N")  # convert newlines
-            lines = re.sub(r"< *u *>", "{\\\\u1}", lines) # not r" for Python 2.7 compat, triggers unicodeescape
-            lines = re.sub(r"< */? *[a-zA-Z][^>]*>", "", lines) # strip other HTML tags
-            return lines
+            # Unfortunately, end timestamp is not given; try to estimate something reasonable:
+            # start + 500 ms + 67 ms/character (15 chars per second)
+            end_guess = start + 500 + (len(line) * 67)
 
-        subs.events = [SSAEvent(start=start, end=end, text=prepare_text(lines))
-                       for (start, end), lines in zip(timestamps, lines)]
+            event = SSAEvent(start=start, end=end_guess, text=prepare_text(text))
+            events.append(event)
+
+        # correct any overlapping subtitles created by end_guess
+        for i in range(len(events) - 1):
+            events[i].end = min(events[i].end, events[i+1].start)
+
+        subs.events = events
 
     @classmethod
     def to_file(cls, subs, fp, format_, **kwargs):
@@ -83,11 +88,8 @@ class TmpFormat(FormatBase):
 
         visible_lines = (line for line in subs if not line.is_comment)
 
-        for i, line in enumerate(visible_lines, 1):
+        for line in visible_lines:
             start = ms_to_timestamp(line.start)
-            #end = ms_to_timestamp(line.end)
             text = prepare_text(line.text, subs.styles.get(line.style, SSAStyle.DEFAULT_STYLE))
 
-            #print("%d" % i, file=fp) # Python 2.7 compat
             print(start + ":" + text, end="\n", file=fp)
-            #print(text, end="\n\n", file=fp)

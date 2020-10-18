@@ -52,6 +52,20 @@ def test_simple_read():
     subs = SSAFile.from_string(text)
     assert subs.equals(ref)
 
+def test_overlapping_read():
+    # see issue #35
+    text = dedent("""\
+    00:00:12:I ... this is some long text ... ... this is some long text ...
+    00:00:14:observing ... ... this is some long text ... ... this is some long text ...
+    00:00:18:and ... ... this is some long text ... ... this is some long text ...
+    00:00:22:You ... ... this is some long text ... ... this is some long text ...
+    """)
+    subs = SSAFile.from_string(text)
+    assert subs[0].start == make_time(s=12)
+    assert subs[0].end == subs[1].start == make_time(s=14)
+    assert subs[1].end == subs[2].start == make_time(s=18)
+    assert subs[2].end == subs[3].start == make_time(s=22)
+
 def test_write_drawing():
     subs = SSAFile()
 
