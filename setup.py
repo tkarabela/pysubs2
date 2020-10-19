@@ -48,5 +48,6 @@ setup(
         "Operating System :: OS Independent",
         "License :: OSI Approved :: MIT License"
         ],
-    entry_points={'console_scripts': ['pysubs2 = pysubs2.cli:__main__']}
+    entry_points={'console_scripts': ['pysubs2 = pysubs2.cli:__main__']},
+    python_requires=">=3.7",
     )
