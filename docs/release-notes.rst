@@ -1,6 +1,15 @@
 Release Notes
 =============
 
+**1.0.0** --- released on 2020-10-19
+
+- Dropped support for Python 2. The library now requires Python 3.7 or newer.
+- Added type hints and also explicit keyword arguments to ``SSAEvent``, ``SSAStyle``, which should improve coding experience.
+- Support for WebVTT subtitle format (this used to be somewhat possible using the SRT parser, but support is much better now)
+- Lines with ASS drawing tags (eg. ``{\p1}``) are not written to non-SubStation files, patch by pannal (https://github.com/pannal)
+- ASS-style hex colors are supported in SSA files, patch by Mike Wang (https://github.com/MikeWang000000)
+- TMP reader no longer creates subtitles with overlapping times (Issue #35)
+
 **0.2.4** --- released on 2019-06-23
 
 - Support for TMP subtitle format, patch by bkiziuk (https://github.com/bkiziuk)

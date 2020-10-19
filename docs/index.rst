@@ -5,13 +5,13 @@ pysubs2 is a Python library for editing subtitle files. It’s based on *SubStat
 the native format of `Aegisub <http://www.aegisub.org/>`_; it also supports  *SubRip (SRT)*,
 *MicroDVD*, *MPL2*, *TMP* and *WebVTT* formats. There is a small CLI tool for batch conversion and retiming.
 
-::
+.. code-block:: text
 
     $ pip install pysubs2
     $ pysubs2 --shift 0.3s *.srt
     $ pysubs2 --to srt *.ass
 
-::
+.. code-block:: python
 
     import pysubs2
     subs = pysubs2.load("my_subtitles.ass", encoding="utf-8")
@@ -20,9 +20,9 @@ the native format of `Aegisub <http://www.aegisub.org/>`_; it also supports  *Su
         line.text = "{\\be1}" + line.text
     subs.save("my_subtitles_edited.ass")
 
-pysubs2 works with Python 3.7 or newer. It’s available under the MIT license (see bottom of the page).
-
-To install pysubs2, just use `pip <https://pypi.python.org/pypi/pip>`_: ``pip install pysubs2``.
+The library works in Python 3.7 or newer, with no extra dependencies.
+It’s available under the MIT license (see bottom of the page).
+To get started, simply install it using `pip <https://pypi.python.org/pypi/pip>`_: ``pip install pysubs2``.
 You can also clone `the GitHub repository <https://github.com/tkarabela/pysubs2/>`_ and install via ``python setup.py install``.
 
 If you find a bug or have something to say, please let me know `via GitHub <https://github.com/tkarabela/pysubs2/issues>`_ or
@@ -34,9 +34,10 @@ Documentation
 .. toctree::
    :maxdepth: 2
 
-   cli
+   supported-formats
    tutorial
    api-reference
+   cli
    release-notes
 
 

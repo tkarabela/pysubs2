@@ -1,9 +1,12 @@
-Let's ``import pysubs2``
-========================
+API tutorial: Let's ``import pysubs2``
+======================================
 
 This tutorial will show you how to use most of what pysubs2 library has to offer. If you are familiar with Python and Aegisub, you will hopefully find the API quite intuitive.
 
 If you want to follow along in your REPL, make sure to have Python 3 and pysubs2 installed.
+
+Reading subtitle file
+---------------------
 
 Let's settle on a simple subtitle file first.
 
@@ -42,6 +45,9 @@ Individual subtitles are :class:`pysubs2.SSAEvent` objects and have the attribut
 
 .. tip:: If you don't entertain SubStation, there is also a :attr:`pysubs2.SSAEvent.plaintext` property which hides override tags and translates newlines for you. Be warned, however, that writing to this property throws away any override tags.
 
+Working with timing
+-------------------
+
 Let's have a look at the timestamps.
 
     >>> subs[1].start
@@ -70,6 +76,9 @@ Well, it turns out the library can already do this with :meth:`pysubs2.SSAFile.s
 
 .. note:: You can have negative timestamps in your ``subs``. They are assumed to be zero for purposes of export.
 
+Working with styles
+-------------------
+
 As you've seen already with the newlines, pysubs2 works with SubStation, meaning our SRT file actually has a "Default" style associated with its subtitles.
 
     >>> subs.styles["Default"]
@@ -85,6 +94,9 @@ Let's add one more style, with italics, and let the second subtitle have it.
 Notice that the subtitle object (:class:`pysubs2.SSAEvent`) and the style object (:class:`pysubs2.SSAStyle`) aren't really connected. Instead, styles are referred to by their name in the :attr:`pysubs2.SSAFile.styles` dictionary.
 
 .. tip:: This means that renaming a style is a little difficult, because you also have to fix all references to the old name. The :meth:`pysubs2.SSAFile.rename_style()` method does what's needed behind the scenes.
+
+Saving subtitle file
+--------------------
 
 Now that the second subtitle uses "MyStyle", it should appear in italics. Let's export to SRT again to see if that's the case!
 
