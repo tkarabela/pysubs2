@@ -49,6 +49,7 @@ Working with styles
 Misc methods
 ~~~~~~~~~~~~
 
+.. automethod:: SSAFile.remove_miscellaneous_events
 .. automethod:: SSAFile.equals
 .. automethod:: SSAFile.sort
 

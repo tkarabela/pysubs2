@@ -49,6 +49,7 @@ class Pysubs2CLI:
                                                        epilog=dedent("""
                                                        usage examples:
                                                          python -m pysubs2 --to srt *.ass
+                                                         python -m pysubs2 --to srt --clean *.ass
                                                          python -m pysubs2 --to microdvd --fps 23.976 *.ass
                                                          python -m pysubs2 --shift 0.3s *.srt
                                                          python -m pysubs2 --shift 0.3s <my_file.srt >retimed_file.srt
@@ -84,6 +85,8 @@ class Pysubs2CLI:
                             help="Use this to save all files to given directory. By default, every file is saved to its parent directory, "
                                  "ie. unless it's being saved in different subtitle format (and thus with different file extension), "
                                  "it overwrites the original file.")
+        parser.add_argument("--clean", action="store_true",
+                            help="Attempt to remove non-essential subtitles (eg. karaoke, SSA drawing tags)")
 
         group = parser.add_mutually_exclusive_group()
 
@@ -158,6 +161,9 @@ class Pysubs2CLI:
         elif args.transform_framerate is not None:
             in_fps, out_fps = args.transform_framerate
             subs.transform_framerate(in_fps, out_fps)
+
+        if args.clean:
+            subs.remove_miscellaneous_events()
 
 
 def __main__():

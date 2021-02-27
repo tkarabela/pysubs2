@@ -9,11 +9,15 @@ along with the library. Alternatively, the CLI can also be invoked by executing 
 See ``pysubs2 --help`` for usage. Here are some examples::
 
     pysubs2 --to srt *.ass
+    pysubs2 --to srt --clean *.ass
     pysubs2 --to microdvd --fps 23.976 *.ass
     pysubs2 --shift 0.3s *.srt
     pysubs2 --shift 0.3s <my_file.srt >retimed_file.srt
     pysubs2 --shift-back 0.3s --output-dir retimed *.srt
     pysubs2 --transform-framerate 25 23.976 *.srt
+
+For formats other than SubStation, comment and drawing lines will be skipped. If you'd like a bit more
+aggressive skipping, try the ``--clean`` option, which will also try to skip karaoke and duplicated lines.
 
 .. warning::
     

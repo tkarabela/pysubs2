@@ -4,7 +4,7 @@ from io import open
 from itertools import chain
 import os.path
 import logging
-from typing import Optional, List, Dict
+from typing import Optional, List, Dict, Iterable
 
 from .common import IntOrFloat
 from .formats import autodetect_format, get_format_class, get_format_identifier
@@ -335,6 +335,38 @@ class SSAFile(MutableSequence):
     # Helper methods
     # ------------------------------------------------------------------------
 
+    def remove_miscellaneous_events(self):
+        """
+        Remove subtitles which appear to be non-essential (the --clean in CLI)
+
+        Currently, this removes events matching any of these criteria:
+        - SSA event type Comment
+        - SSA drawing tags
+        - Less than two characters of text
+        - Duplicated text with identical time interval (only the first event is kept)
+        """
+        new_events = []
+
+        duplicate_text_ids = set()
+        times_to_texts = {}
+        for i, e in enumerate(self):
+            tmp = times_to_texts.setdefault((e.start, e.end), [])
+            if tmp.count(e.plaintext) > 0:
+                duplicate_text_ids.add(i)
+            tmp.append(e.plaintext)
+
+        for i, e in enumerate(self):
+            if e.is_drawing or e.is_comment:
+                continue
+            if len(e.plaintext.strip()) < 2:
+                continue
+            if i in duplicate_text_ids:
+                continue
+
+            new_events.append(e)
+
+        self.events = new_events
+
     def equals(self, other: "SSAFile"):
         """
         Equality of two SSAFiles.
@@ -405,6 +437,9 @@ class SSAFile(MutableSequence):
     def sort(self):
         """Sort subtitles time-wise, in-place."""
         self.events.sort()
+
+    def __iter__(self) -> Iterable[SSAEvent]:
+        return iter(self.events)
 
     def __getitem__(self, item: int):
         return self.events[item]

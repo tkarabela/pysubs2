@@ -91,6 +91,12 @@ class SSAEvent:
             self.type = "Dialogue"
 
     @property
+    def is_drawing(self) -> bool:
+        """Returns True if line is SSA drawing tag (ie. not text)"""
+        from .substation import parse_tags
+        return any(sty.drawing for _, sty in parse_tags(self.text))
+
+    @property
     def plaintext(self) -> str:
         """
         Subtitle text as multi-line string with no tags (read/write property).

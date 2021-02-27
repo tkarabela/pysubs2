@@ -78,15 +78,12 @@ class MicroDVDFormat(FormatBase):
                     return False
             return True
 
-        def is_drawing(line):
-            return any(sty.drawing for _, sty in parse_tags(line.text))
-
         # insert an artificial first line telling the framerate
         if write_fps_declaration:
             subs.insert(0, SSAEvent(start=0, end=0, text=str(fps)))
 
         for line in subs:
-            if line.is_comment or is_drawing(line):
+            if line.is_comment or line.is_drawing:
                 continue
 
             text = "|".join(line.plaintext.splitlines())
