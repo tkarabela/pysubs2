@@ -1,6 +1,10 @@
 Release Notes
 =============
 
+**1.1.0** --- released on 2021-02-27
+
+- Added ``--clean`` option to CLI for more aggressive skipping of unwanted subtitles (Issue #37)
+
 **1.0.0** --- released on 2020-10-19
 
 - Dropped support for Python 2. The library now requires Python 3.7 or newer.
