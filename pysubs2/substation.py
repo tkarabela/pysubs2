@@ -1,3 +1,4 @@
+import logging
 import re
 from numbers import Number
 from .formatbase import FormatBase
@@ -14,7 +15,14 @@ def ass_to_ssa_alignment(i):
 def ssa_to_ass_alignment(i):
     return SSA_ALIGNMENT.index(i) + 1
 
-SECTION_HEADING = re.compile(r"^.{,3}\[[^\]]+\]") # allow for UTF-8 BOM, which is 3 bytes
+SECTION_HEADING = re.compile(
+    r"^.{,3}"  # allow 3 chars at start of line for BOM
+    r"\["  # open square bracket
+    r"[^]]*[a-z][^]]*"  # inside square brackets, at least one lowercase letter (this guards vs. uuencoded font data)
+    r"]"  # close square bracket
+)
+
+FONT_FILE_HEADING = re.compile(r"fontname:\s+(\S+)")
 
 STYLE_FORMAT_LINE = {
     "ass": "Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic,"
@@ -175,16 +183,22 @@ class SubstationFormat(FormatBase):
         subs.info.clear()
         subs.aegisub_project.clear()
         subs.styles.clear()
+        subs.fonts_opaque.clear()
 
         inside_info_section = False
         inside_aegisub_section = False
+        inside_font_section = False
+        current_font_name = None
+        current_font_lines_buffer = []
 
-        for line in fp:
+        for lineno, line in enumerate(fp, 1):
             line = line.strip()
 
             if SECTION_HEADING.match(line):
+                logging.debug("at line %d: section heading %s", lineno, line)
                 inside_info_section = "Info" in line
                 inside_aegisub_section = "Aegisub" in line
+                inside_font_section = "Fonts" in line
             elif inside_info_section or inside_aegisub_section:
                 if line.startswith(";"): continue # skip comments
                 try:
@@ -195,6 +209,24 @@ class SubstationFormat(FormatBase):
                         subs.aegisub_project[k] = v.strip()
                 except ValueError:
                     pass
+            elif inside_font_section:
+                m = FONT_FILE_HEADING.match(line)
+
+                if current_font_name and (m or not line):
+                    # flush last font on newline or new font name
+                    font_data = current_font_lines_buffer[:]
+                    subs.fonts_opaque[current_font_name] = font_data
+                    logging.debug("at line %d: finished font definition %s", lineno, current_font_name)
+                    current_font_lines_buffer.clear()
+                    current_font_name = None
+
+                if m:
+                    # start new font
+                    font_name = m.group(1)
+                    current_font_name = font_name
+                elif line:
+                    # add non-empty line to current buffer
+                    current_font_lines_buffer.append(line)
             elif line.startswith("Style:"):
                 _, rest = line.split(":", 1)
                 buf = rest.strip().split(",")
@@ -210,6 +242,14 @@ class SubstationFormat(FormatBase):
                 ev = SSAEvent(**field_dict)
                 subs.events.append(ev)
 
+        # cleanup fonts
+        if current_font_name:
+            # flush last font on EOF or new section w/o newline
+            font_data = current_font_lines_buffer[:]
+            subs.fonts_opaque[current_font_name] = font_data
+            logging.debug("at EOF: finished font definition %s", current_font_name)
+            current_font_lines_buffer.clear()
+            current_font_name = None
 
     @classmethod
     def to_file(cls, subs, fp, format_, header_notice=NOTICE, **kwargs):
@@ -250,6 +290,14 @@ class SubstationFormat(FormatBase):
         for name, sty in subs.styles.items():
             fields = [field_to_string(f, getattr(sty, f), sty) for f in STYLE_FIELDS[format_]]
             print("Style: %s" % name, *fields, sep=",", file=fp)
+
+        if subs.fonts_opaque:
+            print("\n[Fonts]", file=fp)
+            for font_name, font_lines in sorted(subs.fonts_opaque.items()):
+                print("fontname: {}".format(font_name), file=fp)
+                for line in font_lines:
+                    print(line, file=fp)
+                print(file=fp)
 
         print("\n[Events]", file=fp)
         print(EVENT_FORMAT_LINE[format_], file=fp)

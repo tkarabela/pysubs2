@@ -4,7 +4,7 @@ from io import open
 from itertools import chain
 import os.path
 import logging
-from typing import Optional, List, Dict, Iterable
+from typing import Optional, List, Dict, Iterable, Any
 
 from .common import IntOrFloat
 from .formats import autodetect_format, get_format_class, get_format_identifier
@@ -43,6 +43,7 @@ class SSAFile(MutableSequence):
         self.styles: Dict[str, SSAStyle] = {"Default": SSAStyle.DEFAULT_STYLE.copy()}  #: Dict of :class:`SSAStyle` instances.
         self.info: Dict[str, str] = self.DEFAULT_INFO.copy()  #: Dict with script metadata, ie. ``[Script Info]``.
         self.aegisub_project: Dict[str, str] = {}  #: Dict with Aegisub project, ie. ``[Aegisub Project Garbage]``.
+        self.fonts_opaque: Dict[str, Any] = {}  #: Dict with embedded fonts, ie. ``[Fonts]``.
         self.fps: Optional[float] = None  #: Framerate used when reading the file, if applicable.
         self.format: Optional[str] = None  #: Format of source subtitle file, if applicable, eg. ``"srt"``.
 
@@ -390,6 +391,18 @@ class SSAFile(MutableSequence):
                     return False
                 elif sv != ov:
                     logging.debug("info %r differs (self=%r, other=%r)", key, sv, ov)
+                    return False
+
+            for key in set(chain(self.fonts_opaque.keys(), other.fonts_opaque.keys())):
+                sv, ov = self.fonts_opaque.get(key), other.fonts_opaque.get(key)
+                if sv is None:
+                    logging.debug("%r missing in self.fonts_opaque", key)
+                    return False
+                elif ov is None:
+                    logging.debug("%r missing in other.fonts_opaque", key)
+                    return False
+                elif sv != ov:
+                    logging.debug("fonts_opaque %r differs (self=%r, other=%r)", key, sv, ov)
                     return False
 
             for key in set(chain(self.styles.keys(), other.styles.keys())):

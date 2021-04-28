@@ -13,10 +13,15 @@ pysubs2 is built around *SubStation Alpha*, the native subtitle format of `Aegis
 This format is popular in anime fansub community as it allows for rich text formatting and even animations
 and vector graphics.
 
-**SubStation Alpha** --- supported in two versions:
+**SubStation Alpha** --- supported in two flavours:
 
 - .ass files (Advanced SubStation Alpha v4.0+), format identifier is ``"ass"``.
 - .ssa files (SubStation Alpha v4.0), format identifier is ``"ssa"``.
+
+.. versionchanged:: 1.2.0
+   Added support for embedded fonts. Fonts in loaded files will be preserved on save.
+   For simplicity and speed, the data is stored in opaque form (not decoded).
+   If you'd like to extract/embed fonts via pysubs2, feel free to open an issue on GitHub.
 
 Time-based Formats
 ------------------

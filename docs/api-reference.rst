@@ -11,7 +11,7 @@ API Reference
 -------------------------------
 
 .. autoclass:: pysubs2.SSAFile
-   :members: events, styles, info, fps, format, aegisub_project
+   :members: events, styles, info, fps, format, aegisub_project, fonts_opaque
 
 Reading and writing subtitles
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
