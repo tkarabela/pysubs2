@@ -11,6 +11,7 @@ from .formats import get_file_extension, FORMAT_IDENTIFIERS
 from .time import make_time
 from .ssafile import SSAFile
 from .common import VERSION
+import logging
 
 
 def positive_float(s: str) -> float:
@@ -87,6 +88,8 @@ class Pysubs2CLI:
                                  "it overwrites the original file.")
         parser.add_argument("--clean", action="store_true",
                             help="Attempt to remove non-essential subtitles (eg. karaoke, SSA drawing tags)")
+        parser.add_argument("--verbose", action="store_true",
+                            help="Print misc logging")
 
         group = parser.add_mutually_exclusive_group()
 
@@ -106,6 +109,9 @@ class Pysubs2CLI:
     def main(self, argv):
         args = self.parser.parse_args(argv)
         errors = 0
+
+        if args.verbose:
+            logging.basicConfig(level=logging.DEBUG)
 
         if args.output_dir and not op.exists(args.output_dir):
             os.makedirs(args.output_dir)
