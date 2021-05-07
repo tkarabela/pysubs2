@@ -70,9 +70,9 @@ class Pysubs2CLI:
         parser.add_argument("-t", "--to", choices=FORMAT_IDENTIFIERS, dest="output_format",
                             help="Convert subtitle files to given format. By default, each file is saved in its "
                                  "original format.")
-        parser.add_argument("--input-enc", metavar="ENCODING", default="iso-8859-1", type=character_encoding,
-                            help="Character encoding for input files. By default, ISO-8859-1 is used for both "
-                                 "input and output, which should generally work (for 8-bit encodings).")
+        parser.add_argument("--input-enc", metavar="ENCODING", default="utf-8", type=character_encoding,
+                            help="Character encoding for input files. By default, UTF-8 is used for both "
+                                 "input and output.")
         parser.add_argument("--output-enc", metavar="ENCODING", type=character_encoding,
                             help="Character encoding for output files. By default, it is the same as input encoding. "
                                  "If you wish to convert between encodings, make sure --input-enc is set correctly! "
