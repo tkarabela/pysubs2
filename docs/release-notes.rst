@@ -1,6 +1,15 @@
 Release Notes
 =============
 
+**1.2.0** --- released on 2021-05-08
+
+- Basic support for ``[Fonts]`` in SubStation files (Issue #41)
+- Default file encoding for CLI is now UTF-8, bringing it in line with how the Python API works (Issue #38)
+- The ``--clean`` option for CLI now skips styling when writing non-SubStation formats (Issue #39)
+- ``SSAEvent``, ``SSAStyle`` and ``Color`` are now dataclasses
+- Improved Sphinx documentation (documented format implementation classes, including what extra read/write
+  keyword parameters they support; included CLI ``--help`` output for parameter reference)
+
 **1.1.0** --- released on 2021-02-27
 
 - Added ``--clean`` option to CLI for more aggressive skipping of unwanted subtitles (Issue #37)
