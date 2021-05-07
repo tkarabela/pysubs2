@@ -66,7 +66,16 @@ class TmpFormat(FormatBase):
         subs.events = events
 
     @classmethod
-    def to_file(cls, subs, fp, format_, **kwargs):
+    def to_file(cls, subs, fp, format_, apply_styles=True, **kwargs):
+        """
+        See :meth:`pysubs2.formats.FormatBase.to_file()`
+
+        Italic, underline and strikeout styling is supported.
+
+        Keyword args:
+            apply_styles: If False, do not write any styling.
+
+        """
         def prepare_text(text, style):
             body = []
             skip = False
@@ -74,9 +83,10 @@ class TmpFormat(FormatBase):
                 fragment = fragment.replace(r"\h", " ")
                 fragment = fragment.replace(r"\n", "\n")
                 fragment = fragment.replace(r"\N", "\n")
-                if sty.italic: fragment = "<i>%s</i>" % fragment
-                if sty.underline: fragment = "<u>%s</u>" % fragment
-                if sty.strikeout: fragment = "<s>%s</s>" % fragment
+                if apply_styles:
+                    if sty.italic: fragment = "<i>%s</i>" % fragment
+                    if sty.underline: fragment = "<u>%s</u>" % fragment
+                    if sty.strikeout: fragment = "<s>%s</s>" % fragment
                 if sty.drawing: skip = True
                 body.append(fragment)
 

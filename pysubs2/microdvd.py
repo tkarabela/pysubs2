@@ -60,7 +60,18 @@ class MicroDVDFormat(FormatBase):
             subs.append(ev)
 
     @classmethod
-    def to_file(cls, subs, fp, format_, fps=None, write_fps_declaration=True, **kwargs):
+    def to_file(cls, subs, fp, format_, fps=None, write_fps_declaration=True, apply_styles=True, **kwargs):
+        """
+        See :meth:`pysubs2.formats.FormatBase.to_file()`
+
+        The only supported styling is marking whole lines italic.
+
+        Keyword args:
+            write_fps_declaration: If True, create a zero-duration first subtitle which will contain
+                the fps.
+            apply_styles: If False, do not write any styling.
+
+        """
         if fps is None:
             fps = subs.fps
 
@@ -87,7 +98,7 @@ class MicroDVDFormat(FormatBase):
                 continue
 
             text = "|".join(line.plaintext.splitlines())
-            if is_entirely_italic(line):
+            if apply_styles and is_entirely_italic(line):
                 text = "{Y:i}" + text
 
             start, end = map(to_frames, (line.start, line.end))

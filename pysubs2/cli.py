@@ -58,9 +58,9 @@ class Pysubs2CLI:
                                                          python -m pysubs2 --transform-framerate 25 23.976 *.srt"""))
 
         parser.add_argument("files", nargs="*", metavar="FILE",
-                            help="Input subtitle files. Can be in SubStation Alpha (*.ass, *.ssa), SubRip (*.srt) or "
-                                 "MicroDVD (*.sub) formats. When no files are specified, pysubs2 will work as a pipe, "
-                                 "reading from standard input and writing to standard output.")
+                            help="Input subtitle files. Can be in SubStation Alpha (*.ass, *.ssa), SubRip (*.srt), "
+                                 "MicroDVD (*.sub) or other supported format. When no files are specified, "
+                                 "pysubs2 will work as a pipe, reading from standard input and writing to standard output.")
 
         parser.add_argument("-v", "--version", action="version", version="pysubs2 %s" % VERSION)
 
@@ -87,7 +87,8 @@ class Pysubs2CLI:
                                  "ie. unless it's being saved in different subtitle format (and thus with different file extension), "
                                  "it overwrites the original file.")
         parser.add_argument("--clean", action="store_true",
-                            help="Attempt to remove non-essential subtitles (eg. karaoke, SSA drawing tags)")
+                            help="Attempt to remove non-essential subtitles (eg. karaoke, SSA drawing tags), "
+                                 "strip styling information when saving to non-SSA formats")
         parser.add_argument("--verbose", action="store_true",
                             help="Print misc logging")
 
@@ -146,7 +147,7 @@ class Pysubs2CLI:
                         outpath = op.join(args.output_dir, filename)
 
                     with open(outpath, "w", encoding=args.output_enc) as outfile:
-                        subs.to_file(outfile, output_format, args.fps)
+                        subs.to_file(outfile, output_format, args.fps, apply_styles=not args.clean)
         else:
             infile = io.TextIOWrapper(sys.stdin.buffer, args.input_enc)
             outfile = io.TextIOWrapper(sys.stdout.buffer, args.output_enc)
@@ -154,7 +155,7 @@ class Pysubs2CLI:
             subs = SSAFile.from_file(infile, args.input_format, args.fps)
             self.process(subs, args)
             output_format = args.output_format or subs.format
-            subs.to_file(outfile, output_format, args.fps)
+            subs.to_file(outfile, output_format, args.fps, apply_styles=not args.clean)
 
         return (0 if errors == 0 else 1)
 
