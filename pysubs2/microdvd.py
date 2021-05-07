@@ -12,13 +12,16 @@ MICRODVD_LINE = re.compile(r" *\{ *(\d+) *\} *\{ *(\d+) *\}(.+)")
 
 
 class MicroDVDFormat(FormatBase):
+    """MicroDVD subtitle format implementation"""
     @classmethod
     def guess_format(cls, text):
+        """See :meth:`pysubs2.formats.FormatBase.guess_format()`"""
         if any(map(MICRODVD_LINE.match, text.splitlines())):
             return "microdvd"
 
     @classmethod
     def from_file(cls, subs, fp, format_, fps=None, **kwargs):
+        """See :meth:`pysubs2.formats.FormatBase.from_file()`"""
         for line in fp:
             match = MICRODVD_LINE.match(line)
             if not match:

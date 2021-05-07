@@ -24,8 +24,10 @@ def ms_to_timestamp(ms):
 
 
 class TmpFormat(FormatBase):
+    """TMP subtitle format implementation"""
     @classmethod
     def guess_format(cls, text):
+        """See :meth:`pysubs2.formats.FormatBase.guess_format()`"""
         if "[Script Info]" in text or "[V4+ Styles]" in text:
             # disambiguation vs. SSA/ASS
             return None
@@ -36,6 +38,7 @@ class TmpFormat(FormatBase):
 
     @classmethod
     def from_file(cls, subs, fp, format_, **kwargs):
+        """See :meth:`pysubs2.formats.FormatBase.from_file()`"""
         events = []
 
         def prepare_text(text):

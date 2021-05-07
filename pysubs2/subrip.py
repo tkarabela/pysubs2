@@ -19,6 +19,7 @@ def ms_to_timestamp(ms):
 
 
 class SubripFormat(FormatBase):
+    """SubRip Text (SRT) subtitle format implementation"""
     TIMESTAMP = TIMESTAMP
 
     @staticmethod
@@ -27,6 +28,7 @@ class SubripFormat(FormatBase):
 
     @classmethod
     def guess_format(cls, text):
+        """See :meth:`pysubs2.formats.FormatBase.guess_format()`"""
         if "[Script Info]" in text or "[V4+ Styles]" in text:
             # disambiguation vs. SSA/ASS
             return None
@@ -41,6 +43,19 @@ class SubripFormat(FormatBase):
 
     @classmethod
     def from_file(cls, subs, fp, format_, keep_unknown_html_tags=False, **kwargs):
+        """
+        See :meth:`pysubs2.formats.FormatBase.from_file()`
+
+        Supported tags:
+
+          - ``<i>``
+          - ``<u>``
+          - ``<s>``
+
+        Keyword args:
+            keep_unknown_html_tags: If True, HTML tags other than i/u/s will be kept as-is.
+                Otherwise, they will be stripped from input.
+        """
         timestamps = [] # (start, end)
         following_lines = [] # contains lists of lines following each timestamp
 

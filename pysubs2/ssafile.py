@@ -56,6 +56,13 @@ class SSAFile(MutableSequence):
         """
         Load subtitle file from given path.
 
+        This method is implemented in terms of :meth:`SSAFile.from_file()`.
+
+        See also:
+            Specific formats may implement additional loading options,
+            please refer to documentation of the implementation classes
+            (eg. :meth:`pysubs2.subrip.SubripFormat.from_file()`)
+
         Arguments:
             path (str): Path to subtitle file.
             encoding (str): Character encoding of input file.
@@ -69,14 +76,7 @@ class SSAFile(MutableSequence):
                 be detected from the file, in which case you don't need
                 to specify it here (when given, this argument overrides
                 autodetection).
-            keep_unknown_html_tags (bool): This affects SubRip only (SRT),
-                for other formats this argument is ignored.
-                By default, HTML tags are converted to equivalent SubStation tags
-                (eg. ``<i>`` to ``{\\i1}`` and any remaining tags are removed
-                to keep the text clean. Set this parameter to ``True``
-                if you want to pass through these tags (eg. ``<sub>``).
-                This is useful if your output format is SRT and your player
-                supports these tags.
+            kwargs: Extra options for the reader.
 
         Returns:
             SSAFile
@@ -166,6 +166,13 @@ class SSAFile(MutableSequence):
     def save(self, path: str, encoding: str="utf-8", format_: Optional[str]=None, fps: Optional[float]=None, **kwargs):
         """
         Save subtitle file to given path.
+
+        This method is implemented in terms of :meth:`SSAFile.to_file()`.
+
+        See also:
+            Specific formats may implement additional saving options,
+            please refer to documentation of the implementation classes
+            (eg. :meth:`pysubs2.subrip.SubripFormat.to_file()`)
 
         Arguments:
             path (str): Path to subtitle file.

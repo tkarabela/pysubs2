@@ -6,13 +6,20 @@ from .formatbase import FormatBase
 
 
 class JSONFormat(FormatBase):
+    """
+    Implementation of JSON subtitle pseudo-format (serialized pysubs2 internal representation)
+
+    This is essentially SubStation Alpha as JSON.
+    """
     @classmethod
     def guess_format(cls, text):
+        """See :meth:`pysubs2.formats.FormatBase.guess_format()`"""
         if text.startswith("{\""):
             return "json"
 
     @classmethod
     def from_file(cls, subs, fp, format_, **kwargs):
+        """See :meth:`pysubs2.formats.FormatBase.from_file()`"""
         data = json.load(fp)
 
         subs.info.clear()
@@ -31,6 +38,7 @@ class JSONFormat(FormatBase):
 
     @classmethod
     def to_file(cls, subs, fp, format_, **kwargs):
+        """See :meth:`pysubs2.formats.FormatBase.to_file()`"""
         data = {
             "info": dict(**subs.info),
             "styles": {name: sty.as_dict() for name, sty in subs.styles.items()},

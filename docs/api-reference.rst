@@ -82,12 +82,40 @@ Misc methods
 ``pysubs2.formats`` --- subtitle format implementations
 -------------------------------------------------------
 
-.. note:: This submodule contains pysubs2 internals. It's mostly of interest if you're looking to implement a subtitle format not supported by the library. In that case, have a look at :class:`pysubs2.formats.FormatBase`.
+.. note:: This submodule contains pysubs2 internals. It's mostly of interest if you're looking to implement
+          a subtitle format not supported by the library. In that case, have a look at :class:`pysubs2.formats.FormatBase`.
 
 .. autofunction:: pysubs2.substation.parse_tags
 
 .. automodule:: pysubs2.formats
    :members:
 
+Subtitle format API
+~~~~~~~~~~~~~~~~~~~
+
 .. autoclass:: pysubs2.formats.FormatBase
+   :members:
+
+Subtitle format implementations
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: pysubs2.substation.SubstationFormat
+   :members:
+
+.. autoclass:: pysubs2.subrip.SubripFormat
+   :members:
+
+.. autoclass:: pysubs2.mpl2.MPL2Format
+   :members:
+
+.. autoclass:: pysubs2.tmp.TmpFormat
+   :members:
+
+.. autoclass:: pysubs2.webvtt.WebVTTFormat
+   :members:
+
+.. autoclass:: pysubs2.microdvd.MicroDVDFormat
+   :members:
+
+.. autoclass:: pysubs2.jsonformat.JSONFormat
    :members:

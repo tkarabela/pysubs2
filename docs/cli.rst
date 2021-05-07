@@ -23,3 +23,8 @@ aggressive skipping, try the ``--clean`` option, which will also try to skip kar
     
     By default, the script works in-place; original files are overwritten. You can use the ``-o/--output-dir``
     option to specify output directory or process files in UNIX pipe fashion (``pysubs2 <infile >outfile``).
+
+CLI parameters
+--------------
+
+.. program-output:: python -m pysubs2 -h

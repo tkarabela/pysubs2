@@ -18,6 +18,8 @@ and vector graphics.
 - .ass files (Advanced SubStation Alpha v4.0+), format identifier is ``"ass"``.
 - .ssa files (SubStation Alpha v4.0), format identifier is ``"ssa"``.
 
+Implemented in :class:`pysubs2.substation.SubstationFormat`.
+
 .. versionchanged:: 1.2.0
    Added support for embedded fonts. Fonts in loaded files will be preserved on save.
    For simplicity and speed, the data is stored in opaque form (not decoded).
@@ -28,18 +30,22 @@ Time-based Formats
 
 **SubRip** --- .srt files, format identifier is ``"srt"``. Widely used subtitle format, it uses HTML
 tags for formatting, though it is usually not heavily formatted (as opposed to *SubStation*).
+Implemented in :class:`pysubs2.subrip.SubripFormat`.
 
 **MPL2** --- Time-based format similar to MicroDVD, format identifier is ``"mpl2"``. To save subtitles in MPL2 format,
 use ``subs.save("subtitles.txt", format_="mpl2")``.
+Implemented in :class:`pysubs2.mpl2.MPL2Format`.
 
 **TMP** --- Time-based format, format identifier is ``"tmp"``. A very simple format which only specifies starting time
 for each subtitle, eg. ``0:00:13:This is a subtitle``. Subtitle length is calculated automatically based on character
 count. This older subtitle format is also referred to as "TMP Player" format.
+Implemented in :class:`pysubs2.tmp.TmpFormat`.
 
 **WebVTT** --- Time-based format similar to SubRip, format identifier is ``"vtt"``. Currently implemented
 as a flavour of SubRip, with no extra support for WebVTT-specific features like styles or subtitle alignment.
 `Link to WebVTT specification <https://developer.mozilla.org/en-US/docs/Web/API/WebVTT_API>`_, official name is
 "Web Video Text Tracks Format".
+Implemented in :class:`pysubs2.webvtt.WebVTTFormat`.
 
 Frame-based Formats
 -------------------
@@ -47,8 +53,10 @@ Frame-based Formats
 **MicroDVD** --- .sub files, format identifier is ``"microdvd"``. This format uses frames to describe start/end times,
 instead of hour/minute/second, which means it is dependent on framerate of the video. For proper retiming and conversion,
 you need to know the framerate (sometimes it is given in the first subtitle, which ``pysubs2`` will autodetect and use).
+Implemented in :class:`pysubs2.microdvd.MicroDVDFormat`.
 
 Other
 -----
 
 **JSON**-serialized internal representation, which amounts to ASS. Format identifier is ``"json"``.
+Implemented in :class:`pysubs2.jsonformat.JSONFormat`.
