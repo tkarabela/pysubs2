@@ -1,8 +1,18 @@
+import dataclasses
 import json
 from .common import Color
 from .ssaevent import SSAEvent
 from .ssastyle import SSAStyle
 from .formatbase import FormatBase
+
+
+# We're using Color dataclass
+# https://stackoverflow.com/questions/51286748/make-the-python-json-encoder-support-pythons-new-dataclasses
+class EnhancedJSONEncoder(json.JSONEncoder):
+    def default(self, o):
+        if dataclasses.is_dataclass(o):
+            return dataclasses.asdict(o)
+        return super().default(o)
 
 
 class JSONFormat(FormatBase):
@@ -30,7 +40,7 @@ class JSONFormat(FormatBase):
             subs.styles[name] = sty = SSAStyle()
             for k, v in fields.items():
                 if "color" in k:
-                    setattr(sty, k, Color(*v))
+                    setattr(sty, k, Color(**v))
                 else:
                     setattr(sty, k, v)
 
@@ -45,4 +55,4 @@ class JSONFormat(FormatBase):
             "events": [ev.as_dict() for ev in subs.events]
         }
 
-        json.dump(data, fp)
+        json.dump(data, fp, cls=EnhancedJSONEncoder)

@@ -1,10 +1,13 @@
 import re
-from typing import Optional, Dict, Any
+import warnings
+from typing import Optional, Dict, Any, ClassVar
+import dataclasses
 
 from .common import IntOrFloat
 from .time import ms_to_str, make_time
 
 
+@dataclasses.dataclass(repr=False, eq=False, order=False)
 class SSAEvent:
     """
     A SubStation Event, ie. one subtitle.
@@ -22,39 +25,26 @@ class SSAEvent:
         >>> ev = SSAEvent(start=make_time(s=1), end=make_time(s=2.5), text="Hello World!")
 
     """
-    OVERRIDE_SEQUENCE = re.compile(r"{[^}]*}")
+    OVERRIDE_SEQUENCE: ClassVar = re.compile(r"{[^}]*}")
 
-    #: All fields in SSAEvent.
-    FIELDS = frozenset([
-        "start", "end", "text", "marked", "layer", "style",
-        "name", "marginl", "marginr", "marginv", "effect", "type"
-    ])
+    start: int = 0  #: Subtitle start time (in milliseconds)
+    end: int = 10000  #: Subtitle end time (in milliseconds)
+    text: str = ""  #: Text of subtitle (with SubStation override tags)
+    marked: bool = False  #: (SSA only)
+    layer: int = 0  #: Layer number, 0 is the lowest layer (ASS only)
+    style: str = "Default"  #: Style name
+    name: str = ""  #: Actor name
+    marginl: int = 0  #: Left margin
+    marginr: int = 0  #: Right margin
+    marginv: int = 0  #: Vertical margin
+    effect: str = ""  #: Line effect
+    type: str = "Dialogue"  #: Line type (Dialogue/Comment)
 
-    def __init__(self,
-                 start: int = 0,
-                 end: int = 10000,
-                 text: str = "",
-                 marked: bool = False,
-                 layer: int = 0,
-                 style: str = "Default",
-                 name: str = "",
-                 marginl: int = 0,
-                 marginr: int = 0,
-                 marginv: int = 0,
-                 effect: str = "",
-                 type: str = "Dialogue"):
-        self.start: int = start  #: Subtitle start time (in milliseconds)
-        self.end: int = end  #: Subtitle end time (in milliseconds)
-        self.text: str = text  #: Text of subtitle (with SubStation override tags)
-        self.marked: bool = marked  #: (SSA only)
-        self.layer: int = layer  #: Layer number, 0 is the lowest layer (ASS only)
-        self.style: str = style  #: Style name
-        self.name: str = name  #: Actor name
-        self.marginl: int = marginl  #: Left margin
-        self.marginr: int = marginr  #: Right margin
-        self.marginv: int = marginv  #: Vertical margin
-        self.effect: str = effect  #: Line effect
-        self.type: str = type  #: Line type (Dialogue/Comment)
+    @property
+    def FIELDS(self):
+        """All fields in SSAEvent."""
+        warnings.warn("Deprecated in 1.2.0 - it's a dataclass now", DeprecationWarning)
+        return frozenset(field.name for field in dataclasses.fields(self))
 
     @property
     def duration(self) -> IntOrFloat:
@@ -132,7 +122,8 @@ class SSAEvent:
         return SSAEvent(**self.as_dict())
 
     def as_dict(self) -> Dict[str, Any]:
-        return {field: getattr(self, field) for field in self.FIELDS}
+        # dataclasses.asdict() would recursively dictify Color objects, which we don't want
+        return {field.name: getattr(self, field.name) for field in dataclasses.fields(self)}
 
     def equals(self, other: "SSAEvent") -> bool:
         """Field-based equality for SSAEvents."""

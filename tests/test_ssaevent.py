@@ -67,3 +67,10 @@ def test_shift():
 
     e2 = e.copy(); e2.shift(h=1, m=-60, s=2, ms=-2000)
     assert e2 == e
+
+def test_fields():
+    e = SSAEvent()
+    assert e.FIELDS == frozenset([
+        "start", "end", "text", "marked", "layer", "style",
+        "name", "marginl", "marginr", "marginv", "effect", "type"
+    ])

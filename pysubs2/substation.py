@@ -53,7 +53,7 @@ EVENT_FIELDS = {
 #: Largest timestamp allowed in SubStation, ie. 9:59:59.99.
 MAX_REPRESENTABLE_TIME = make_time(h=10) - 10
 
-def ms_to_timestamp(ms):
+def ms_to_timestamp(ms: int) -> str:
     """Convert ms to 'H:MM:SS.cc'"""
     # XXX throw on overflow/underflow?
     if ms < 0: ms = 0
@@ -61,13 +61,13 @@ def ms_to_timestamp(ms):
     h, m, s, ms = ms_to_times(ms)
     return "%01d:%02d:%02d.%02d" % (h, m, s, ms//10)
 
-def color_to_ass_rgba(c):
+def color_to_ass_rgba(c: Color) -> str:
     return "&H%08X" % ((c.a << 24) | (c.b << 16) | (c.g << 8) | c.r)
 
-def color_to_ssa_rgb(c):
+def color_to_ssa_rgb(c: Color) -> str:
     return "%d" % ((c.b << 16) | (c.g << 8) | c.r)
 
-def rgba_to_color(s):
+def rgba_to_color(s: str) -> Color:
     if s[0] == '&':
         x = int(s[2:], base=16)
     else:
@@ -78,7 +78,7 @@ def rgba_to_color(s):
     a = (x >> 24) & 0xff
     return Color(r, g, b, a)
 
-def is_valid_field_content(s):
+def is_valid_field_content(s: str) -> bool:
     """
     Returns True if string s can be stored in a SubStation field.
 
