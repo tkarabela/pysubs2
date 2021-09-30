@@ -1,4 +1,7 @@
-from collections import MutableSequence
+try:
+    from collections import abc
+except ImportError:
+    import collections as abc
 import io
 from io import open
 from itertools import chain
@@ -14,7 +17,7 @@ from .ssastyle import SSAStyle
 from .time import make_time, ms_to_str
 
 
-class SSAFile(MutableSequence):
+class SSAFile(abc.MutableSequence):
     """
     Subtitle file in SubStation Alpha format.
 
