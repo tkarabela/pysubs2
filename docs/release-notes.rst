@@ -1,6 +1,12 @@
 Release Notes
 =============
 
+**1.3.0** --- released on 2021-10-02
+
+- More robust SubStation parser (Issue #45)
+- Added Python 3.10 support, patch by luk1337 (https://github.com/luk1337)
+- Migrated tests from nose to pytest
+
 **1.2.0** --- released on 2021-05-08
 
 - Basic support for ``[Fonts]`` in SubStation files (Issue #41)

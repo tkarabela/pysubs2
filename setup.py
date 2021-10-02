@@ -47,7 +47,8 @@ setup(
         "Intended Audience :: Developers",
         "Intended Audience :: End Users/Desktop",
         "Operating System :: OS Independent",
-        "License :: OSI Approved :: MIT License"
+        "License :: OSI Approved :: MIT License",
+        "Typing :: Typed",
         ],
     entry_points={'console_scripts': ['pysubs2 = pysubs2.cli:__main__']},
     python_requires=">=3.7",
