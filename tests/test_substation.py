@@ -164,6 +164,28 @@ Format: Marked, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 Dialogue: Marked=0,0:01:30.30,0:01:35.30,Default,NTP,0000,0000,0000,!Effect,-脫逃-
 """
 
+ASS_WITH_MALFORMED_STYLE = """\
+[Script Info]
+Title: file
+Original Script: <unknown>
+ScriptType: v4.00+
+Collisions: Normal
+PlayResX: 384
+PlayResY: 288
+PlayDepth: 0
+Timer: 100.0
+WrapStyle: 0
+Audio File: file.ogg
+
+[v4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Default, Arial, 20, &H00FFFFFF, &H00000000, &H00000000, &H00000000, 0, 0, 0, 0, 100, 100, 0, 0, 1, 2, 0, 2, 15, 15, 15, 0
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.00,0:00:01.10,Default,Иные 0,0000,0000,0000,,Hello
+"""
+
 def build_ref():
     subs = SSAFile()
     subs.info["My Custom Info"] = "Some: Test, String."
@@ -269,3 +291,10 @@ def test_hex_color_in_ssa():
     style = subs.styles["Default"]
     assert style.primarycolor == Color(r=0xff, g=0xff, b=0xff)
     assert style.secondarycolor == Color(r=0xff, g=0xff, b=0x00)
+
+
+def test_ass_with_malformed_style():
+    # see issue #45
+    subs = SSAFile.from_string(ASS_WITH_MALFORMED_STYLE)
+    assert subs[0].text == "Hello"
+    assert subs.styles["Default"].fontname == "Arial"
