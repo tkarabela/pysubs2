@@ -1,4 +1,4 @@
-from nose.tools import assert_raises
+import pytest
 
 from pysubs2 import SSAFile, SSAStyle, SSAEvent, make_time
 
@@ -21,13 +21,13 @@ def test_shift():
     #TODO: write more tests
     subs = SSAFile()
 
-    with assert_raises(ValueError):
+    with pytest.raises(ValueError):
         subs.shift(frames=5)
 
-    with assert_raises(ValueError):
+    with pytest.raises(ValueError):
         subs.shift(fps=23.976)
 
-    with assert_raises(ValueError):
+    with pytest.raises(ValueError):
         subs.shift(frames=5, fps=-1)
 
 def test_import_styles():
@@ -54,7 +54,7 @@ def test_import_styles():
     assert subs2.styles["green"] is green
     assert subs2.styles["red"] is red2
 
-    with assert_raises(TypeError):
+    with pytest.raises(TypeError):
         subs2.import_styles({})
 
 def test_rename_style():
@@ -74,16 +74,16 @@ def test_rename_style():
     assert subs[1].style == "unrelated"
 
     prepare()
-    with assert_raises(ValueError):
+    with pytest.raises(ValueError):
         # cannot delete style via move
         subs.rename_style("red", "green")
 
     prepare()
-    with assert_raises(ValueError):
+    with pytest.raises(ValueError):
         subs.rename_style("red", "illegal,name")
-    with assert_raises(ValueError):
+    with pytest.raises(ValueError):
         subs.rename_style("red", "illegal\nname")
-    with assert_raises(KeyError):
+    with pytest.raises(KeyError):
         subs.rename_style("nonexistent-style", "blue")
 
 def test_transform_framerate():
@@ -91,13 +91,13 @@ def test_transform_framerate():
     subs.append(SSAEvent(start=0, end=10))
     subs.append(SSAEvent(start=1000, end=1010))
 
-    with assert_raises(ValueError):
+    with pytest.raises(ValueError):
         subs.transform_framerate(1, 0)
-    with assert_raises(ValueError):
+    with pytest.raises(ValueError):
         subs.transform_framerate(1, -1)
-    with assert_raises(ValueError):
+    with pytest.raises(ValueError):
         subs.transform_framerate(0, 1)
-    with assert_raises(ValueError):
+    with pytest.raises(ValueError):
         subs.transform_framerate(-1, 1)
 
     subs.transform_framerate(10, 20)
@@ -108,9 +108,9 @@ def test_insertion_of_wrong_type():
     subs = SSAFile()
     subs.append(SSAEvent())
 
-    with assert_raises(TypeError):
+    with pytest.raises(TypeError):
         subs.append(42)
-    with assert_raises(TypeError):
+    with pytest.raises(TypeError):
         subs.insert(42)
-    with assert_raises(TypeError):
+    with pytest.raises(TypeError):
         subs[0] = 42

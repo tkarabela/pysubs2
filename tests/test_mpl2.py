@@ -1,7 +1,7 @@
 from __future__ import unicode_literals
 
 from textwrap import dedent
-from nose.tools import assert_raises
+import pytest
 
 from pysubs2 import SSAFile, SSAEvent, make_time
 

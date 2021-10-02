@@ -1,4 +1,4 @@
-from nose.tools import assert_raises
+import pytest
 
 from pysubs2 import SSAEvent, make_time
 
@@ -26,7 +26,7 @@ def test_duration():
     e.duration = 0
     assert e.start == 0 and e.end == 0
 
-    with assert_raises(ValueError):
+    with pytest.raises(ValueError):
         e.duration = -20
 
 def test_plaintext():
@@ -44,13 +44,13 @@ def test_plaintext():
 def test_shift():
     e = SSAEvent(start=0, end=10)
 
-    with assert_raises(ValueError):
+    with pytest.raises(ValueError):
         e.shift(frames=5)
 
-    with assert_raises(ValueError):
+    with pytest.raises(ValueError):
         e.shift(fps=23.976)
 
-    with assert_raises(ValueError):
+    with pytest.raises(ValueError):
         e.shift(frames=5, fps=-1)
 
     e2 = e.copy(); e2.shift(ms=5)
@@ -70,7 +70,8 @@ def test_shift():
 
 def test_fields():
     e = SSAEvent()
-    assert e.FIELDS == frozenset([
-        "start", "end", "text", "marked", "layer", "style",
-        "name", "marginl", "marginr", "marginv", "effect", "type"
-    ])
+    with pytest.warns(DeprecationWarning):
+        assert e.FIELDS == frozenset([
+            "start", "end", "text", "marked", "layer", "style",
+            "name", "marginl", "marginr", "marginv", "effect", "type"
+        ])

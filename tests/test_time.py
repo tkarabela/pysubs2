@@ -4,7 +4,7 @@ pysubs2.time tests
 """
 
 from fractions import Fraction 
-from nose.tools import assert_raises
+import pytest
 
 from pysubs2.time import *
 
@@ -124,9 +124,12 @@ def test_frames_to_ms():
     assert frames_to_ms(-1, 23.976) == -42
     
     # framerate handling
-    assert_raises(ValueError, frames_to_ms, frames=1, fps=0.0)
-    assert_raises(ValueError, frames_to_ms, frames=1, fps=-25.0)
-    assert_raises(TypeError, frames_to_ms, frames=1, fps="pal") # keyword aliases from PySubs 0.1 are no longer supported
+    with pytest.raises(ValueError):
+        frames_to_ms(frames=1, fps=0.0)
+    with pytest.raises(ValueError):
+        frames_to_ms(frames=1, fps=-25.0)
+    with pytest.raises(TypeError):
+        frames_to_ms(frames=1, fps="pal")  # keyword aliases from PySubs 0.1 are no longer supported
 
 def test_ms_to_frames():
     # basic tests
@@ -138,9 +141,12 @@ def test_ms_to_frames():
     assert ms_to_frames(-42, 23.976) == -1
     
     # framerate handling
-    assert_raises(ValueError, ms_to_frames, 1, fps=0.0)
-    assert_raises(ValueError, ms_to_frames, 1, fps=-25.0)
-    assert_raises(TypeError, ms_to_frames, 1, fps="pal") # keyword aliases from PySubs 0.1 are no longer supported
+    with pytest.raises(ValueError):
+        ms_to_frames(1, fps=0.0)
+    with pytest.raises(ValueError):
+        ms_to_frames(1, fps=-25.0)
+    with pytest.raises(TypeError):
+        ms_to_frames(1, fps="pal")  # keyword aliases from PySubs 0.1 are no longer supported
 
 def test_ms_to_str():
     assert ms_to_str(0) == "0:00:00"

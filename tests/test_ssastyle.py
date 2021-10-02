@@ -1,3 +1,5 @@
+import pytest
+
 from pysubs2 import SSAStyle
 
 def test_repr_plain():
@@ -22,13 +24,15 @@ def test_repr_floatsize():
 
 def test_fields():
     sty = SSAStyle()
-    assert sty.FIELDS == frozenset([
-        "fontname", "fontsize", "primarycolor", "secondarycolor",
-        "tertiarycolor", "outlinecolor", "backcolor",
-        "bold", "italic", "underline", "strikeout",
-        "scalex", "scaley", "spacing", "angle", "borderstyle",
-        "outline", "shadow", "alignment",
-        "marginl", "marginr", "marginv", "alphalevel", "encoding",
 
-        "drawing"
-    ])
+    with pytest.warns(DeprecationWarning):
+        assert sty.FIELDS == frozenset([
+            "fontname", "fontsize", "primarycolor", "secondarycolor",
+            "tertiarycolor", "outlinecolor", "backcolor",
+            "bold", "italic", "underline", "strikeout",
+            "scalex", "scaley", "spacing", "angle", "borderstyle",
+            "outline", "shadow", "alignment",
+            "marginl", "marginr", "marginv", "alphalevel", "encoding",
+
+            "drawing"
+        ])

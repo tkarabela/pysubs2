@@ -5,4 +5,4 @@ python:
   - "3.9"
   - "3.10-dev"  # TODO replace with "3.10" once the release comes out
 install: pip install .
-script: nosetests
+script: pytest

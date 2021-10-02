@@ -1,7 +1,7 @@
 from __future__ import unicode_literals
 
 from textwrap import dedent
-from nose.tools import assert_raises
+import pytest
 
 from pysubs2 import SSAFile, SSAEvent, SSAStyle, UnknownFPSError
 
@@ -45,10 +45,10 @@ def test_framerate_inference():
     assert subs3[0] == SSAEvent(start=0, end=0, text="23.976")
     assert subs3[1] == SSAEvent(start=10, end=20, text="Hello!")
     
-    with assert_raises(UnknownFPSError):
+    with pytest.raises(UnknownFPSError):
         SSAFile.from_string(no_fps)
     
-    with assert_raises(ValueError):
+    with pytest.raises(ValueError):
         SSAFile.from_string(illegal_fps)
 
 def test_extra_whitespace_parsing():

@@ -7,7 +7,7 @@ from __future__ import unicode_literals
 from textwrap import dedent
 from pysubs2 import SSAFile, SSAEvent, SSAStyle, make_time, Color
 from pysubs2.substation import color_to_ass_rgba, color_to_ssa_rgb, rgba_to_color
-from nose.tools import assert_raises
+import pytest
 import sys
 
 SIMPLE_ASS_REF = """
@@ -227,7 +227,7 @@ def test_ascii_str_fields():
         subs.to_string("ass")
     else:
         # in Python 3, we are strict and enforce Unicode
-        with assert_raises(TypeError):
+        with pytest.raises(TypeError):
             subs.to_string("ass")
 
 def test_non_ascii_str_fields():
@@ -243,7 +243,7 @@ def test_non_ascii_str_fields():
 
     # in all Pythons, saving subtitles with non-unicode fields
     # fails when they are not in ASCII range
-    with assert_raises(TypeError):
+    with pytest.raises(TypeError):
         subs.to_string("ass")
 
 def test_negative_timestamp_read():

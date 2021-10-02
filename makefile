@@ -1,6 +1,5 @@
 test:
-	nosetests3
-	nosetests
+	pytest
 
 doc:
 	cd docs; $(MAKE) html
