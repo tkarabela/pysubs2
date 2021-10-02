@@ -2,9 +2,9 @@ pysubs2
 =======
 
 
-.. image:: https://img.shields.io/travis/tkarabela/pysubs2/master.svg?style=flat-square
+.. image:: https://app.travis-ci.com/tkarabela/pysubs2.svg?branch=master
     :alt: pysubs2 build master branch
-    :target: https://travis-ci.org/tkarabela/pysubs2
+    :target: https://app.travis-ci.com/github/tkarabela/pysubs2
 .. image:: https://img.shields.io/pypi/v/pysubs2.svg?style=flat-square
     :alt: PyPI - Version
     :target: https://pypi.org/project/pysubs2/
