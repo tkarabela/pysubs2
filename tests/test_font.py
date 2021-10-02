@@ -3,7 +3,6 @@ test of SubStation [Fonts] handling
 
 """
 
-from __future__ import unicode_literals
 from pysubs2 import SSAFile
 import os.path as op
 

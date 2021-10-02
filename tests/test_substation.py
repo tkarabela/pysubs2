@@ -3,7 +3,6 @@ pysubs2.formats.substation tests
 
 """
 
-from __future__ import unicode_literals
 from textwrap import dedent
 from pysubs2 import SSAFile, SSAEvent, SSAStyle, make_time, Color
 from pysubs2.substation import color_to_ass_rgba, color_to_ssa_rgb, rgba_to_color

@@ -3,7 +3,6 @@ pysubs2.formats.tmp tests
 
 """
 
-from __future__ import unicode_literals
 from textwrap import dedent
 from pysubs2 import SSAFile, SSAEvent, make_time
 
