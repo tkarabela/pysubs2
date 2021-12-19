@@ -169,9 +169,15 @@ class SubstationFormat(FormatBase):
                 if v.startswith("-"):
                     # handle negative timestamps
                     v = v[1:]
-                    return -timestamp_to_ms(TIMESTAMP.match(v).groups())
+                    sign = -1
                 else:
-                    return timestamp_to_ms(TIMESTAMP.match(v).groups())
+                    sign = 1
+
+                m = TIMESTAMP.match(v)
+                if m is None:
+                    raise ValueError("Failed to parse timestamp: {!r}".format(v))
+
+                return sign * timestamp_to_ms(m.groups())
             elif "color" in f:
                 v = v.strip()
                 return rgba_to_color(v)

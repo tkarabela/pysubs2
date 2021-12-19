@@ -114,3 +114,28 @@ def test_insertion_of_wrong_type():
         subs.insert(42)
     with pytest.raises(TypeError):
         subs[0] = 42
+
+def test_slice_api():
+    subs = SSAFile()
+    subs[:] = [
+        SSAEvent(text="A"),
+        SSAEvent(text="B"),
+        SSAEvent(text="C")
+    ]
+    assert subs[0].text == "A"
+    assert subs[-1].text == "C"
+
+    bc = subs[1:]
+    assert len(bc) == 2
+    assert bc[0].text == "B"
+    assert bc[1].text == "C"
+
+    del subs[1:]
+    assert len(subs) == 1
+    assert subs[0].text == "A"
+
+    subs[:] = (SSAEvent(text=c) for c in "XYZ")
+    assert len(subs) == 3
+    assert subs[0].text == "X"
+    assert subs[1].text == "Y"
+    assert subs[2].text == "Z"
