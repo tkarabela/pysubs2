@@ -12,7 +12,7 @@ class WebVTTFormat(SubripFormat):
     TIMESTAMP = re.compile(r"(\d{0,4}:)?(\d{2}):(\d{2})\.(\d{2,3})")
 
     @staticmethod
-    def ms_to_timestamp(ms):
+    def ms_to_timestamp(ms: int) -> str:
         result = SubripFormat.ms_to_timestamp(ms)
         return result.replace(',', '.')
 

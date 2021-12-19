@@ -18,7 +18,7 @@ class TmpFormat(FormatBase):
     """TMP subtitle format implementation"""
 
     @staticmethod
-    def ms_to_timestamp(ms):
+    def ms_to_timestamp(ms: int) -> str:
         """Convert ms to 'HH:MM:SS'"""
         # XXX throw on overflow/underflow?
         if ms < 0: ms = 0
