@@ -7,6 +7,7 @@ pysubs2
     :target: https://app.travis-ci.com/github/tkarabela/pysubs2
 .. image:: http://www.mypy-lang.org/static/mypy_badge.svg
     :alt: MyPy checked
+    :target: https://app.travis-ci.com/github/tkarabela/pysubs2
 .. image:: https://img.shields.io/pypi/v/pysubs2.svg?style=flat-square
     :alt: PyPI - Version
     :target: https://pypi.org/project/pysubs2/
