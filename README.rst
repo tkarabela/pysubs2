@@ -5,6 +5,8 @@ pysubs2
 .. image:: https://app.travis-ci.com/tkarabela/pysubs2.svg?branch=master
     :alt: pysubs2 build master branch
     :target: https://app.travis-ci.com/github/tkarabela/pysubs2
+.. image:: http://www.mypy-lang.org/static/mypy_badge.svg
+    :alt: MyPy checked
 .. image:: https://img.shields.io/pypi/v/pysubs2.svg?style=flat-square
     :alt: PyPI - Version
     :target: https://pypi.org/project/pysubs2/

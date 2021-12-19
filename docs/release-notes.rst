@@ -1,6 +1,12 @@
 Release Notes
 =============
 
+**1.3.1** --- released on 2021-12-19
+
+- Fixed WebVTT timestamps output, patch by Mathias Köhler (https://github.com/interru)
+- Added slice indexing support to ``SSAFile``
+- pysubs2 now passes MyPy non-strict typecheck (with MyPy 0.920)
+
 **1.3.0** --- released on 2021-10-02
 
 - More robust SubStation parser (Issue #45)
