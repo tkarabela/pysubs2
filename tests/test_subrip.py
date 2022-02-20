@@ -193,3 +193,24 @@ def test_write_drawing():
 
     text = subs.to_string("srt")
     assert text.strip() == ref.strip()
+
+def test_keep_ssa_tags():
+    # test for issue #48
+    input_text = dedent("""\
+    1
+    00:00:00,000 --> 00:01:00,000
+    {\\an7}An example subtitle.
+
+    2
+    00:01:00,000 --> 00:02:00,000
+    Subtitle {\\b1}number{\\b0}
+    two.
+    """)
+
+    subs = SSAFile.from_string(input_text)
+
+    output_text_do_not_keep_tags = subs.to_string("srt")
+    output_text_keep_tags = subs.to_string("srt", keep_ssa_tags=True)
+
+    assert input_text.strip() != output_text_do_not_keep_tags.strip()
+    assert input_text.strip() == output_text_keep_tags.strip()

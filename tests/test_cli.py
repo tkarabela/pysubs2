@@ -210,6 +210,26 @@ TEST_SUBSTATION_WITH_ITALICS_SRT_OUTPUT = """
 Italic from <i>override tag</i>
 """
 
+TEST_SRT_KEEP_SSA_TAGS = """
+1
+00:00:00,000 --> 00:01:00,000
+{\\an7}An example subtitle.
+
+2
+00:01:00,000 --> 00:02:00,000
+Subtitle {\\b1}number{\\b0}
+two.
+"""
+
+TEST_SRT_KEEP_UNKNOWN_HTML_TAGS = """
+1
+00:00:00,000 --> 00:00:05,000
+<i>Italic from style</i>
+
+2
+00:00:05,000 --> 00:00:07,000
+Some unsupported <blink>tag</blink>
+"""
 
 def test_srt_clean():
     # see issue #37
@@ -252,3 +272,58 @@ def test_srt_clean_styling():
         with open(outpath, encoding="utf-8") as fp:
             out = fp.read()
             assert out.strip() == TEST_SUBSTATION_WITH_ITALICS_SRT_CLEAN_OUTPUT.strip()
+
+
+def test_srt_keep_ssa_tags():
+    # see issue #48
+    with temp_dir() as dirpath:
+        path = op.join(dirpath, "test.srt")
+
+        # test standard
+        with open(path, "w", encoding="utf-8") as fp:
+            fp.write(TEST_SRT_KEEP_SSA_TAGS)
+
+        cli = pysubs2.cli.Pysubs2CLI()
+        cli(["--to", "srt", path])
+
+        with open(path, encoding="utf-8") as fp:
+            out = fp.read()
+            assert out.strip() != TEST_SRT_KEEP_SSA_TAGS.strip()
+
+        # test keep tags
+        with open(path, "w", encoding="utf-8") as fp:
+            fp.write(TEST_SRT_KEEP_SSA_TAGS)
+
+        cli = pysubs2.cli.Pysubs2CLI()
+        cli(["--to", "srt", "--srt-keep-ssa-tags", path])
+
+        with open(path, encoding="utf-8") as fp:
+            out = fp.read()
+            assert out.strip() == TEST_SRT_KEEP_SSA_TAGS.strip()
+
+
+def test_srt_keep_unknown_html_tags():
+    with temp_dir() as dirpath:
+        path = op.join(dirpath, "test.srt")
+
+        # test standard
+        with open(path, "w", encoding="utf-8") as fp:
+            fp.write(TEST_SRT_KEEP_UNKNOWN_HTML_TAGS)
+
+        cli = pysubs2.cli.Pysubs2CLI()
+        cli(["--to", "srt", path])
+
+        with open(path, encoding="utf-8") as fp:
+            out = fp.read()
+            assert out.strip() != TEST_SRT_KEEP_UNKNOWN_HTML_TAGS.strip()
+
+        # test keep tags
+        with open(path, "w", encoding="utf-8") as fp:
+            fp.write(TEST_SRT_KEEP_UNKNOWN_HTML_TAGS)
+
+        cli = pysubs2.cli.Pysubs2CLI()
+        cli(["--to", "srt", "--srt-keep-unknown-html-tags", path])
+
+        with open(path, encoding="utf-8") as fp:
+            out = fp.read()
+            assert out.strip() == TEST_SRT_KEEP_UNKNOWN_HTML_TAGS.strip()

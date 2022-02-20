@@ -96,28 +96,44 @@ class SubripFormat(FormatBase):
                        for (start, end), lines in zip(timestamps, following_lines)]
 
     @classmethod
-    def to_file(cls, subs, fp, format_, apply_styles=True, **kwargs):
+    def to_file(cls, subs, fp, format_, apply_styles=True, keep_ssa_tags=False, **kwargs):
         """
         See :meth:`pysubs2.formats.FormatBase.to_file()`
 
         Italic, underline and strikeout styling is supported.
 
         Keyword args:
-            apply_styles: If False, do not write any styling.
-
+            apply_styles: If False, do not write any styling (ignore line style
+                and override tags).
+            keep_ssa_tags: If True, instead of trying to convert inline override
+                tags to HTML (as supported by SRT), any inline tags will be passed
+                to output (eg. ``{\\an7}``, which would be otherwise stripped;
+                or ``{\\b1}`` instead of ``<b>``). Whitespace tags ``\\h``, ``\\n``
+                and ``\\N`` will always be converted to whitespace regardless of
+                this option. In the current implementation, enabling this option
+                disables processing of line styles - you will get inline tags but
+                if for example line's style is italic you will not get ``{\\i1}``
+                at the beginning of the line. (Since this option is mostly useful
+                for dealing with non-standard SRT files, ie. both input and output
+                is SRT which doesn't use line styles - this shouldn't be much
+                of an issue in practice.)
         """
-        def prepare_text(text, style):
+        def prepare_text(text: str, style: SSAStyle):
+            text = text.replace(r"\h", " ")
+            text = text.replace(r"\n", "\n")
+            text = text.replace(r"\N", "\n")
+
             body = []
-            for fragment, sty in parse_tags(text, style, subs.styles):
-                fragment = fragment.replace(r"\h", " ")
-                fragment = fragment.replace(r"\n", "\n")
-                fragment = fragment.replace(r"\N", "\n")
-                if apply_styles:
-                    if sty.italic: fragment = "<i>%s</i>" % fragment
-                    if sty.underline: fragment = "<u>%s</u>" % fragment
-                    if sty.strikeout: fragment = "<s>%s</s>" % fragment
-                if sty.drawing: raise ContentNotUsable
-                body.append(fragment)
+            if keep_ssa_tags:
+                body.append(text)
+            else:
+                for fragment, sty in parse_tags(text, style, subs.styles):
+                    if apply_styles:
+                        if sty.italic: fragment = "<i>%s</i>" % fragment
+                        if sty.underline: fragment = "<u>%s</u>" % fragment
+                        if sty.strikeout: fragment = "<s>%s</s>" % fragment
+                    if sty.drawing: raise ContentNotUsable
+                    body.append(fragment)
 
             return re.sub("\n+", "\n", "".join(body).strip())
 

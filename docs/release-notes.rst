@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+**1.4.0** --- released on 2022-02-20
+
+- Added option to keep SubStation override tags in SRT output: ``subs.to_file("subs.srt", keep_ssa_tags=True)`` (Issue #48)
+- Added format-specific extra options to CLI: ``--srt-keep-unknown-html-tags``, ``--srt-keep-ssa-tags``, ``--sub-no-write-fps-declaration``
+
 **1.3.1** --- released on 2021-12-19
 
 - Fixed WebVTT timestamps output, patch by Mathias Köhler (https://github.com/interru)

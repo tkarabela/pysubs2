@@ -32,15 +32,15 @@ CLI parameters
 ::
 
     usage: pysubs2 [-h] [-v] [-f {srt,ass,ssa,microdvd,json,mpl2,tmp,vtt}] [-t {srt,ass,ssa,microdvd,json,mpl2,tmp,vtt}] [--input-enc ENCODING] [--output-enc ENCODING] [--fps FPS] [-o DIR] [--clean] [--verbose]
-                   [--shift TIME | --shift-back TIME | --transform-framerate FPS1 FPS2]
+                   [--shift TIME | --shift-back TIME | --transform-framerate FPS1 FPS2] [--srt-keep-unknown-html-tags] [--srt-keep-ssa-tags] [--sub-no-write-fps-declaration]
                    [FILE [FILE ...]]
 
     The pysubs2 CLI for processing subtitle files.
     https://github.com/tkarabela/pysubs2
 
     positional arguments:
-      FILE                  Input subtitle files. Can be in SubStation Alpha (*.ass, *.ssa), SubRip (*.srt), MicroDVD (*.sub) or other supported format. When no files are specified, pysubs2 will work as a pipe, reading from standard
-                            input and writing to standard output.
+      FILE                  Input subtitle files. Can be in SubStation Alpha (*.ass, *.ssa), SubRip (*.srt), MicroDVD (*.sub) or other supported format. When no files are specified, pysubs2 will work as a pipe, reading from
+                            standard input and writing to standard output.
 
     optional arguments:
       -h, --help            show this help message and exit
@@ -51,18 +51,25 @@ CLI parameters
                             Convert subtitle files to given format. By default, each file is saved in its original format.
       --input-enc ENCODING  Character encoding for input files. By default, UTF-8 is used for both input and output.
       --output-enc ENCODING
-                            Character encoding for output files. By default, it is the same as input encoding. If you wish to convert between encodings, make sure --input-enc is set correctly! Otherwise, your output files will probably
-                            be corrupted. It's a good idea to back up your files or use the -o option.
+                            Character encoding for output files. By default, it is the same as input encoding. If you wish to convert between encodings, make sure --input-enc is set correctly! Otherwise, your output files will
+                            probably be corrupted. It's a good idea to back up your files or use the -o option.
       --fps FPS             This argument specifies framerate for MicroDVD files. By default, framerate is detected from the file. Use this when framerate specification is missing or to force different framerate.
       -o DIR, --output-dir DIR
-                            Use this to save all files to given directory. By default, every file is saved to its parent directory, ie. unless it's being saved in different subtitle format (and thus with different file extension), it
-                            overwrites the original file.
+                            Use this to save all files to given directory. By default, every file is saved to its parent directory, ie. unless it's being saved in different subtitle format (and thus with different file
+                            extension), it overwrites the original file.
       --clean               Attempt to remove non-essential subtitles (eg. karaoke, SSA drawing tags), strip styling information when saving to non-SSA formats
       --verbose             Print misc logging
       --shift TIME          Delay all subtitles by given time amount. Time is specified like this: '1m30s', '0.5s', ...
       --shift-back TIME     The opposite of --shift (subtitles will appear sooner).
       --transform-framerate FPS1 FPS2
                             Multiply all timestamps by FPS1/FPS2 ratio.
+
+    optional arguments (SRT):
+      --srt-keep-unknown-html-tags
+      --srt-keep-ssa-tags
+
+    optional arguments (MicroDVD):
+      --sub-no-write-fps-declaration
 
     usage examples:
       python -m pysubs2 --to srt *.ass
