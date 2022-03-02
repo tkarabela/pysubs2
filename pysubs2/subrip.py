@@ -43,7 +43,7 @@ class SubripFormat(FormatBase):
                 return "srt"
 
     @classmethod
-    def from_file(cls, subs, fp, format_, keep_unknown_html_tags=False, **kwargs):
+    def from_file(cls, subs, fp, format_, keep_html_tags=False, keep_unknown_html_tags=False, **kwargs):
         """
         See :meth:`pysubs2.formats.FormatBase.from_file()`
 
@@ -52,10 +52,17 @@ class SubripFormat(FormatBase):
           - ``<i>``
           - ``<u>``
           - ``<s>``
+          - ``<b>``
 
         Keyword args:
-            keep_unknown_html_tags: If True, HTML tags other than i/u/s will be kept as-is.
-                Otherwise, they will be stripped from input.
+            keep_html_tags: If True, all HTML tags will be kept as-is instead of being
+                converted to SubStation tags (eg. you will get ``<i>example</i>`` instead of ``{\\i1}example{\\i0}``).
+                Setting this to True overrides the ``keep_unknown_html_tags`` option.
+            keep_unknown_html_tags: If True, supported HTML tags will be converted
+                to SubStation tags and any other HTML tags will be kept as-is
+                (eg. you would get ``<blink>example {\\i1}text{\\i0}</blink>``).
+                If False, these other HTML tags will be stripped from output
+                (in the previous example, you would get only ``example {\\i1}text{\\i0}``).
         """
         timestamps = [] # (start, end)
         following_lines = [] # contains lists of lines following each timestamp
@@ -81,13 +88,16 @@ class SubripFormat(FormatBase):
             # Handle the general case.
             s = "".join(lines).strip()
             s = re.sub(r"\n+ *\d+ *$", "", s) # strip number of next subtitle
-            s = re.sub(r"< *i *>", r"{\\i1}", s)
-            s = re.sub(r"< */ *i *>", r"{\\i0}", s)
-            s = re.sub(r"< *s *>", r"{\\s1}", s)
-            s = re.sub(r"< */ *s *>", r"{\\s0}", s)
-            s = re.sub(r"< *u *>", "{\\\\u1}", s) # not r" for Python 2.7 compat, triggers unicodeescape
-            s = re.sub(r"< */ *u *>", "{\\\\u0}", s)
-            if not keep_unknown_html_tags:
+            if not keep_html_tags:
+                s = re.sub(r"< *i *>", r"{\\i1}", s)
+                s = re.sub(r"< */ *i *>", r"{\\i0}", s)
+                s = re.sub(r"< *s *>", r"{\\s1}", s)
+                s = re.sub(r"< */ *s *>", r"{\\s0}", s)
+                s = re.sub(r"< *u *>", r"{\\u1}", s)
+                s = re.sub(r"< */ *u *>", r"{\\u0}", s)
+                s = re.sub(r"< *b *>", r"{\\b1}", s)
+                s = re.sub(r"< */ *b *>", r"{\\b0}", s)
+            if not (keep_html_tags or keep_unknown_html_tags):
                 s = re.sub(r"< */? *[a-zA-Z][^>]*>", "", s) # strip other HTML tags
             s = re.sub(r"\n", r"\\N", s) # convert newlines
             return s

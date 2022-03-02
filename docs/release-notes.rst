@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+**1.4.1** --- released on 2022-03-02
+
+- Added option to keep all HTML tags in SRT input: ``pysubs2.load("subs.srt", keep_html_tags=True)`` (Issue #48)
+- Added support for ``<b>`` tags in SRT parser
+
 **1.4.0** --- released on 2022-02-20
 
 - Added option to keep SubStation override tags in SRT output: ``subs.to_file("subs.srt", keep_ssa_tags=True)`` (Issue #48)

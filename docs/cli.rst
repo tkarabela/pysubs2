@@ -19,6 +19,9 @@ See ``pysubs2 --help`` for usage. Here are some examples::
 For formats other than SubStation, comment and drawing lines will be skipped. If you'd like a bit more
 aggressive skipping, try the ``--clean`` option, which will also try to skip karaoke and duplicated lines.
 
+To handle SRT files with mixed HTML ``<tags>`` and SubStation ``{\tags}``, you can use these options:
+``--srt-keep-html-tags --srt-keep-ssa-tags``.
+
 .. warning::
     
     By default, the script works in-place; original files are overwritten. You can use the ``-o/--output-dir``
@@ -32,7 +35,7 @@ CLI parameters
 ::
 
     usage: pysubs2 [-h] [-v] [-f {srt,ass,ssa,microdvd,json,mpl2,tmp,vtt}] [-t {srt,ass,ssa,microdvd,json,mpl2,tmp,vtt}] [--input-enc ENCODING] [--output-enc ENCODING] [--fps FPS] [-o DIR] [--clean] [--verbose]
-                   [--shift TIME | --shift-back TIME | --transform-framerate FPS1 FPS2] [--srt-keep-unknown-html-tags] [--srt-keep-ssa-tags] [--sub-no-write-fps-declaration]
+                   [--shift TIME | --shift-back TIME | --transform-framerate FPS1 FPS2] [--srt-keep-unknown-html-tags] [--srt-keep-html-tags] [--srt-keep-ssa-tags] [--sub-no-write-fps-declaration]
                    [FILE [FILE ...]]
 
     The pysubs2 CLI for processing subtitle files.
@@ -66,10 +69,13 @@ CLI parameters
 
     optional arguments (SRT):
       --srt-keep-unknown-html-tags
-      --srt-keep-ssa-tags
+                            (input) do not strip unrecognized HTML tags
+      --srt-keep-html-tags  (input) do not convert HTML tags to SubStation internally, this implies --srt-keep-unknown-html-tags
+      --srt-keep-ssa-tags   (output) do not convert/strip SubStation tags for output
 
     optional arguments (MicroDVD):
       --sub-no-write-fps-declaration
+                            (output) omit writing FPS as first zero-length subtitle
 
     usage examples:
       python -m pysubs2 --to srt *.ass

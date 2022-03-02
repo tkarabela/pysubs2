@@ -117,6 +117,20 @@ def test_read_bad_tags():
     subs = SSAFile.from_string(text)
     assert subs.equals(ref)
 
+def test_read_tags():
+    text = dedent("""\
+    1
+    00:00:10,500 --> 00:00:13,000
+    <i>italic <b>bold <u>underline <s>strikethrough</s></u></b></i>
+
+    """)
+
+    ref = SSAFile()
+    ref.append(SSAEvent(start=make_time(s=10.5), end=make_time(s=13), text="{\\i1}italic {\\b1}bold {\\u1}underline {\\s1}strikethrough{\\s0}{\\u0}{\\b0}{\\i0}"))
+
+    subs = SSAFile.from_string(text)
+    assert subs.equals(ref)
+
 def test_empty_subtitles():
     # regression test for issue #11
 
@@ -208,6 +222,27 @@ def test_keep_ssa_tags():
     """)
 
     subs = SSAFile.from_string(input_text)
+
+    output_text_do_not_keep_tags = subs.to_string("srt")
+    output_text_keep_tags = subs.to_string("srt", keep_ssa_tags=True)
+
+    assert input_text.strip() != output_text_do_not_keep_tags.strip()
+    assert input_text.strip() == output_text_keep_tags.strip()
+
+def test_keep_ssa_tags_and_html_tags():
+    # test for issue #48
+    input_text = dedent("""\
+    1
+    00:00:00,000 --> 00:01:00,000
+    {\\an7}An example <i>subtitle</i>.
+
+    2
+    00:01:00,000 --> 00:02:00,000
+    Subtitle {\\b1}number{\\b0}
+    two.
+    """)
+
+    subs = SSAFile.from_string(input_text, keep_html_tags=True)
 
     output_text_do_not_keep_tags = subs.to_string("srt")
     output_text_keep_tags = subs.to_string("srt", keep_ssa_tags=True)

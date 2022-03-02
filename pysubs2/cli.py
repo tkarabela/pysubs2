@@ -103,11 +103,17 @@ class Pysubs2CLI:
                            help="Multiply all timestamps by FPS1/FPS2 ratio.")
 
         extra_srt_options = parser.add_argument_group("optional arguments (SRT)")
-        extra_srt_options.add_argument("--srt-keep-unknown-html-tags", action="store_true")
-        extra_srt_options.add_argument("--srt-keep-ssa-tags", action="store_true")
+        extra_srt_options.add_argument("--srt-keep-unknown-html-tags", action="store_true",
+                                       help="(input) do not strip unrecognized HTML tags")
+        extra_srt_options.add_argument("--srt-keep-html-tags", action="store_true",
+                                       help="(input) do not convert HTML tags to SubStation internally,"
+                                            " this implies --srt-keep-unknown-html-tags")
+        extra_srt_options.add_argument("--srt-keep-ssa-tags", action="store_true",
+                                       help="(output) do not convert/strip SubStation tags for output")
 
         extra_sub_options = parser.add_argument_group("optional arguments (MicroDVD)")
-        extra_sub_options.add_argument("--sub-no-write-fps-declaration", action="store_true")
+        extra_sub_options.add_argument("--sub-no-write-fps-declaration", action="store_true",
+                                       help="(output) omit writing FPS as first zero-length subtitle")
 
     def __call__(self, argv):
         try:
@@ -132,6 +138,8 @@ class Pysubs2CLI:
         extra_output_args = {}
         if args.srt_keep_unknown_html_tags:
             extra_input_args["keep_unknown_html_tags"] = True
+        if args.srt_keep_html_tags:
+            extra_input_args["keep_html_tags"] = True
         if args.srt_keep_ssa_tags:
             extra_output_args["keep_ssa_tags"] = True
         if args.sub_no_write_fps_declaration:

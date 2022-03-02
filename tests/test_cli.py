@@ -221,6 +221,17 @@ Subtitle {\\b1}number{\\b0}
 two.
 """
 
+TEST_SRT_KEEP_SSA_TAGS_MIXED_WITH_HTML = """
+1
+00:00:00,000 --> 00:01:00,000
+{\\an7}An example subtitle.
+
+2
+00:01:00,000 --> 00:02:00,000
+Subtitle <i>number</i>
+two.
+"""
+
 TEST_SRT_KEEP_UNKNOWN_HTML_TAGS = """
 1
 00:00:00,000 --> 00:00:05,000
@@ -300,6 +311,44 @@ def test_srt_keep_ssa_tags():
         with open(path, encoding="utf-8") as fp:
             out = fp.read()
             assert out.strip() == TEST_SRT_KEEP_SSA_TAGS.strip()
+
+def test_srt_keep_ssa_tags_mixed_with_html():
+    # see issue #48
+    with temp_dir() as dirpath:
+        path = op.join(dirpath, "test.srt")
+
+        # test standard - does not pass
+        with open(path, "w", encoding="utf-8") as fp:
+            fp.write(TEST_SRT_KEEP_SSA_TAGS_MIXED_WITH_HTML)
+
+        cli = pysubs2.cli.Pysubs2CLI()
+        cli(["--to", "srt", path])
+
+        with open(path, encoding="utf-8") as fp:
+            out = fp.read()
+            assert out.strip() != TEST_SRT_KEEP_SSA_TAGS_MIXED_WITH_HTML.strip()
+
+        # test juts keep SSA tags - does not pass
+        with open(path, "w", encoding="utf-8") as fp:
+            fp.write(TEST_SRT_KEEP_SSA_TAGS_MIXED_WITH_HTML)
+
+        cli = pysubs2.cli.Pysubs2CLI()
+        cli(["--to", "srt", "--srt-keep-ssa-tags", path])
+
+        with open(path, encoding="utf-8") as fp:
+            out = fp.read()
+            assert out.strip() != TEST_SRT_KEEP_SSA_TAGS_MIXED_WITH_HTML.strip()
+
+        # test keep SSA tags and keep HTML tags - should pass
+        with open(path, "w", encoding="utf-8") as fp:
+            fp.write(TEST_SRT_KEEP_SSA_TAGS_MIXED_WITH_HTML)
+
+        cli = pysubs2.cli.Pysubs2CLI()
+        cli(["--to", "srt", "--srt-keep-ssa-tags", "--srt-keep-html-tags", path])
+
+        with open(path, encoding="utf-8") as fp:
+            out = fp.read()
+            assert out.strip() == TEST_SRT_KEEP_SSA_TAGS_MIXED_WITH_HTML.strip()
 
 
 def test_srt_keep_unknown_html_tags():
