@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+**1.4.2** --- released on 2022-04-08
+
+- Added support for SubStation files with ``H:MM:SS`` timestamps (issue #50)
+- Migrated CI from Travis to CircleCI, added Mypy typecheck to CI
+
 **1.4.1** --- released on 2022-03-02
 
 - Added option to keep all HTML tags in SRT input: ``pysubs2.load("subs.srt", keep_html_tags=True)`` (Issue #48)
