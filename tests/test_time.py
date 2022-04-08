@@ -44,6 +44,23 @@ def test_timestamp():
     assert TIMESTAMP.match(":12:45.67") is None
 
 
+def test_timestamp_short():
+    # proper TMP
+    assert TIMESTAMP_SHORT.match("01:23:45").groups() == ("01", "23", "45")
+
+    # malformed SRT
+    assert TIMESTAMP_SHORT.match("10:23:45.678").groups() == ("10", "23", "45")
+    assert TIMESTAMP_SHORT.match("10:23:45,").groups() == ("10", "23", "45")
+
+    # rejected stamps
+    assert TIMESTAMP_SHORT.match("-1:23:45") is None
+    assert TIMESTAMP_SHORT.match("100:23:45") is None
+    assert TIMESTAMP_SHORT.match("1:23:4") is None
+    assert TIMESTAMP_SHORT.match("1:2:45") is None
+    assert TIMESTAMP_SHORT.match("1::45") is None
+    assert TIMESTAMP_SHORT.match(":12:45") is None
+
+
 def test_timestamp_to_ms():
     # proper SSA
     assert timestamp_to_ms(TIMESTAMP.match("1:23:45.67").groups()) == \
@@ -59,6 +76,10 @@ def test_timestamp_to_ms():
 
     assert timestamp_to_ms(TIMESTAMP.match("1:23:45,6789").groups()) == \
         h2ms(1) + m2ms(23) + s2ms(45) + 678
+
+    # proper TMP
+    assert timestamp_to_ms(TIMESTAMP_SHORT.match("10:23:45").groups()) == \
+           h2ms(10) + m2ms(23) + s2ms(45)
 
 
 def test_times_to_ms():
