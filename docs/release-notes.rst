@@ -1,6 +1,10 @@
 Release Notes
 =============
 
+**1.4.3** --- released on 2022-08-19
+
+- Added support for SubStation files with ``H:M:S.cs`` timestamps, patch by Florian Badie (https://github.com/odrling)
+
 **1.4.2** --- released on 2022-04-08
 
 - Added support for SubStation files with ``H:MM:SS`` timestamps (issue #50)
