@@ -4,7 +4,7 @@ from typing import Optional, List, Tuple, Sequence
 from pysubs2.common import IntOrFloat
 
 #: Pattern that matches both SubStation and SubRip timestamps.
-TIMESTAMP = re.compile(r"(\d{1,2}):(\d{2}):(\d{2})[.,](\d{2,3})")
+TIMESTAMP = re.compile(r"(\d{1,2}):(\d{1,2}):(\d{1,2})[.,](\d{1,3})")
 
 #: Pattern that matches H:MM:SS or HH:MM:SS timestamps.
 TIMESTAMP_SHORT = re.compile(r"(\d{1,2}):(\d{2}):(\d{2})")
