@@ -207,6 +207,26 @@ Dialogue: 0,0:00:23.45,0:01:23.45,Default,,0,0,0,,Correct timestamp line.
 Dialogue: 0,0:00:23,0:01:23,Default,,0,0,0,,Timestamp with missing fractions line.
 """
 
+ASS_WITH_SHORT_MINUTES_SECONDS_REF = """
+[Script Info]
+Title: karaoke
+ScriptType: v4.00+
+WrapStyle: 0
+ScaledBorderAndShadow: yes
+Collisions: Normal
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Default,Arial,20,&H00FFFFFF,&H000088EF,&H00000000,&H00666666,-1,0,0,0,100,100,0,0,1,3,0,8,10,10,10,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+
+Dialogue: 1,0:0:0.04,0:0:4.00,Default,,0000,0000,0000,,{\k100}{\k33}SUN{\k4}{\k42}DAY {\k4}{\k38}MON{\k4}{\k29}DAY {\k4}{\k33}CHU-{\k4}{\k21}CHU {\k4}{\k21}TUES{\k4}{\k50}DAY
+Dialogue: 1,0:0:3.42,0:0:7.88,Default,,0000,0000,0000,,{\k100}{\k4}me{\k4}{\k8}ku{\k4}{\k38}t{\k4}{\k17}te {\k4}{\k17}CA{\k4}{\k33}LEN{\k4}{\k29}DAR {\k4}{\k38}GIRL {\k4}{\k8}wa{\k4}{\k8}ta{\k4}{\k13}shi {\k4}{\k17}no {\k4}{\k13}mai{\k4}{\k8}ni{\k8}{\k33}chi
+"""
+
+
 def build_ref():
     subs = SSAFile()
     subs.info["My Custom Info"] = "Some: Test, String."
@@ -336,3 +356,15 @@ def test_ass_with_missing_fractions_in_timestamp():
     # timestamp with missing fractions
     assert subs[2].start == make_time(0, 0, 23, 0)
     assert subs[2].end == make_time(0, 1, 23, 0)
+
+
+def test_ass_with_short_minutes_seconds_in_timestamp():
+    # see pull request #54
+
+    subs = SSAFile.from_string(ASS_WITH_SHORT_MINUTES_SECONDS_REF)
+
+    assert subs[0].start == make_time(0, 0, 0, 40)
+    assert subs[0].end == make_time(0, 0, 4, 0)
+
+    assert subs[1].start == make_time(0, 0, 3, 420)
+    assert subs[1].end == make_time(0, 0, 7, 880)

@@ -31,15 +31,18 @@ def test_timestamp():
     assert TIMESTAMP.match("1:23:45.678").groups() == ("1", "23", "45", "678")
     assert TIMESTAMP.match("99:99:99,999").groups() == ("99", "99", "99", "999")
     assert TIMESTAMP.match("1:23:45,6789").groups() == ("1", "23", "45", "678") # at most 3 frac digits matched
-    
+
+    # malformed ASS (see pull request #54)
+    assert TIMESTAMP.match("1:23:4.67") .groups() == ("1", "23", "4", "67")
+    assert TIMESTAMP.match("1:2:45.67") .groups() == ("1", "2", "45", "67")
+    assert TIMESTAMP.match("1:2:3.4").groups() == ("1", "2", "3", "4")
+
     # rejected stamps
     assert TIMESTAMP.match("-1:23:45.67") is None
     assert TIMESTAMP.match("12:45:67") is None
     assert TIMESTAMP.match("100:23:45,678") is None
     assert TIMESTAMP.match("1:23:45,") is None
     assert TIMESTAMP.match("1:23:45.") is None
-    assert TIMESTAMP.match("1:23:4.67") is None
-    assert TIMESTAMP.match("1:2:45.67") is None
     assert TIMESTAMP.match("1::45.67") is None
     assert TIMESTAMP.match(":12:45.67") is None
 
