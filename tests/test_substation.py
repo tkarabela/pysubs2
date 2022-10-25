@@ -207,7 +207,7 @@ Dialogue: 0,0:00:23.45,0:01:23.45,Default,,0,0,0,,Correct timestamp line.
 Dialogue: 0,0:00:23,0:01:23,Default,,0,0,0,,Timestamp with missing fractions line.
 """
 
-ASS_WITH_SHORT_MINUTES_SECONDS_REF = """
+ASS_WITH_SHORT_MINUTES_SECONDS_REF = r"""
 [Script Info]
 Title: karaoke
 ScriptType: v4.00+
