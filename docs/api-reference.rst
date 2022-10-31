@@ -96,8 +96,17 @@ Subtitle format API
 .. autoclass:: pysubs2.formats.FormatBase
    :members:
 
+.. _subtitle-format-implementations:
+
 Subtitle format implementations
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Here you can find specific details regarding support of the individual subtitle formats.
+
+.. tip::
+   Some formats support additional keyword parameters in their ``from_file()`` or ``to_file()`` methods.
+   These are used to customize the parser/writer behaviour.
+
 
 .. autoclass:: pysubs2.substation.SubstationFormat
    :members:
