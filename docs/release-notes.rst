@@ -1,6 +1,10 @@
 Release Notes
 =============
 
+**1.4.4** --- released on 2022-11-01
+
+- Added support for Python 3.11 (issue #56)
+
 **1.4.3** --- released on 2022-08-19
 
 - Added support for SubStation files with ``H:M:S.cs`` timestamps, patch by Florian Badie (https://github.com/odrling)
