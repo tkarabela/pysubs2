@@ -102,3 +102,11 @@ JSON
 
 This is JSON-serialized internal representation, which amounts to ASS. Format identifier is ``"json"``.
 Implemented in :class:`pysubs2.jsonformat.JSONFormat`.
+
+OpenAI Whisper
+~~~~~~~~~~~~~~
+
+Transcripts from the `OpenAI Whisper library <https://github.com/openai/whisper>`_
+can be directly imported using :func:`pysubs2.load_from_whisper`. This is only available
+from the Python API. There is no format identifier or class, only this one function
+(since it's not a subtitle format per se, and has no file representation).

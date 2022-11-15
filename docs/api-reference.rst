@@ -5,7 +5,7 @@ API Reference
 -------------------------------
 
 .. automodule:: pysubs2
-   :members: load, make_time, Color, VERSION
+   :members: load, load_from_whisper, make_time, Color, VERSION
 
 ``SSAFile`` --- a subtitle file
 -------------------------------
@@ -128,3 +128,8 @@ Here you can find specific details regarding support of the individual subtitle 
 
 .. autoclass:: pysubs2.jsonformat.JSONFormat
    :members:
+
+Misc functions
+--------------
+
+.. autofunction:: pysubs2.whisper.load_from_whisper
