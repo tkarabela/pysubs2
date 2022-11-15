@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+**1.5.0** --- released on 2022-11-15
+
+- Added support for loading `OpenAI Whisper <https://github.com/openai/whisper>`_ transcription output: ``result = model.transcribe(...); subs = pysubs2.load_from_whisper(result)`` (issue #58)
+- Removed old-style ``setup.py``, moved to declarative ``setup.cfg`` and ``pyproject.toml``
+
 **1.4.4** --- released on 2022-11-01
 
 - Added support for Python 3.11 (issue #56)
