@@ -142,6 +142,14 @@ class SubripFormat(FormatBase):
                         if sty.italic: fragment = "<i>%s</i>" % fragment
                         if sty.underline: fragment = "<u>%s</u>" % fragment
                         if sty.strikeout: fragment = "<s>%s</s>" % fragment
+
+                        # sty.primarycolor and sty.alignment has some value instead of None,
+                        # so comparision to default is needed to omit unnecessary tags...
+                        if sty.primarycolor !=  SSAStyle.DEFAULT_STYLE.primarycolor:
+                            hex_color = "%02x%02x%02x" % (sty.primarycolor.r, sty.primarycolor.g, sty.primarycolor.b)
+                            fragment = f'<font color=#{hex_color}>{fragment}</font>'
+                        if sty.alignment != SSAStyle.DEFAULT_STYLE.alignment:
+                            fragment = "{\\an%s}%s" % (sty.alignment, fragment)
                     if sty.drawing: raise ContentNotUsable
                     body.append(fragment)
 
