@@ -1,18 +1,22 @@
 import logging
 import re
+import warnings
 from numbers import Number
+from typing import Any, Union, Optional, Dict
+
 from .formatbase import FormatBase
 from .ssaevent import SSAEvent
 from .ssastyle import SSAStyle
-from .common import Color
+from .common import Color, Alignment, SSA_ALIGNMENT
 from .time import make_time, ms_to_times, timestamp_to_ms, TIMESTAMP, TIMESTAMP_SHORT
 
-SSA_ALIGNMENT = (1, 2, 3, 9, 10, 11, 5, 6, 7)
 
 def ass_to_ssa_alignment(i):
+    warnings.warn("ass_to_ssa_alignment function is deprecated, please use the Alignment enum", DeprecationWarning)
     return SSA_ALIGNMENT[i-1]
 
 def ssa_to_ass_alignment(i):
+    warnings.warn("ssa_to_ass_alignment function is deprecated, please use the Alignment enum", DeprecationWarning)
     return SSA_ALIGNMENT.index(i) + 1
 
 SECTION_HEADING = re.compile(
@@ -81,7 +85,7 @@ def is_valid_field_content(s: str) -> bool:
     return "\n" not in s and "," not in s
 
 
-def parse_tags(text, style=SSAStyle.DEFAULT_STYLE, styles={}):
+def parse_tags(text: str, style: SSAStyle = SSAStyle.DEFAULT_STYLE, styles: Optional[Dict[str, SSAStyle]] = None):
     """
     Split text into fragments with computed SSAStyles.
     
@@ -98,6 +102,8 @@ def parse_tags(text, style=SSAStyle.DEFAULT_STYLE, styles={}):
     - r (with or without style name)
     
     """
+    if styles is None:
+        styles = {}
     
     fragments = SSAEvent.OVERRIDE_SEQUENCE.split(text)
     if len(fragments) == 1:
@@ -192,11 +198,14 @@ class SubstationFormat(FormatBase):
             elif f == "marked":
                 return v.endswith("1")
             elif f == "alignment":
-                i = int(v)
-                if format_ == "ass":
-                    return i
-                else:
-                    return ssa_to_ass_alignment(i)
+                try:
+                    if format_ == "ass":
+                        return Alignment(int(v))
+                    else:
+                        return Alignment.from_ssa_alignment(int(v))
+                except Exception:
+                    warnings.warn("Failed to parse alignment, using default", RuntimeWarning)
+                    return Alignment.BOTTOM_CENTER
             elif f == "fontname":
                 return v.strip()
             else:
@@ -289,13 +298,22 @@ class SubstationFormat(FormatBase):
             for k, v in subs.aegisub_project.items():
                 print(k, v, sep=": ", file=fp)
 
-        def field_to_string(f, v, line):
+        def field_to_string(f: str, v: Any, line: Union[SSAEvent, SSAStyle]):
             if f in {"start", "end"}:
                 return cls.ms_to_timestamp(v)
             elif f == "marked":
                 return "Marked=%d" % v
-            elif f == "alignment" and format_ == "ssa":
-                return str(ass_to_ssa_alignment(v))
+            elif f == "alignment":
+                if isinstance(v, Alignment):
+                    alignment = v
+                else:
+                    warnings.warn("The 'alignment' attribute of SSAStyle should be an Alignment instance, using plain int is deprecated", DeprecationWarning)
+                    alignment = Alignment(v)
+
+                if format_ == "ssa":
+                    return str(alignment.to_ssa_alignment())
+                else:
+                    return str(alignment.value)
             elif isinstance(v, bool):
                 return "-1" if v else "0"
             elif isinstance(v, (str, Number)):

@@ -3,7 +3,7 @@ from .ssaevent import SSAEvent
 from .ssastyle import SSAStyle
 from . import time, formats, cli, whisper
 from .exceptions import *
-from .common import Color, VERSION
+from .common import Color, Alignment, VERSION
 
 #: Alias for :meth:`SSAFile.load()`.
 load = SSAFile.load

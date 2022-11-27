@@ -42,7 +42,7 @@ class SSAFile(abc.MutableSequence):
         "Collisions": "Normal"
     }
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.events: List[SSAEvent] = []  #: List of :class:`SSAEvent` instances, ie. individual subtitles.
         self.styles: Dict[str, SSAStyle] = {"Default": SSAStyle.DEFAULT_STYLE.copy()}  #: Dict of :class:`SSAStyle` instances.
         self.info: Dict[str, str] = self.DEFAULT_INFO.copy()  #: Dict with script metadata, ie. ``[Script Info]``.

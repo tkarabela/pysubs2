@@ -93,7 +93,13 @@ Let's add one more style, with italics, and let the second subtitle have it.
 
 Notice that the subtitle object (:class:`pysubs2.SSAEvent`) and the style object (:class:`pysubs2.SSAStyle`) aren't really connected. Instead, styles are referred to by their name in the :attr:`pysubs2.SSAFile.styles` dictionary.
 
-.. tip:: This means that renaming a style is a little difficult, because you also have to fix all references to the old name. The :meth:`pysubs2.SSAFile.rename_style()` method does what's needed behind the scenes.
+You can also create a :class:`pysubs2.SSAStyle` directly, specifying the attributes you want, while the other attributes will use values from the default style:
+
+    >>> top_style = pysubs2.SSAStyle(fontsize=10, alignment=pysubs2.Alignment.TOP_CENTER)
+    >>> subs.styles["Top"] = my_style
+    >>> subs[1].style = "Top"
+
+.. tip:: Renaming a style is a little difficult, because you also have to fix all references to the old name. The :meth:`pysubs2.SSAFile.rename_style()` method does what's needed behind the scenes.
 
 Saving subtitle file
 --------------------
