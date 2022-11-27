@@ -4,7 +4,10 @@ pysubs2.formats.subrip tests
 """
 
 from textwrap import dedent
+import pytest
+
 from pysubs2 import SSAFile, SSAEvent, make_time
+from pysubs2.subrip import MAX_REPRESENTABLE_TIME
 
 def test_simple_write():
     subs = SSAFile()
@@ -249,3 +252,11 @@ def test_keep_ssa_tags_and_html_tags():
 
     assert input_text.strip() != output_text_do_not_keep_tags.strip()
     assert input_text.strip() == output_text_keep_tags.strip()
+
+def test_overflow_timestamp_write():
+    ref = SSAFile()
+    ref.append(SSAEvent(start=make_time(h=1000), end=make_time(h=1001), text="test"))
+    with pytest.warns(RuntimeWarning):
+        text = ref.to_string("srt")
+    subs = SSAFile.from_string(text)
+    assert subs[0].end == MAX_REPRESENTABLE_TIME

@@ -1,4 +1,6 @@
 import re
+import warnings
+
 from .formatbase import FormatBase
 from .ssaevent import SSAEvent
 from .ssastyle import SSAStyle
@@ -9,7 +11,7 @@ from .time import ms_to_times, make_time, TIMESTAMP_SHORT, timestamp_to_ms
 TMP_LINE = re.compile(r"(\d{1,2}:\d{2}:\d{2}):(.+)")
 
 #: Largest timestamp allowed in Tmp, ie. 99:59:59.
-MAX_REPRESENTABLE_TIME = make_time(h=100) - 1
+MAX_REPRESENTABLE_TIME = make_time(h=99, m=59, s=59)
 
 
 class TmpFormat(FormatBase):
@@ -18,10 +20,12 @@ class TmpFormat(FormatBase):
     @staticmethod
     def ms_to_timestamp(ms: int) -> str:
         """Convert ms to 'HH:MM:SS'"""
-        # XXX throw on overflow/underflow?
-        if ms < 0: ms = 0
-        if ms > MAX_REPRESENTABLE_TIME: ms = MAX_REPRESENTABLE_TIME
-        h, m, s, ms = ms_to_times(ms)
+        if ms < 0:
+            ms = 0
+        if ms > MAX_REPRESENTABLE_TIME:
+            warnings.warn("Overflow in TMP timestamp, clamping to MAX_REPRESENTABLE_TIME", RuntimeWarning)
+            ms = MAX_REPRESENTABLE_TIME
+        h, m, s, _ = ms_to_times(ms)
         return "%02d:%02d:%02d" % (h, m, s)
 
     @classmethod

@@ -4,7 +4,10 @@ pysubs2.formats.tmp tests
 """
 
 from textwrap import dedent
+import pytest
+
 from pysubs2 import SSAFile, SSAEvent, make_time
+from pysubs2.tmp import MAX_REPRESENTABLE_TIME
 
 def test_simple_write():
     subs = SSAFile()
@@ -95,3 +98,11 @@ def test_write_drawing():
 
     text = subs.to_string("tmp")
     assert text.strip() == ref.strip()
+
+def test_overflow_timestamp_write():
+    ref = SSAFile()
+    ref.append(SSAEvent(start=make_time(h=1000), end=make_time(h=1001), text="test"))
+    with pytest.warns(RuntimeWarning):
+        text = ref.to_string("tmp")
+    subs = SSAFile.from_string(text)
+    assert subs[0].start == MAX_REPRESENTABLE_TIME
