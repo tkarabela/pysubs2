@@ -155,6 +155,34 @@ It's better to save the file as ASS so that style information isn't lost.
     Dialogue: 0,0:00:00.00,0:01:00.00,Default,,0,0,0,,Once upon a time,
     Dialogue: 0,0:01:00.00,0:02:00.00,MyStyle,,0,0,0,,there was a SubRip file\Nwith two subtitles.
 
+Example: Creating top/bottom bilingual subtitles
+------------------------------------------------
+
+Let's say you have English and Italian subtitles for the same movie and you wish to create combined subtitle file with Italian subtitles located at the bottom and English at the top, with different colors
+for each language. The following code creates this combined file and saves it in SubStation Alpha format (this is important, you need to use a format that supports positioning):
+
+::
+
+    import pysubs2
+    from pysubs2 import Alignment, Color, SSAFile, SSAStyle
+
+    subs_en = pysubs2.load("subs.en.srt")  # read input subtitles in SRT format
+    subs_it = pysubs2.load("subs.it.srt")
+
+    subs = SSAFile()
+    subs.styles = {
+        "bottom": SSAStyle(alignment=Alignment.BOTTOM_CENTER, primarycolor=Color(255, 255, 0)),
+        "top": SSAStyle(alignment=Alignment.TOP_CENTER, primarycolor=pysubs2.Color(0, 128, 128)),
+    }
+    for e in subs_it:
+        e.style = "bottom"
+        subs.append(e)
+    for e in subs_en:
+        e.style = "top"
+        subs.append(e)
+
+    subs.save("subs.ass")  # write subtitles in ASS format (supports formatting)
+
 And that's it! Now you should be a little familiar with pysubs2. Have a look at the API Reference to see what's there.
 
 Some final thoughts, in no particular order:
