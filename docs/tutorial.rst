@@ -191,3 +191,4 @@ Some final thoughts, in no particular order:
 - Only basic SubRip/MicroDVD tags are supported.
 - If you are unsure about SubStation, get familiar with the `Aegisub subtitle editor <http://www.aegisub.org/>`_. You can also use `the SubStation specification <http://moodub.free.fr/video/ass-specs.doc>`_ for reference.
 - When working with MicroDVD, you sometimes have to specify the ``fps`` argument when loading and saving. There is a convention to specify framerate in the first subtitle, which pysubs2 handles transparently.
+- If your goal is to create complex effects with frame-perfect timing, you may want to check out the `PyonFX <https://github.com/CoffeeStraw/PyonFX>`_ library which is focused on this use case. `This discussion of timestamps vs. frames <https://github.com/tkarabela/pysubs2/issues/57>`_ may also be relevant to you.

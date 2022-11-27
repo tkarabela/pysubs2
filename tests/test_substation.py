@@ -5,7 +5,7 @@ pysubs2.formats.substation tests
 
 from textwrap import dedent
 from pysubs2 import SSAFile, SSAEvent, SSAStyle, make_time, Color, Alignment
-from pysubs2.substation import color_to_ass_rgba, color_to_ssa_rgb, rgba_to_color
+from pysubs2.substation import color_to_ass_rgba, color_to_ssa_rgb, rgba_to_color, MAX_REPRESENTABLE_TIME
 import pytest
 import sys
 
@@ -339,6 +339,22 @@ def test_negative_timestamp_read():
 
     # negative times are flushed to zero on output
     assert ref.to_string("ass") == subs.to_string("ass")
+
+def test_overflow_timestamp_write():
+    ref = build_ref()
+    ref[0].end = make_time(h=1000)
+    with pytest.warns(RuntimeWarning):
+        text = ref.to_string("ass")
+    subs = SSAFile.from_string(text)
+    assert subs[0].end == MAX_REPRESENTABLE_TIME
+
+def test_centisecond_rounding():
+    ref = SSAFile()
+    ref.append(SSAEvent(start=make_time(h=1, m=1, ms=4), end=make_time(h=1, m=1, ms=5)))
+    text = ref.to_string("ass")
+    subs = SSAFile.from_string(text)
+    assert subs[0].start == make_time(h=1, m=1, ms=0)
+    assert subs[0].end == make_time(h=1, m=1, ms=10)
 
 def test_no_space_after_colon_in_metadata_section():
     # see issue #14

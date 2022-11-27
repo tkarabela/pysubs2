@@ -146,11 +146,18 @@ class SubstationFormat(FormatBase):
     @staticmethod
     def ms_to_timestamp(ms: int) -> str:
         """Convert ms to 'H:MM:SS.cc'"""
-        # XXX throw on overflow/underflow?
-        if ms < 0: ms = 0
-        if ms > MAX_REPRESENTABLE_TIME: ms = MAX_REPRESENTABLE_TIME
+        if ms < 0:
+            ms = 0
+        if ms > MAX_REPRESENTABLE_TIME:
+            warnings.warn("Overflow in SubStation timestamp, clamping to MAX_REPRESENTABLE_TIME", RuntimeWarning)
+            ms = MAX_REPRESENTABLE_TIME
+
         h, m, s, ms = ms_to_times(ms)
-        return "%01d:%02d:%02d.%02d" % (h, m, s, ms//10)
+
+        # Aegisub does rounding, see https://github.com/Aegisub/Aegisub/blob/6f546951b4f004da16ce19ba638bf3eedefb9f31/libaegisub/include/libaegisub/ass/time.h#L32
+        cs = ((ms + 5) - (ms + 5) % 10) // 10
+
+        return "%01d:%02d:%02d.%02d" % (h, m, s, cs)
 
     @classmethod
     def guess_format(cls, text):
