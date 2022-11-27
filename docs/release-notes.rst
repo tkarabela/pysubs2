@@ -1,6 +1,13 @@
 Release Notes
 =============
 
+**1.6.0** --- released on 2022-11-28
+
+- Basic support for ``[Graphics]`` in SubStation files (Issue #59)
+- SubStation now outputs timestamps with properly rounded centiseconds, instead of always rounding down (Issue #57)
+- ``SSAStyle.alignment`` now uses new ``pysubs2.Alignment`` enum type instead of ``int`` (eg. ``Alignment.TOP_CENTER`` instead of ``7``). Support for integers is retained.
+- The library will now issue ``RuntimeWarning`` when saving a timestamp that is too large to be represented in given format (it will be clamped to its maximum legal value).
+
 **1.5.0** --- released on 2022-11-15
 
 - Added support for loading `OpenAI Whisper <https://github.com/openai/whisper>`_ transcription output: ``result = model.transcribe(...); subs = pysubs2.load_from_whisper(result)`` (issue #58)
