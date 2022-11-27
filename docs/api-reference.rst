@@ -5,7 +5,9 @@ API Reference
 -------------------------------
 
 .. automodule:: pysubs2
-   :members: load, load_from_whisper, make_time, Color, Alignment, VERSION
+   :members: load, load_from_whisper, make_time, Color, VERSION
+
+.. autoenum:: pysubs2.Alignment
 
 ``SSAFile`` --- a subtitle file
 -------------------------------
@@ -110,8 +112,6 @@ Here you can find specific details regarding support of the individual subtitle 
 
 .. autoclass:: pysubs2.substation.SubstationFormat
    :members:
-
-.. autofunction:: pysubs2.substation.parse_tags
 
 .. autoclass:: pysubs2.subrip.SubripFormat
    :members:

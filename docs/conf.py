@@ -33,6 +33,7 @@ import pysubs2
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.napoleon',
+    'enum_tools.autoenum',
     #'sphinxcontrib.programoutput',
 ]
 
