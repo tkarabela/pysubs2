@@ -4,6 +4,7 @@ import warnings
 from numbers import Number
 from typing import Any, Union, Optional, Dict
 
+import pysubs2
 from .formatbase import FormatBase
 from .ssaevent import SSAEvent
 from .ssastyle import SSAStyle
@@ -26,7 +27,7 @@ SECTION_HEADING = re.compile(
     r"]"  # close square bracket
 )
 
-FONT_FILE_HEADING = re.compile(r"fontname:\s+(\S+)")
+ATTACHMENT_FILE_HEADING = re.compile(r"(fontname|filename):\s+(?P<name>\S+)")
 
 STYLE_FORMAT_LINE = {
     "ass": "Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic,"
@@ -168,7 +169,7 @@ class SubstationFormat(FormatBase):
             return "ssa"
 
     @classmethod
-    def from_file(cls, subs, fp, format_, **kwargs):
+    def from_file(cls, subs: "pysubs2.SSAFile", fp, format_, **kwargs):
         """See :meth:`pysubs2.formats.FormatBase.from_file()`"""
 
         def string_to_field(f: str, v: str):
@@ -222,12 +223,15 @@ class SubstationFormat(FormatBase):
         subs.aegisub_project.clear()
         subs.styles.clear()
         subs.fonts_opaque.clear()
+        subs.graphics_opaque.clear()
 
         inside_info_section = False
         inside_aegisub_section = False
         inside_font_section = False
-        current_font_name = None
-        current_font_lines_buffer = []
+        inside_graphic_section = False
+        current_attachment_name = None
+        current_attachment_lines_buffer = []
+        current_attachment_is_font = None
 
         for lineno, line in enumerate(fp, 1):
             line = line.strip()
@@ -237,6 +241,7 @@ class SubstationFormat(FormatBase):
                 inside_info_section = "Info" in line
                 inside_aegisub_section = "Aegisub" in line
                 inside_font_section = "Fonts" in line
+                inside_graphic_section = "Graphics" in line
             elif inside_info_section or inside_aegisub_section:
                 if line.startswith(";"): continue # skip comments
                 try:
@@ -247,24 +252,30 @@ class SubstationFormat(FormatBase):
                         subs.aegisub_project[k] = v.strip()
                 except ValueError:
                     pass
-            elif inside_font_section:
-                m = FONT_FILE_HEADING.match(line)
+            elif inside_font_section or inside_graphic_section:
+                m = ATTACHMENT_FILE_HEADING.match(line)
+                current_attachment_is_font = inside_font_section
 
-                if current_font_name and (m or not line):
-                    # flush last font on newline or new font name
-                    font_data = current_font_lines_buffer[:]
-                    subs.fonts_opaque[current_font_name] = font_data
-                    logging.debug("at line %d: finished font definition %s", lineno, current_font_name)
-                    current_font_lines_buffer.clear()
-                    current_font_name = None
+                if current_attachment_name and (m or not line):
+                    # flush last font/picture on newline or new font/picture name
+                    attachment_data = current_attachment_lines_buffer[:]
+                    if inside_font_section:
+                        subs.fonts_opaque[current_attachment_name] = attachment_data
+                    elif inside_graphic_section:
+                        subs.graphics_opaque[current_attachment_name] = attachment_data
+                    else:
+                        raise NotImplementedError("Bad attachment section, expected [Fonts] or [Graphics]")
+                    logging.debug("at line %d: finished attachment definition %s", lineno, current_attachment_name)
+                    current_attachment_lines_buffer.clear()
+                    current_attachment_name = None
 
                 if m:
-                    # start new font
-                    font_name = m.group(1)
-                    current_font_name = font_name
+                    # start new font/picture
+                    attachment_name = m.group("name")
+                    current_attachment_name = attachment_name
                 elif line:
                     # add non-empty line to current buffer
-                    current_font_lines_buffer.append(line)
+                    current_attachment_lines_buffer.append(line)
             elif line.startswith("Style:"):
                 _, rest = line.split(":", 1)
                 buf = rest.strip().split(",")
@@ -280,17 +291,22 @@ class SubstationFormat(FormatBase):
                 ev = SSAEvent(**field_dict)
                 subs.events.append(ev)
 
-        # cleanup fonts
-        if current_font_name:
+        # cleanup fonts/pictures
+        if current_attachment_name:
             # flush last font on EOF or new section w/o newline
-            font_data = current_font_lines_buffer[:]
-            subs.fonts_opaque[current_font_name] = font_data
-            logging.debug("at EOF: finished font definition %s", current_font_name)
-            current_font_lines_buffer.clear()
-            current_font_name = None
+            attachment_data = current_attachment_lines_buffer[:]
+
+            if current_attachment_is_font:
+                subs.fonts_opaque[current_attachment_name] = attachment_data
+            else:
+                subs.graphics_opaque[current_attachment_name] = attachment_data
+
+            logging.debug("at EOF: finished attachment definition %s", current_attachment_name)
+            current_attachment_lines_buffer.clear()
+            current_attachment_name = None
 
     @classmethod
-    def to_file(cls, subs, fp, format_, header_notice=NOTICE, **kwargs):
+    def to_file(cls, subs: "pysubs2.SSAFile", fp, format_, header_notice=NOTICE, **kwargs):
         """See :meth:`pysubs2.formats.FormatBase.to_file()`"""
         print("[Script Info]", file=fp)
         for line in header_notice.splitlines(False):
@@ -344,6 +360,14 @@ class SubstationFormat(FormatBase):
             for font_name, font_lines in sorted(subs.fonts_opaque.items()):
                 print("fontname: {}".format(font_name), file=fp)
                 for line in font_lines:
+                    print(line, file=fp)
+                print(file=fp)
+
+        if subs.graphics_opaque:
+            print("\n[Graphics]", file=fp)
+            for picture_name, picture_lines in sorted(subs.graphics_opaque.items()):
+                print("filename: {}".format(picture_name), file=fp)
+                for line in picture_lines:
                     print(line, file=fp)
                 print(file=fp)
 

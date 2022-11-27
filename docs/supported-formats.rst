@@ -32,6 +32,9 @@ Implemented in :class:`pysubs2.substation.SubstationFormat`.
    For simplicity and speed, the data is stored in opaque form (not decoded).
    If you'd like to extract/embed fonts via pysubs2, feel free to open an issue on GitHub.
 
+.. versionchanged:: 1.6.0
+   Added support for embedded graphics.
+
 Time-based Formats
 ------------------
 

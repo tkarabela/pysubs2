@@ -48,6 +48,7 @@ class SSAFile(abc.MutableSequence):
         self.info: Dict[str, str] = self.DEFAULT_INFO.copy()  #: Dict with script metadata, ie. ``[Script Info]``.
         self.aegisub_project: Dict[str, str] = {}  #: Dict with Aegisub project, ie. ``[Aegisub Project Garbage]``.
         self.fonts_opaque: Dict[str, Any] = {}  #: Dict with embedded fonts, ie. ``[Fonts]``.
+        self.graphics_opaque: Dict[str, Any] = {}  #: Dict with embedded images, ie. ``[Graphics]``.
         self.fps: Optional[float] = None  #: Framerate used when reading the file, if applicable.
         self.format: Optional[str] = None  #: Format of source subtitle file, if applicable, eg. ``"srt"``.
 
@@ -414,6 +415,18 @@ class SSAFile(abc.MutableSequence):
                     return False
                 elif self_font != other_font:
                     logging.debug("fonts_opaque %r differs (self=%r, other=%r)", key, self_font, other_font)
+                    return False
+
+            for key in set(chain(self.graphics_opaque.keys(), other.graphics_opaque.keys())):
+                self_image, other_image = self.graphics_opaque.get(key), other.graphics_opaque.get(key)
+                if self_image is None:
+                    logging.debug("%r missing in self.graphics_opaque", key)
+                    return False
+                elif other_image is None:
+                    logging.debug("%r missing in other.graphics_opaque", key)
+                    return False
+                elif self_image != other_image:
+                    logging.debug("graphics_opaque %r differs (self=%r, other=%r)", key, self_image, other_image)
                     return False
 
             for key in set(chain(self.styles.keys(), other.styles.keys())):
