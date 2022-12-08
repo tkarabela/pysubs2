@@ -283,7 +283,7 @@ class SSAFile(MutableSequence):
 
         """
         if in_fps <= 0 or out_fps <= 0:
-            raise ValueError("Framerates must be positive, cannot transform %f -> %f" % (in_fps, out_fps))
+            raise ValueError(f"Framerates must be positive, cannot transform {in_fps} -> {out_fps}")
 
         ratio = in_fps / out_fps
         for line in self:
@@ -309,11 +309,11 @@ class SSAFile(MutableSequence):
 
         """
         if old_name not in self.styles:
-            raise KeyError("Style %r not found" % old_name)
+            raise KeyError(f"Style {old_name!r} not found")
         if new_name in self.styles:
-            raise ValueError("There is already a style called %r" % new_name)
+            raise ValueError(f"There is already a style called {new_name!r}")
         if not is_valid_field_content(new_name):
-            raise ValueError("%r is not a valid name" % new_name)
+            raise ValueError(f"{new_name!r} is not a valid name")
 
         self.styles[new_name] = self.styles[old_name]
         del self.styles[old_name]

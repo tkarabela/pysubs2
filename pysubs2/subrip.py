@@ -25,7 +25,7 @@ class SubripFormat(FormatBase):
             warnings.warn("Overflow in SubRip timestamp, clamping to MAX_REPRESENTABLE_TIME", RuntimeWarning)
             ms = MAX_REPRESENTABLE_TIME
         h, m, s, ms = ms_to_times(ms)
-        return "%02d:%02d:%02d,%03d" % (h, m, s, ms)
+        return f"{h:02d}:{m:02d}:{s:02d},{ms:03d}"
 
     @staticmethod
     def timestamp_to_ms(groups):
@@ -143,9 +143,9 @@ class SubripFormat(FormatBase):
             else:
                 for fragment, sty in parse_tags(text, style, subs.styles):
                     if apply_styles:
-                        if sty.italic: fragment = "<i>%s</i>" % fragment
-                        if sty.underline: fragment = "<u>%s</u>" % fragment
-                        if sty.strikeout: fragment = "<s>%s</s>" % fragment
+                        if sty.italic: fragment = f"<i>{fragment}</i>"
+                        if sty.underline: fragment = f"<u>{fragment}</u>"
+                        if sty.strikeout: fragment = f"<s>{fragment}</s>"
                     if sty.drawing: raise ContentNotUsable
                     body.append(fragment)
 
@@ -162,7 +162,7 @@ class SubripFormat(FormatBase):
             except ContentNotUsable:
                 continue
 
-            print("%d" % lineno, file=fp) # Python 2.7 compat
+            print(lineno, file=fp)
             print(start, "-->", end, file=fp)
             print(text, end="\n\n", file=fp)
             lineno += 1

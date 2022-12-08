@@ -48,9 +48,9 @@ class MicroDVDFormat(FormatBase):
             def prepare_text(text):
                 text = text.replace("|", r"\N")
 
-                def style_replacer(match):
+                def style_replacer(match: re.Match) -> str:
                     tags = [c for c in "biu" if c in match.group(0)]
-                    return "{%s}" % "".join(r"\%s1" % c for c in tags)
+                    return "{%s}" % "".join(f"\\{c}1" for c in tags)
 
                 text = re.sub(r"\{[Yy]:[^}]+\}", style_replacer, text)
                 text = re.sub(r"\{[Ff]:([^}]+)\}", r"{\\fn\1}", text)

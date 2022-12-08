@@ -59,10 +59,10 @@ EVENT_FIELDS = {
 MAX_REPRESENTABLE_TIME = make_time(h=10) - 10
 
 def color_to_ass_rgba(c: Color) -> str:
-    return "&H%08X" % ((c.a << 24) | (c.b << 16) | (c.g << 8) | c.r)
+    return f"&H{((c.a << 24) | (c.b << 16) | (c.g << 8) | c.r):08X}"
 
 def color_to_ssa_rgb(c: Color) -> str:
-    return "%d" % ((c.b << 16) | (c.g << 8) | c.r)
+    return f"{((c.b << 16) | (c.g << 8) | c.r)}"
 
 def rgba_to_color(s: str) -> Color:
     if s[0] == '&':
@@ -159,7 +159,7 @@ class SubstationFormat(FormatBase):
         # Aegisub does rounding, see https://github.com/Aegisub/Aegisub/blob/6f546951b4f004da16ce19ba638bf3eedefb9f31/libaegisub/include/libaegisub/ass/time.h#L32
         cs = ((ms + 5) - (ms + 5) % 10) // 10
 
-        return "%01d:%02d:%02d.%02d" % (h, m, s, cs)
+        return f"{h:01d}:{m:02d}:{s:02d}.{cs:02d}"
 
     @classmethod
     def guess_format(cls, text):
@@ -192,7 +192,7 @@ class SubstationFormat(FormatBase):
                 if m is None:
                     m = TIMESTAMP_SHORT.match(v)
                     if m is None:
-                        raise ValueError("Failed to parse timestamp: {!r}".format(v))
+                        raise ValueError(f"Failed to parse timestamp: {v!r}")
 
                 return sign * timestamp_to_ms(m.groups())
             elif "color" in f:
@@ -326,7 +326,7 @@ class SubstationFormat(FormatBase):
             if f in {"start", "end"}:
                 return cls.ms_to_timestamp(v)
             elif f == "marked":
-                return "Marked=%d" % v
+                return f"Marked={v:d}"
             elif f == "alignment":
                 if isinstance(v, Alignment):
                     alignment = v
@@ -348,18 +348,18 @@ class SubstationFormat(FormatBase):
                 else:
                     return color_to_ssa_rgb(v)
             else:
-                raise TypeError("Unexpected type when writing a SubStation field {!r} for line {!r}".format(f, line))
+                raise TypeError(f"Unexpected type when writing a SubStation field {f!r} for line {line!r}")
 
         print("\n[V4+ Styles]" if format_ == "ass" else "\n[V4 Styles]", file=fp)
         print(STYLE_FORMAT_LINE[format_], file=fp)
         for name, sty in subs.styles.items():
             fields = [field_to_string(f, getattr(sty, f), sty) for f in STYLE_FIELDS[format_]]
-            print("Style: %s" % name, *fields, sep=",", file=fp)
+            print(f"Style: {name}", *fields, sep=",", file=fp)
 
         if subs.fonts_opaque:
             print("\n[Fonts]", file=fp)
             for font_name, font_lines in sorted(subs.fonts_opaque.items()):
-                print("fontname: {}".format(font_name), file=fp)
+                print(f"fontname: {font_name}", file=fp)
                 for line in font_lines:
                     print(line, file=fp)
                 print(file=fp)
@@ -367,7 +367,7 @@ class SubstationFormat(FormatBase):
         if subs.graphics_opaque:
             print("\n[Graphics]", file=fp)
             for picture_name, picture_lines in sorted(subs.graphics_opaque.items()):
-                print("filename: {}".format(picture_name), file=fp)
+                print(f"filename: {picture_name}", file=fp)
                 for line in picture_lines:
                     print(line, file=fp)
                 print(file=fp)

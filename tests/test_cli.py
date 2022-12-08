@@ -54,7 +54,7 @@ def test_srt_to_microdvd_subprocess_pipe():
 def test_srt_to_microdvd_multiple_files():
     N = 3
     with temp_dir() as dirpath:
-        inpaths = [op.join(dirpath, "test-%d.srt" % i) for i in range(N)]
+        inpaths = [op.join(dirpath, f"test-{i}.srt") for i in range(N)]
         for inpath in inpaths:
             with open(inpath, "w", encoding="utf-8") as fp:
                 fp.write(TEST_SRT_FILE)
