@@ -5,6 +5,9 @@ pysubs2
 .. image:: https://img.shields.io/github/workflow/status/tkarabela/pysubs2/CI
     :alt: pysubs2 build master branch
     :target: https://github.com/tkarabela/pysubs2/actions
+.. image:: https://img.shields.io/codecov/c/github/tkarabela/pysubs2
+    :alt: pysubs2 test code coverage
+    :target: https://app.codecov.io/github/tkarabela/pysubs2
 .. image:: http://www.mypy-lang.org/static/mypy_badge.svg
     :alt: MyPy checked
     :target: https://github.com/tkarabela/pysubs2/actions
