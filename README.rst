@@ -2,12 +2,12 @@ pysubs2
 =======
 
 
-.. image:: https://circleci.com/gh/tkarabela/pysubs2.svg?style=shield
+.. image:: https://img.shields.io/github/workflow/status/tkarabela/pysubs2/CI
     :alt: pysubs2 build master branch
-    :target: https://circleci.com/gh/tkarabela/pysubs2
+    :target: https://github.com/tkarabela/pysubs2/actions
 .. image:: http://www.mypy-lang.org/static/mypy_badge.svg
     :alt: MyPy checked
-    :target: https://circleci.com/gh/tkarabela/pysubs2
+    :target: https://github.com/tkarabela/pysubs2/actions
 .. image:: https://img.shields.io/pypi/v/pysubs2.svg?style=flat-square
     :alt: PyPI - Version
     :target: https://pypi.org/project/pysubs2/
