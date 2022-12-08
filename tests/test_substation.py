@@ -408,6 +408,7 @@ def test_ass_with_short_minutes_seconds_in_timestamp():
     assert subs[1].end == make_time(0, 0, 7, 880)
 
 
+@pytest.mark.filterwarnings("ignore:.*should be an Alignment instance.*:DeprecationWarning")
 def test_alignment_given_as_integer():
     subs = SSAFile()
     subs.info["My Custom Info"] = "Some: Test, String."
