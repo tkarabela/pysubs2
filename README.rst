@@ -48,5 +48,6 @@ There is a small CLI tool for batch conversion and retiming.
     subs.save("my_subtitles_edited.ass")
 
 To learn more, please `see the documentation <http://pysubs2.readthedocs.io>`_.
+If you'd like to contribute, see `CONTRIBUTING.md <CONTRIBUTING.md>`_.
 
 pysubs2 is licensed under the MIT license (see `LICENSE.txt <LICENSE.txt>`_).
