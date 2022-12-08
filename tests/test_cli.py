@@ -1,5 +1,6 @@
 import pysubs2
 import tempfile
+import subprocess
 import shutil
 import os.path as op
 from contextlib import contextmanager
@@ -44,6 +45,11 @@ def test_srt_to_microdvd():
         with open(outpath, encoding="utf-8") as fp:
             out = fp.read()
             assert out == TEST_MICRODVD_FILE
+
+def test_srt_to_microdvd_subprocess_pipe():
+    cmd = ["python", "-m", "pysubs2", "--to", "microdvd", "--fps", "1000"]
+    output = subprocess.check_output(cmd, input=TEST_SRT_FILE, text=True)
+    assert output.strip() == TEST_MICRODVD_FILE.strip()
 
 def test_srt_to_microdvd_multiple_files():
     N = 3

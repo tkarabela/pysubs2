@@ -110,15 +110,16 @@ def parse_tags(text: str, style: SSAStyle = SSAStyle.DEFAULT_STYLE, styles: Opti
     if len(fragments) == 1:
         return [(text, style)]
     
-    def apply_overrides(all_overrides):
+    def apply_overrides(all_overrides: str) -> SSAStyle:
         s = style.copy()
         for tag in re.findall(r"\\[ibusp][0-9]|\\r[a-zA-Z_0-9 ]*", all_overrides):
             if tag == r"\r":
                 s = style.copy() # reset to original line style
             elif tag.startswith(r"\r"):
                 name = tag[2:]
-                if name in styles:
-                    s = styles[name].copy() # reset to named style
+                if name in styles:  # type: ignore[operator]
+                    # reset to named style
+                    s = styles[name].copy()  # type: ignore[index]
             else:
                 if "i" in tag: s.italic = "1" in tag
                 elif "b" in tag: s.bold = "1" in tag

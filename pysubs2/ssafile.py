@@ -1,7 +1,4 @@
-try:
-    from collections import abc
-except ImportError:
-    import collections as abc  # type: ignore[no-redef]
+from collections.abc import MutableSequence
 import io
 from io import open
 from itertools import chain
@@ -17,8 +14,7 @@ from .ssastyle import SSAStyle
 from .time import make_time, ms_to_str
 
 
-# TODO fix mypy errors regarding SSAFile
-class SSAFile(abc.MutableSequence):
+class SSAFile(MutableSequence):
     """
     Subtitle file in SubStation Alpha format.
 

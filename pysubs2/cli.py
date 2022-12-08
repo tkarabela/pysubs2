@@ -20,6 +20,7 @@ def positive_float(s: str) -> float:
         raise argparse.ArgumentTypeError("%r is not a positive number" % s)
     return x
 
+
 def character_encoding(s: str) -> str:
     try:
         codecs.lookup(s)

@@ -82,7 +82,7 @@ class MicroDVDFormat(FormatBase):
             raise UnknownFPSError("Framerate must be specified when writing MicroDVD.")
         to_frames = partial(ms_to_frames, fps=fps)
 
-        def is_entirely_italic(line):
+        def is_entirely_italic(line: SSAEvent) -> bool:
             style = subs.styles.get(line.style, SSAStyle.DEFAULT_STYLE)
             for fragment, sty in parse_tags(line.text, style, subs.styles):
                 fragment = fragment.replace(r"\h", " ")
