@@ -1,7 +1,9 @@
 from collections import namedtuple
+from numbers import Number
 import re
-from typing import Optional, List, Tuple, Sequence
+from typing import Optional, Tuple, Sequence, Union
 from pysubs2.common import IntOrFloat
+from .timestamps import Timestamps
 
 #: Pattern that matches both SubStation and SubRip timestamps.
 TIMESTAMP = re.compile(r"(\d{1,2}):(\d{1,2}):(\d{1,2})[.,](\d{1,3})")
@@ -13,7 +15,7 @@ Times = namedtuple("Times", ["h", "m", "s", "ms"])
 
 
 def make_time(h: IntOrFloat=0, m: IntOrFloat=0, s: IntOrFloat=0, ms: IntOrFloat=0,
-              frames: Optional[int]=None, fps: Optional[float]=None):
+              frames: Optional[int]=None, fps: Optional[Union[Number,Timestamps]]=None):
     """
     Convert time to milliseconds.
 
@@ -33,7 +35,13 @@ def make_time(h: IntOrFloat=0, m: IntOrFloat=0, s: IntOrFloat=0, ms: IntOrFloat=
     if frames is None and fps is None:
         return times_to_ms(h, m, s, ms)
     elif frames is not None and fps is not None:
-        return frames_to_ms(frames, fps)
+        if isinstance(fps, Number):
+            timestamps = Timestamps.from_fps(fps)
+        elif isinstance(fps, Timestamps):
+            timestamps = fps
+        
+        # TODO Correct this line
+        return timestamps.frames_to_ms(frames, "FORMAT ???", START_OR_END)
     else:
         raise ValueError("Both fps and frames must be specified")
 
@@ -80,48 +88,6 @@ def times_to_ms(h: IntOrFloat=0, m: IntOrFloat=0, s: IntOrFloat=0, ms: IntOrFloa
     ms += m * 60000
     ms += h * 3600000
     return int(round(ms))
-
-
-def frames_to_ms(frames: int, fps: float) -> int:
-    """
-    Convert frame-based duration to milliseconds.
-    
-    Arguments:
-        frames: Number of frames (should be int).
-        fps: Framerate (must be a positive number, eg. 23.976).
-    
-    Returns:
-        Number of milliseconds (rounded to int).
-        
-    Raises:
-        ValueError: fps was negative or zero.
-    
-    """
-    if fps <= 0:
-        raise ValueError(f"Framerate must be a positive number ({fps}).")
-
-    return int(round(frames * (1000 / fps)))
-
-
-def ms_to_frames(ms: IntOrFloat, fps: float) -> int:
-    """
-    Convert milliseconds to number of frames.
-    
-    Arguments:
-        ms: Number of milliseconds (may be int, float or other numeric class).
-        fps: Framerate (must be a positive number, eg. 23.976).
-    
-    Returns:
-        Number of frames (int).
-        
-    Raises:
-        ValueError: fps was negative or zero.
-    
-    """
-    if fps <= 0:
-        raise ValueError(f"Framerate must be a positive number ({fps}).")
-
-    return int(round((ms / 1000) * fps))
 
 
 def ms_to_times(ms: IntOrFloat) -> Tuple[int, int, int, int]:

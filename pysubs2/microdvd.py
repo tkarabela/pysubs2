@@ -1,11 +1,12 @@
-from functools import partial
+from numbers import Number
+from typing import Union
 import re
 from .exceptions import UnknownFPSError
 from .ssaevent import SSAEvent
 from .ssastyle import SSAStyle
 from .formatbase import FormatBase
 from .substation import parse_tags
-from .time import ms_to_frames, frames_to_ms
+from .timestamps import Timestamps, TimeType
 
 #: Matches a MicroDVD line.
 MICRODVD_LINE = re.compile(r" *\{ *(\d+) *\} *\{ *(\d+) *\}(.+)")
@@ -20,8 +21,13 @@ class MicroDVDFormat(FormatBase):
             return "microdvd"
 
     @classmethod
-    def from_file(cls, subs, fp, format_, fps=None, **kwargs):
+    def from_file(cls, subs, fp, format_, fps:Union[None,Number,Timestamps] = None, **kwargs):
         """See :meth:`pysubs2.formats.FormatBase.from_file()`"""
+        if isinstance(fps, Number):
+            timestamps = Timestamps.from_fps(fps)
+        elif isinstance(fps, Timestamps):
+            timestamps = fps
+
         for line in fp:
             match = MICRODVD_LINE.match(line)
             if not match:
@@ -37,13 +43,17 @@ class MicroDVDFormat(FormatBase):
                 try:
                     fps = float(text)
                     subs.fps = fps
+                    timestamps = Timestamps.from_fps(subs.fps)
                     continue
                 except ValueError:
                     raise UnknownFPSError("Framerate was not specified and "
                                           "cannot be read from "
                                           "the MicroDVD file.")
 
-            start, end = map(partial(frames_to_ms, fps=fps), (fstart, fend))
+            # I chose the format SRT, but it could be anyone.
+            # SRT simply has a precision in milliseconds which can be better.
+            start = timestamps.frames_to_ms(fstart, "srt", TimeType.START)
+            end = timestamps.frames_to_ms(fend, "srt", TimeType.END)
 
             def prepare_text(text):
                 text = text.replace("|", r"\N")
@@ -63,7 +73,7 @@ class MicroDVDFormat(FormatBase):
             subs.append(ev)
 
     @classmethod
-    def to_file(cls, subs, fp, format_, fps=None, write_fps_declaration=True, apply_styles=True, **kwargs):
+    def to_file(cls, subs, fp, format_, fps:Union[None,Number,Timestamps] = None, write_fps_declaration=True, apply_styles=True, **kwargs):
         """
         See :meth:`pysubs2.formats.FormatBase.to_file()`
 
@@ -80,7 +90,10 @@ class MicroDVDFormat(FormatBase):
 
         if fps is None:
             raise UnknownFPSError("Framerate must be specified when writing MicroDVD.")
-        to_frames = partial(ms_to_frames, fps=fps)
+        elif isinstance(fps, Number):
+            timestamps = Timestamps.from_fps(fps)
+        elif isinstance(fps, Timestamps):
+            timestamps = fps
 
         def is_entirely_italic(line: SSAEvent) -> bool:
             style = subs.styles.get(line.style, SSAStyle.DEFAULT_STYLE)
@@ -104,7 +117,8 @@ class MicroDVDFormat(FormatBase):
             if apply_styles and is_entirely_italic(line):
                 text = "{Y:i}" + text
 
-            start, end = map(to_frames, (line.start, line.end))
+            start = timestamps.ms_to_frames(line.start, TimeType.START)
+            end = timestamps.ms_to_frames(line.end, TimeType.END)
 
             # XXX warn on underflow?
             if start < 0: start = 0
