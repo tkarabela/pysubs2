@@ -4,6 +4,7 @@ from .ssastyle import SSAStyle
 from . import time, formats, cli, whisper
 from .exceptions import *
 from .common import Color, Alignment, VERSION
+from .timestamps import Timestamps, TimeType
 
 #: Alias for :meth:`SSAFile.load()`.
 load = SSAFile.load
