@@ -52,8 +52,8 @@ class MicroDVDFormat(FormatBase):
 
             # I chose the format SRT, but it could be anyone.
             # SRT simply has a precision in milliseconds which can be better.
-            start = timestamps.frames_to_ms(fstart, "srt", TimeType.START)
-            end = timestamps.frames_to_ms(fend, "srt", TimeType.END)
+            start = timestamps.frames_to_ms(fstart, TimeType.START)
+            end = timestamps.frames_to_ms(fend, TimeType.END)
 
             def prepare_text(text):
                 text = text.replace("|", r"\N")

@@ -41,7 +41,7 @@ def make_time(h: IntOrFloat=0, m: IntOrFloat=0, s: IntOrFloat=0, ms: IntOrFloat=
             timestamps = fps
         
         # TODO Correct this line
-        return timestamps.frames_to_ms(frames, "FORMAT ???", START_OR_END)
+        return timestamps.frames_to_ms(frames, START_OR_END)
     else:
         raise ValueError("Both fps and frames must be specified")
 

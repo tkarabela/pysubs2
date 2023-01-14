@@ -29,16 +29,6 @@ class Timestamps:
         normalize (bool, optional): If True, it will shift the timestamps to make them start from 0. If false, the option does nothing.
     """
 
-    FORMAT_IDENTIFIER_TO_PRECISION: Dict[str, int] = {
-        "srt": 1,  # milliseconds
-        "ass": 10,  # centiseconds
-        "ssa": 10,  # centiseconds
-        "json": 10,  # centiseconds
-        "mpl2": 100,  # deciseconds
-        "tmp": 10,  # centiseconds
-        "vtt": 1,  # milliseconds
-    }
-
     timestamps: List[int]
     denominator: int = 1000000000
     numerator: int
@@ -225,24 +215,6 @@ class Timestamps:
             return list(map(lambda t: t - timestamps[0], timestamps))
         return timestamps
 
-    @staticmethod
-    def get_time_format(format: str) -> int:
-        """
-
-        Args:
-            format (str): Format of the subtitle. Ex: "srt", "ass", etc...
-        Returns:
-            The time format depending on milliseconds.
-            Ex:
-                - If the format is in milliseconds, it will return 0.
-                - If the format is in centiseconds, it will return 10.
-        """
-        time_format = Timestamps.FORMAT_IDENTIFIER_TO_PRECISION.get(format, None)
-
-        if time_format == None:
-            raise ValueError(f"The format {format} is not currently supported")
-
-        return time_format
 
     def ms_to_frames(
         self, ms: int, time_type: TimeType = TimeType.EXACT, approximate: bool = True
@@ -296,7 +268,6 @@ class Timestamps:
     def frames_to_ms(
         self,
         frame: int,
-        format: str,
         time_type: TimeType = TimeType.EXACT,
         approximate: bool = True,
     ) -> int:
@@ -322,36 +293,20 @@ class Timestamps:
                 )
 
         if time_type == TimeType.START:
-            precision = Timestamps.get_time_format(format)
-
             # Previous image excluded
-            prev_ms = self.frames_to_ms(frame - 1, format) + 1
+            prev_ms = self.frames_to_ms(frame - 1) + 1
             # Current image inclued
-            curr_ms = self.frames_to_ms(frame, format)
+            curr_ms = self.frames_to_ms(frame)
 
-            prev_ms = math.ceil(prev_ms / precision) * precision
-            curr_ms = math.floor(curr_ms / precision) * precision
-
-            # We do an average of the previous frame and the current one, because there may be some difference between timestamps due to rounding error.
-            average = math.floor(((curr_ms - prev_ms) / 2) / precision) * precision
-
-            return prev_ms + average
+            return prev_ms + int((curr_ms - prev_ms) / 2)
 
         elif time_type == TimeType.END:
-            precision = Timestamps.get_time_format(format)
-
             # Current image excluded
-            curr_ms = self.frames_to_ms(frame, format) + 1
+            curr_ms = self.frames_to_ms(frame) + 1
             # Next image inclued
-            next_ms = self.frames_to_ms(frame + 1, format)
+            next_ms = self.frames_to_ms(frame + 1)
 
-            curr_ms = math.ceil(curr_ms / precision) * precision
-            next_ms = math.floor(next_ms / precision) * precision
-
-            # We do an average of the current frame and the next one, because there may be some difference between timestamps due to rounding error.
-            average = math.floor(((next_ms - curr_ms) / 2) / precision) * precision
-
-            return curr_ms + average
+            return curr_ms + int((next_ms - curr_ms) / 2)
 
         if frame < 0:
             return int(frame * self.denominator * 1000 / self.numerator)
