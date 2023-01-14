@@ -58,9 +58,7 @@ class Timestamps:
             self.last = (len(self.timestamps) - 1) * self.denominator * 1000
 
     @classmethod
-    def from_fps(
-        cls: Type["Timestamps"], fps: Number
-    ) -> "Timestamps":
+    def from_fps(cls: Type["Timestamps"], fps: Number) -> "Timestamps":
         """Create timestamps based on the `fps` provided.
 
         Inspired by: https://github.com/Aegisub/Aegisub/blob/6f546951b4f004da16ce19ba638bf3eedefb9f31/libaegisub/common/vfr.cpp#L134-L141
@@ -215,7 +213,6 @@ class Timestamps:
         if timestamps[0]:
             return list(map(lambda t: t - timestamps[0], timestamps))
         return timestamps
-
 
     def ms_to_frames(
         self, ms: int, time_type: TimeType = TimeType.EXACT, approximate: bool = True
