@@ -1,15 +1,13 @@
-import bisect
 import json
-import math
 import os
 import shutil
 import subprocess
 import sys
+from bisect import bisect_right
 from decimal import Decimal
 from enum import Enum
-from fractions import Fraction
 from numbers import Number
-from typing import Dict, Type, Union, List
+from typing import Type, List
 
 
 class TimeType(Enum):
@@ -261,7 +259,7 @@ class Timestamps:
                 - 1
             )
 
-        return bisect.bisect_right(self.timestamps, ms) - 1
+        return bisect_right(self.timestamps, ms) - 1
 
     def frames_to_ms(
         self,
