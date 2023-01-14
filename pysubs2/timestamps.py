@@ -76,8 +76,9 @@ class Timestamps:
             )
 
         timestamps = [0]
-        cls.numerator = int(fps * cls.denominator)
-        return cls(timestamps, False, False)
+        timestamps = cls(timestamps, False, False)
+        timestamps.numerator = int(fps * cls.denominator)
+        return timestamps
 
     @classmethod
     def from_timestamps_file(
