@@ -1,10 +1,13 @@
+import dataclasses
 import re
 import warnings
-from typing import Optional, Dict, Any, ClassVar
-import dataclasses
+from numbers import Number
+from typing import Optional, Dict, Any, ClassVar, Union
+
 
 from .common import IntOrFloat
 from .time import ms_to_str, make_time
+from .timestamps import Timestamps, TimeType
 
 
 @dataclasses.dataclass(repr=False, eq=False, order=False)
@@ -106,16 +109,31 @@ class SSAEvent:
         self.text = text.replace("\n", r"\N")
 
     def shift(self, h: IntOrFloat=0, m: IntOrFloat=0, s: IntOrFloat=0, ms: IntOrFloat=0,
-              frames: Optional[int]=None, fps: Optional[float]=None):
+              frames: Optional[int]=None, fps: Optional[Union[Number,Timestamps]]=None):
         """
         Shift start and end times.
 
         See :meth:`SSAFile.shift()` for full description.
 
         """
-        delta = make_time(h=h, m=m, s=s, ms=ms, frames=frames, fps=fps)
-        self.start += delta
-        self.end += delta
+        if frames is not None and fps is not None:
+            if isinstance(fps, Number):
+                timestamps = Timestamps.from_fps(fps)
+            elif isinstance(fps, Timestamps):
+                timestamps = fps
+
+            start_frame = timestamps.ms_to_frames(self.start, TimeType.START)
+            end_frame = timestamps.ms_to_frames(self.end, TimeType.END)
+
+            start_frame += frames
+            end_frame += frames
+
+            self.start = timestamps.frames_to_ms(start_frame, TimeType.START)
+            self.end = timestamps.frames_to_ms(end_frame, TimeType.END)
+        else:
+            delta = make_time(h=h, m=m, s=s, ms=ms)
+            self.start += delta
+            self.end += delta
 
     def copy(self) -> "SSAEvent":
         """Return a copy of the SSAEvent."""
