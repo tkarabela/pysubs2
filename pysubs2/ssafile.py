@@ -2,7 +2,7 @@ from collections.abc import MutableSequence
 import io
 from io import open
 from itertools import chain
-from numbers import Number
+from numbers import Real
 import os.path
 import logging
 from typing import Optional, List, Dict, Iterable, Any, Union, overload, Iterator
@@ -248,7 +248,7 @@ class SSAFile(MutableSequence):
     # ------------------------------------------------------------------------
 
     def shift(self, h: IntOrFloat=0, m: IntOrFloat=0, s: IntOrFloat=0, ms: IntOrFloat=0,
-              frames: Optional[int]=None, fps: Optional[Union[Number,Timestamps]]=None):
+              frames: Optional[int]=None, fps: Optional[Union[Real,Timestamps]]=None):
         """
         Shift all subtitles by constant time amount.
 

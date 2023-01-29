@@ -1,9 +1,8 @@
 import dataclasses
 import re
 import warnings
-from numbers import Number
+from numbers import Real
 from typing import Optional, Dict, Any, ClassVar, Union
-
 
 from .common import IntOrFloat
 from .time import ms_to_str, make_time
@@ -109,18 +108,22 @@ class SSAEvent:
         self.text = text.replace("\n", r"\N")
 
     def shift(self, h: IntOrFloat=0, m: IntOrFloat=0, s: IntOrFloat=0, ms: IntOrFloat=0,
-              frames: Optional[int]=None, fps: Optional[Union[Number,Timestamps]]=None):
+              frames: Optional[int]=None, fps: Optional[Union[Real,Timestamps]]=None):
         """
         Shift start and end times.
 
         See :meth:`SSAFile.shift()` for full description.
 
         """
-        if frames is not None and fps is not None:
-            if isinstance(fps, Number):
+        if frames is not None:
+            if fps is None:
+                raise ValueError("Both fps and frames must be specified")
+            if isinstance(fps, Real):
                 timestamps = Timestamps.from_fps(fps)
             elif isinstance(fps, Timestamps):
                 timestamps = fps
+            else:
+                raise TypeError("Unexpected type for fps")
 
             start_frame = timestamps.ms_to_frames(self.start, TimeType.START)
             end_frame = timestamps.ms_to_frames(self.end, TimeType.END)

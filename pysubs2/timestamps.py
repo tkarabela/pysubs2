@@ -6,8 +6,8 @@ import sys
 from bisect import bisect_right
 from decimal import Decimal
 from enum import Enum
-from numbers import Number
-from typing import Type, List
+from numbers import Real
+from typing import Type, List, Optional
 
 
 class TimeType(Enum):
@@ -27,19 +27,18 @@ class Timestamps:
         normalize (bool, optional): If True, it will shift the timestamps to make them start from 0. If false, the option does nothing.
     """
 
-    timestamps: List[int]
-    denominator: int = 1000000000
-    numerator: int
-    last: int = 0
-
     def __init__(
         self,
         timestamps: List[int],
         set_from_timestamps: bool = True,
         normalize: bool = True,
+        numerator: Optional[int] = None,
+        denominator: int = 1000000000
     ):
-
-        self.timestamps = timestamps
+        self.timestamps: List[int] = timestamps
+        self.denominator: int = denominator
+        self.numerator: int
+        self.last: int = 0
 
         if normalize:
             self.timestamps = Timestamps.normalize(self.timestamps)
@@ -54,9 +53,13 @@ class Timestamps:
                 / self.timestamps[-1]
             )
             self.last = (len(self.timestamps) - 1) * self.denominator * 1000
+        else:
+            if numerator is None:
+                raise ValueError("You must specify numerator when set_from_timestamps=False")
+            self.numerator = numerator
 
     @classmethod
-    def from_fps(cls: Type["Timestamps"], fps: Number) -> "Timestamps":
+    def from_fps(cls: Type["Timestamps"], fps: Real) -> "Timestamps":
         """Create timestamps based on the `fps` provided.
 
         Inspired by: https://github.com/Aegisub/Aegisub/blob/6f546951b4f004da16ce19ba638bf3eedefb9f31/libaegisub/common/vfr.cpp#L134-L141
@@ -66,14 +69,15 @@ class Timestamps:
         Returns:
             An Timestamps instance.
         """
-        if not 0 < fps <= 1000:
+        if not 0 < fps <= 1000:  # type: ignore[operator]
             raise ValueError(
                 "Parameter 'fps' must be between 0 and 1000 (0 not included)."
             )
 
-        timestamps = [0]
-        timestamps = cls(timestamps, False, False)
-        timestamps.numerator = int(fps * cls.denominator)
+        denominator = 1000000000
+        numerator = int(fps * denominator)
+        timestamps = cls(timestamps=[0], set_from_timestamps=False, normalize=False, numerator=numerator,
+                         denominator=denominator)
         return timestamps
 
     @classmethod
@@ -106,7 +110,7 @@ class Timestamps:
 
             if format_version in [f"{tf} v1", f"{tf} v3", f"{tf} v4"]:
                 raise NotImplementedError(
-                    f'The timestamps file "{path_timestamps}" is in a format not currently supported by PyonFX.'
+                    f'The timestamps file "{path_timestamps}" is in a format not currently supported by pysubs2.'
                 )
 
             if format_version != f"{tf} v2":
@@ -118,11 +122,11 @@ class Timestamps:
                 if line.startswith("#") or not line:
                     continue
                 try:
-                    timestamps.append(int(line))
-                except ValueError:
+                    timestamps.append(int(Decimal(line).to_integral_value()))
+                except ValueError as e:
                     raise ValueError(
                         f'The timestamps file "{path_timestamps}" is not properly formatted.'
-                    )
+                    ) from e
 
         return cls(timestamps, normalize=normalize)
 
@@ -130,7 +134,10 @@ class Timestamps:
     def from_video_file(
         cls: Type["Timestamps"], video_path: str, index: int = 0, normalize: bool = True
     ) -> "Timestamps":
-        """Create timestamps based on the `video_path` provided.
+        """Create timestamps based on the ``video_path`` provided.
+
+        Note:
+            This method requires the ``ffprobe`` program to be available.
 
         Parameters:
             video (str): Video path.
@@ -159,24 +166,30 @@ class Timestamps:
         if not os.path.isfile(video_path):
             raise FileNotFoundError(f'Invalid path for the video file: "{video_path}"')
 
-        cmd = f'ffprobe -select_streams {index} -show_entries packet=pts_time:stream=codec_type "{video_path}" -print_format json'
-        ffprobeOutput = subprocess.run(cmd, capture_output=True, text=True)
-        ffprobeOutput = json.loads(ffprobeOutput.stdout)
+        cmd = [
+            "ffprobe",
+            "-select_streams", f"{index}",
+            "-show_entries", "packet=pts_time:stream=codec_type",
+            f"{video_path}",
+            "-print_format", "json"
+        ]
+        ffprobe_output = subprocess.check_output(cmd)
+        ffprobe_output_dict = json.loads(ffprobe_output)
 
-        if len(ffprobeOutput) == 0:
+        if not ffprobe_output_dict:
             raise Exception(
                 f"The file {video_path} is not a video file or the file does not exist."
             )
 
-        if len(ffprobeOutput["streams"]) == 0:
+        if len(ffprobe_output_dict["streams"]) == 0:
             raise ValueError(f"The index {index} is not in the file {video_path}.")
 
-        if ffprobeOutput["streams"][0]["codec_type"] != "video":
+        if ffprobe_output_dict["streams"][0]["codec_type"] != "video":
             raise ValueError(
-                f'The index {index} is not a video stream. It is an {ffprobeOutput["streams"][0]["codec_type"]} stream.'
+                f'The index {index} is not a video stream. It is an {ffprobe_output_dict["streams"][0]["codec_type"]} stream.'
             )
 
-        timestamps = get_pts(ffprobeOutput["packets"])
+        timestamps = get_pts(ffprobe_output_dict["packets"])
         return cls(timestamps, normalize=normalize)
 
     @staticmethod

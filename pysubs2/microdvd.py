@@ -1,4 +1,4 @@
-from numbers import Number
+from numbers import Real
 from typing import Union
 import re
 from .exceptions import UnknownFPSError
@@ -21,9 +21,9 @@ class MicroDVDFormat(FormatBase):
             return "microdvd"
 
     @classmethod
-    def from_file(cls, subs, fp, format_, fps:Union[None,Number,Timestamps] = None, **kwargs):
+    def from_file(cls, subs, fp, format_, fps:Union[None,Real,Timestamps] = None, **kwargs):
         """See :meth:`pysubs2.formats.FormatBase.from_file()`"""
-        if isinstance(fps, Number):
+        if isinstance(fps, Real):
             timestamps = Timestamps.from_fps(fps)
         elif isinstance(fps, Timestamps):
             timestamps = fps
@@ -41,9 +41,9 @@ class MicroDVDFormat(FormatBase):
                 # it as text of the first subtitle. In that case, we skip
                 # this auxiliary subtitle and proceed with reading.
                 try:
-                    fps = float(text)
+                    fps = float(text)  # type: ignore[assignment]
                     subs.fps = fps
-                    timestamps = Timestamps.from_fps(subs.fps)
+                    timestamps = Timestamps.from_fps(fps)  # type: ignore[arg-type]
                     continue
                 except ValueError:
                     raise UnknownFPSError("Framerate was not specified and "
@@ -73,7 +73,7 @@ class MicroDVDFormat(FormatBase):
             subs.append(ev)
 
     @classmethod
-    def to_file(cls, subs, fp, format_, fps:Union[None,Number,Timestamps] = None, write_fps_declaration=True, apply_styles=True, **kwargs):
+    def to_file(cls, subs, fp, format_, fps:Union[None,Real,Timestamps] = None, write_fps_declaration=True, apply_styles=True, **kwargs):
         """
         See :meth:`pysubs2.formats.FormatBase.to_file()`
 
@@ -90,7 +90,7 @@ class MicroDVDFormat(FormatBase):
 
         if fps is None:
             raise UnknownFPSError("Framerate must be specified when writing MicroDVD.")
-        elif isinstance(fps, Number):
+        elif isinstance(fps, Real):
             timestamps = Timestamps.from_fps(fps)
         elif isinstance(fps, Timestamps):
             timestamps = fps
