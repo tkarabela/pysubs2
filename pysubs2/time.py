@@ -1,7 +1,7 @@
 from collections import namedtuple
 from numbers import Real
 import re
-from typing import Optional, Tuple, Sequence, Union
+from typing import Optional, Tuple, Sequence, Union, cast
 from pysubs2.common import IntOrFloat
 from .timestamps import Timestamps, TimeType
 
@@ -104,7 +104,7 @@ def frames_to_ms(frames: int, fps: float) -> int:
         ValueError: fps was negative or zero.
 
     """
-    return Timestamps.from_fps(fps).frames_to_ms(frames)
+    return Timestamps.from_fps(cast(Real, fps)).frames_to_ms(frames)
 
 
 def ms_to_frames(ms: IntOrFloat, fps: float) -> int:
@@ -122,7 +122,7 @@ def ms_to_frames(ms: IntOrFloat, fps: float) -> int:
         ValueError: fps was negative or zero.
 
     """
-    return Timestamps.from_fps(fps).ms_to_frames(ms)
+    return Timestamps.from_fps(cast(Real, fps)).ms_to_frames(int(ms))
 
 
 def ms_to_times(ms: IntOrFloat) -> Tuple[int, int, int, int]:

@@ -118,7 +118,12 @@ class Timestamps:
                     f'The timestamps file "{path_timestamps}" is not properly formatted.'
                 )
 
-            while line := f.readline().strip():
+            while True:
+                line = f.readline()
+                if not line:
+                    break
+
+                line = line.strip()
                 if line.startswith("#") or not line:
                     continue
                 try:
