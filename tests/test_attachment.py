@@ -7,11 +7,11 @@ from pysubs2 import SSAFile
 import os.path as op
 
 
-FONT_SUBS_AEGISUB_PATH = op.join(op.dirname(__file__), "data/subtitle_with_attached_fonts_aegisub.ass")
-FONT_SUBS_PYSUBS_PATH = op.join(op.dirname(__file__), "data/subtitle_with_attached_fonts_pysubs2_ref.ass")
-FONT_SUBS_NO_EVENTS_PATH = op.join(op.dirname(__file__), "data/subtitle_with_attached_fonts_no_events.ass")
-IMAGE_SUBS_AEGISUB_PATH = op.join(op.dirname(__file__), "data/subtitle_with_attached_images_aegisub.ass")
-IMAGE_SUBS_PYSUBS_PATH = op.join(op.dirname(__file__), "data/subtitle_with_attached_images_pysubs2_ref.ass")
+FONT_SUBS_AEGISUB_PATH = op.join(op.dirname(__file__), "data/attachment/subtitle_with_attached_fonts_aegisub.ass")
+FONT_SUBS_PYSUBS_PATH = op.join(op.dirname(__file__), "data/attachment/subtitle_with_attached_fonts_pysubs2_ref.ass")
+FONT_SUBS_NO_EVENTS_PATH = op.join(op.dirname(__file__), "data/attachment/subtitle_with_attached_fonts_no_events.ass")
+IMAGE_SUBS_AEGISUB_PATH = op.join(op.dirname(__file__), "data/attachment/subtitle_with_attached_images_aegisub.ass")
+IMAGE_SUBS_PYSUBS_PATH = op.join(op.dirname(__file__), "data/attachment/subtitle_with_attached_images_pysubs2_ref.ass")
 
 def test_font_passthrough_from_aegisub():
     subs_aegisub = SSAFile.load(FONT_SUBS_AEGISUB_PATH)
