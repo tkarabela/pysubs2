@@ -2,7 +2,7 @@ pysubs2
 =======
 
 
-.. image:: https://img.shields.io/github/workflow/status/tkarabela/pysubs2/CI
+.. image:: https://img.shields.io/github/actions/workflow/status/tkarabela/pysubs2/main.yml?branch=master
     :alt: pysubs2 build master branch
     :target: https://github.com/tkarabela/pysubs2/actions
 .. image:: https://img.shields.io/codecov/c/github/tkarabela/pysubs2
