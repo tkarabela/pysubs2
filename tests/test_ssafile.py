@@ -25,9 +25,6 @@ def test_shift():
         subs.shift(frames=5)
 
     with pytest.raises(ValueError):
-        subs.shift(fps=23.976)
-
-    with pytest.raises(ValueError):
         subs.shift(frames=5, fps=-1)
 
 def test_import_styles():

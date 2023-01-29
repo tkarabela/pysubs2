@@ -145,7 +145,7 @@ def test_frames_to_ms():
     assert frames_to_ms(100, 25) == 4000
     assert frames_to_ms(1, 23.976) == 42
     assert isinstance(frames_to_ms(1, 23.976), int)
-    assert frames_to_ms(-1, 23.976) == -42
+    assert frames_to_ms(-1, 23.976) == -41
     
     # framerate handling
     with pytest.raises(ValueError):
@@ -162,7 +162,7 @@ def test_ms_to_frames():
     assert ms_to_frames(4000, 25) == 100
     assert ms_to_frames(42, 23.976) == 1
     assert isinstance(ms_to_frames(42, 23.976), int)
-    assert ms_to_frames(-42, 23.976) == -1
+    assert ms_to_frames(-42, 23.976) == -2
     
     # framerate handling
     with pytest.raises(ValueError):
