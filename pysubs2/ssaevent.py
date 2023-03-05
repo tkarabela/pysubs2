@@ -115,9 +115,13 @@ class SSAEvent:
         See :meth:`SSAFile.shift()` for full description.
 
         """
-        if frames is not None:
-            if fps is None:
-                raise ValueError("Both fps and frames must be specified")
+        if frames is None and fps is None:
+            delta = make_time(h=h, m=m, s=s, ms=ms)
+            self.start += delta
+            self.end += delta
+        elif frames is None or fps is None:
+            raise ValueError("Both fps and frames must be specified")
+        else:
             if isinstance(fps, Real):
                 timestamps = Timestamps.from_fps(fps)
             elif isinstance(fps, Timestamps):
@@ -133,10 +137,6 @@ class SSAEvent:
 
             self.start = timestamps.frames_to_ms(start_frame, TimeType.START)
             self.end = timestamps.frames_to_ms(end_frame, TimeType.END)
-        else:
-            delta = make_time(h=h, m=m, s=s, ms=ms)
-            self.start += delta
-            self.end += delta
 
     def copy(self) -> "SSAEvent":
         """Return a copy of the SSAEvent."""
