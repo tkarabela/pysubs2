@@ -11,10 +11,16 @@ from typing import Type, List, Optional
 
 
 class TimeType(Enum):
+    """Enumerate Video timing type."""
 
     START = "START"
+    """The timing type for the start_time"""
+
     EXACT = "EXACT"
+    """The timing you see for a frame in a video player. It is the real timestamps of an video"""
+
     END = "END"
+    """The timing type for the end_time"""
 
 
 class Timestamps:
