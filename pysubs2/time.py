@@ -107,7 +107,7 @@ def frames_to_ms(frames: int, fps: float) -> int:
     return Timestamps.from_fps(cast(Real, fps)).frames_to_ms(frames)
 
 
-def ms_to_frames(ms: IntOrFloat, fps: float) -> int:
+def ms_to_frames(ms: IntOrFloat, fps: float, time_type: TimeType) -> int:
     """
     Convert milliseconds to number of frames.
 
@@ -122,7 +122,7 @@ def ms_to_frames(ms: IntOrFloat, fps: float) -> int:
         ValueError: fps was negative or zero.
 
     """
-    return Timestamps.from_fps(cast(Real, fps)).ms_to_frames(int(ms))
+    return Timestamps.from_fps(cast(Real, fps)).ms_to_frames(int(ms), time_type)
 
 
 def ms_to_times(ms: IntOrFloat) -> Tuple[int, int, int, int]:

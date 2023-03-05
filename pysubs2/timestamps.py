@@ -231,7 +231,7 @@ class Timestamps:
         return timestamps
 
     def ms_to_frames(
-        self, ms: int, time_type: TimeType = TimeType.EXACT, approximate: bool = True
+        self, ms: int, time_type: TimeType, approximate: bool = True
     ) -> int:
         """Converts milliseconds to frames.
 
@@ -252,9 +252,9 @@ class Timestamps:
                 raise ValueError("You cannot specify an time over the video lenght.")
 
         if time_type == TimeType.START:
-            return self.ms_to_frames(ms - 1) + 1
+            return self.ms_to_frames(ms - 1, TimeType.EXACT) + 1
         elif time_type == TimeType.END:
-            return self.ms_to_frames(ms - 1)
+            return self.ms_to_frames(ms - 1, TimeType.EXACT)
 
         if ms < 0:
             return int(int(ms * self.numerator / self.denominator - 999) / 1000)
@@ -282,7 +282,7 @@ class Timestamps:
     def frames_to_ms(
         self,
         frame: int,
-        time_type: TimeType = TimeType.EXACT,
+        time_type: TimeType,
         approximate: bool = True,
     ) -> int:
         """Converts frames to milliseconds.
@@ -308,17 +308,17 @@ class Timestamps:
 
         if time_type == TimeType.START:
             # Previous image excluded
-            prev_ms = self.frames_to_ms(frame - 1) + 1
+            prev_ms = self.frames_to_ms(frame - 1, TimeType.EXACT) + 1
             # Current image inclued
-            curr_ms = self.frames_to_ms(frame)
+            curr_ms = self.frames_to_ms(frame, TimeType.EXACT)
 
             return prev_ms + int((curr_ms - prev_ms) / 2)
 
         elif time_type == TimeType.END:
             # Current image excluded
-            curr_ms = self.frames_to_ms(frame) + 1
+            curr_ms = self.frames_to_ms(frame, TimeType.EXACT) + 1
             # Next image inclued
-            next_ms = self.frames_to_ms(frame + 1)
+            next_ms = self.frames_to_ms(frame + 1, TimeType.EXACT)
 
             return curr_ms + int((next_ms - curr_ms) / 2)
 
