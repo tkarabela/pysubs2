@@ -50,8 +50,6 @@ class MicroDVDFormat(FormatBase):
                                           "cannot be read from "
                                           "the MicroDVD file.")
 
-            # I chose the format SRT, but it could be anyone.
-            # SRT simply has a precision in milliseconds which can be better.
             start = timestamps.frames_to_ms(fstart, TimeType.START)
             end = timestamps.frames_to_ms(fend, TimeType.END)
 
