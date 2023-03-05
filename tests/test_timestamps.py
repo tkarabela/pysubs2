@@ -98,5 +98,5 @@ def test_timestamps_constructors():
     ts_fps = Timestamps.from_fps(23.976)
 
     for i in range(500):
-        assert ts_fps.frames_to_ms(i) == ts_video.frames_to_ms(i)
-        assert ts_fps.frames_to_ms(i) == ts_file.frames_to_ms(i)
+        assert ts_fps.frames_to_ms(i, TimeType.EXACT) == ts_video.frames_to_ms(i, TimeType.EXACT)
+        assert ts_fps.frames_to_ms(i, TimeType.EXACT) == ts_file.frames_to_ms(i, TimeType.EXACT)
