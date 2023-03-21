@@ -151,7 +151,7 @@ class SubripFormat(FormatBase):
 
             return re.sub("\n+", "\n", "".join(body).strip())
 
-        visible_lines = (line for line in subs if not line.is_comment)
+        visible_lines = sorted((line for line in subs if not line.is_comment), key=lambda line: line.start)
 
         lineno = 1
         for line in visible_lines:
