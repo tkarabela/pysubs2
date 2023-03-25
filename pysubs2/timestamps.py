@@ -1,4 +1,5 @@
 import json
+import math
 import os
 import shutil
 import subprocess
@@ -31,7 +32,14 @@ class Timestamps:
                                 It represent each frame [presentation timestamp (PTS)](https://en.wikipedia.org/wiki/Presentation_timestamp)
         set_from_timestamps (bool, optional): If True, then it will does some calculation related on the timestamps. If false, this means the object will approximate frame timestamps.
         normalize (bool, optional): If True, it will shift the timestamps to make them start from 0. If false, the option does nothing.
+        numerator (int, optional): The fps numerator.
+        denominator (int, optional): The fps denominator.
     """
+
+    timestamps: List[int]
+    last: int
+    numerator: int
+    denominator: int
 
     def __init__(
         self,
@@ -39,12 +47,9 @@ class Timestamps:
         set_from_timestamps: bool = True,
         normalize: bool = True,
         numerator: Optional[int] = None,
-        denominator: int = 1000000000
+        denominator: Optional[int] = None,
     ):
         self.timestamps: List[int] = timestamps
-        self.denominator: int = denominator
-        self.numerator: int
-        self.last: int = 0
 
         if normalize:
             self.timestamps = Timestamps.normalize(self.timestamps)
@@ -52,23 +57,19 @@ class Timestamps:
         if set_from_timestamps:
             Timestamps.validate(self.timestamps)
 
-            self.numerator = int(
-                (len(self.timestamps) - 1)
-                * self.denominator
-                * 1000
-                / self.timestamps[-1]
-            )
-            self.last = (len(self.timestamps) - 1) * self.denominator * 1000
+            self.numerator = len(self.timestamps) - 1
+            self.denominator = self.timestamps[-1]
+            self.last = self.timestamps[-1]
         else:
-            if numerator is None:
+            if numerator is None or denominator is None:
                 raise ValueError("You must specify numerator when set_from_timestamps=False")
             self.numerator = numerator
+            self.denominator = denominator
+            self.last: int = 0
 
     @classmethod
     def from_fps(cls: Type["Timestamps"], fps: Real) -> "Timestamps":
         """Create timestamps based on the `fps` provided.
-
-        Inspired by: https://github.com/Aegisub/Aegisub/blob/6f546951b4f004da16ce19ba638bf3eedefb9f31/libaegisub/common/vfr.cpp#L134-L141
 
         Args:
             fps (positive int, float or Fraction): Frames per second.
@@ -76,14 +77,18 @@ class Timestamps:
             An Timestamps instance.
         """
         if not 0 < fps <= 1000:  # type: ignore[operator]
-            raise ValueError(
-                "Parameter 'fps' must be between 0 and 1000 (0 not included)."
-            )
+            raise ValueError("Parameter 'fps' must be between 0 and 1000 (0 not included).")
+        
+        numerator = fps
+        denominator = 1000
 
-        denominator = 1000000000
-        numerator = int(fps * denominator)
-        timestamps = cls(timestamps=[0], set_from_timestamps=False, normalize=False, numerator=numerator,
-                         denominator=denominator)
+        timestamps = cls(
+            timestamps=[0],
+            set_from_timestamps=False,
+            normalize=False,
+            numerator=numerator,
+            denominator=denominator,
+        )
         return timestamps
 
     @classmethod
@@ -104,9 +109,7 @@ class Timestamps:
             dirname = os.path.dirname(os.path.abspath(sys.argv[0]))
             path_timestamps = os.path.join(dirname, path_timestamps)
         if not os.path.isfile(path_timestamps):
-            raise FileNotFoundError(
-                f'Invalid path for the timestamps file: "{path_timestamps}"'
-            )
+            raise FileNotFoundError(f'Invalid path for the timestamps file: "{path_timestamps}"')
 
         # Parsing timestamps
         timestamps = []
@@ -115,14 +118,10 @@ class Timestamps:
             tf = "# timestamp format"
 
             if format_version in [f"{tf} v1", f"{tf} v3", f"{tf} v4"]:
-                raise NotImplementedError(
-                    f'The timestamps file "{path_timestamps}" is in a format not currently supported by pysubs2.'
-                )
+                raise NotImplementedError(f'The timestamps file "{path_timestamps}" is in a format not currently supported by pysubs2.')
 
             if format_version != f"{tf} v2":
-                raise ValueError(
-                    f'The timestamps file "{path_timestamps}" is not properly formatted.'
-                )
+                raise ValueError(f'The timestamps file "{path_timestamps}" is not properly formatted.')
 
             while True:
                 line = f.readline()
@@ -188,17 +187,13 @@ class Timestamps:
         ffprobe_output_dict = json.loads(ffprobe_output)
 
         if not ffprobe_output_dict:
-            raise Exception(
-                f"The file {video_path} is not a video file or the file does not exist."
-            )
+            raise Exception(f"The file {video_path} is not a video file or the file does not exist.")
 
         if len(ffprobe_output_dict["streams"]) == 0:
             raise ValueError(f"The index {index} is not in the file {video_path}.")
 
         if ffprobe_output_dict["streams"][0]["codec_type"] != "video":
-            raise ValueError(
-                f'The index {index} is not a video stream. It is an {ffprobe_output_dict["streams"][0]["codec_type"]} stream.'
-            )
+            raise ValueError(f'The index {index} is not a video stream. It is an {ffprobe_output_dict["streams"][0]["codec_type"]} stream.')
 
         timestamps = get_pts(ffprobe_output_dict["packets"])
         return cls(timestamps, normalize=normalize)
@@ -236,83 +231,65 @@ class Timestamps:
             return list(map(lambda t: t - timestamps[0], timestamps))
         return timestamps
 
-    def ms_to_frames(
-        self, ms: int, time_type: TimeType, approximate: bool = True
-    ) -> int:
+    def ms_to_frames(self, ms: int, time_type: TimeType, approximate: bool = True) -> int:
         """Converts milliseconds to frames.
-
-        Inspired by: https://github.com/arch1t3cht/Aegisub/blob/245cc68afabefbc9290bd5a13ec327a59fe23b6d/libaegisub/common/vfr.cpp#L205-L231
 
         Parameters:
             ms (int): Milliseconds.
-            time_type (TimeType, optional): The type of the provided time (start/end).
-            approximate (bool, optional): If True and if the ms is under 0 or over the video length, it will approximate the frame.
+            time_type (TimeType): The type of the provided time (start/end).
+            approximate (bool, optional): If True and if the ms is over the video length, it will approximate the frame.
         Returns:
             The output represents ``ms`` converted into ``frames``.
         """
+        if ms < self.timestamps[0]:
+            raise ValueError("You cannot specify an time under 0.")
 
-        if not approximate:
-            if ms < 0:
-                raise ValueError("You cannot specify an time under 0.")
-            elif ms > self.timestamps[-1]:
-                raise ValueError("You cannot specify an time over the video lenght.")
+        if not approximate and ms > self.timestamps[-1]:
+            raise ValueError("You cannot specify an time over the video lenght.")
 
         if time_type == TimeType.START:
+            if ms == self.timestamps[0]:
+                return 0
             return self.ms_to_frames(ms - 1, TimeType.EXACT) + 1
         elif time_type == TimeType.END:
+            if ms == self.timestamps[0]:
+                return -1
             return self.ms_to_frames(ms - 1, TimeType.EXACT)
 
-        if ms < 0:
-            return int(int(ms * self.numerator / self.denominator - 999) / 1000)
-        elif ms > self.timestamps[-1]:
-            return (
-                int(
-                    int(
-                        (
-                            ms * self.numerator
-                            - int(self.numerator / 2)
-                            - self.last
-                            + self.numerator
-                            - 1
-                        )
-                        / self.denominator
-                    )
-                    / 1000
-                )
-                + len(self.timestamps)
-                - 1
-            )
+        if ms > self.timestamps[-1]:
+            # It is mathematically impossible to isolate frame from this equation
+            # ms = round(frame * denominator / numerator)
+            # Because of that, we need to try both possibility (floor_frame and ceil_frame)
+            frame = ms * self.numerator / self.denominator
+
+            floor_frame = math.floor(frame)
+            ceil_frame = math.ceil(frame)
+
+            ceil_ms = round(ceil_frame * self.denominator / self.numerator)
+            return ceil_frame if ms >= ceil_ms else floor_frame
 
         return bisect_right(self.timestamps, ms) - 1
 
-    def frames_to_ms(
-        self,
-        frame: int,
-        time_type: TimeType,
-        approximate: bool = True,
-    ) -> int:
+    def frames_to_ms(self, frame: int, time_type: TimeType, approximate: bool = True) -> int:
         """Converts frames to milliseconds.
-
-        Inspired by: https://github.com/Aegisub/Aegisub/blob/6f546951b4f004da16ce19ba638bf3eedefb9f31/libaegisub/common/vfr.cpp#L233-L256
 
         Parameters:
             frame (int): Frame.
-            format (str): Subtitle format. Ex: "srt", "ass", "ssa", etc...
-            time_type (TimeType, optional): The type of the provided time (start/end).
+            time_type (TimeType): The type of the provided time (start/end).
             approximate (bool, optional): If True and if the frame is under 0 or over the video length, it will approximate the ms.
         Returns:
             The output represents ``frames`` converted into ``ms``.
         """
+        if frame < 0:
+            raise ValueError("You cannot specify a frame under 0.")
 
-        if not approximate:
-            if frame < 0:
-                raise ValueError("You cannot specify a frame under 0.")
-            elif frame > len(self.timestamps) - 1:
-                raise ValueError(
-                    "You cannot specify an image above what the video length."
-                )
+        if not approximate and frame > len(self.timestamps) - 1:
+            raise ValueError("You cannot specify an image above what the video length.")
 
         if time_type == TimeType.START:
+            if frame == 0:
+                return self.timestamps[0]
+            
             # Previous image excluded
             prev_ms = self.frames_to_ms(frame - 1, TimeType.EXACT) + 1
             # Current image inclued
@@ -328,17 +305,8 @@ class Timestamps:
 
             return curr_ms + int((next_ms - curr_ms) / 2)
 
-        if frame < 0:
-            return int(frame * self.denominator * 1000 / self.numerator)
-        elif frame > len(self.timestamps) - 1:
+        if frame > len(self.timestamps) - 1:
             frames_past_end = frame - len(self.timestamps) + 1
-            return int(
-                (
-                    frames_past_end * 1000 * self.denominator
-                    + self.last
-                    + int(self.numerator / 2)
-                )
-                / self.numerator
-            )
+            return round(frames_past_end * self.denominator / self.numerator) + self.last
 
         return self.timestamps[frame]
