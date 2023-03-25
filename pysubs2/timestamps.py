@@ -265,8 +265,8 @@ class Timestamps:
             floor_frame = math.floor(frame)
             ceil_frame = math.ceil(frame)
 
-            ceil_ms = round(ceil_frame * self.denominator / self.numerator)
-            return ceil_frame if ms >= ceil_ms else floor_frame
+            ceil_ms = math.floor(ceil_frame * self.denominator / self.numerator + 0.5)
+            return ceil_frame if ms == ceil_ms else floor_frame
 
         return bisect_right(self.timestamps, ms) - 1
 
@@ -307,6 +307,6 @@ class Timestamps:
 
         if frame > len(self.timestamps) - 1:
             frames_past_end = frame - len(self.timestamps) + 1
-            return round(frames_past_end * self.denominator / self.numerator) + self.last
+            return math.floor(frames_past_end * self.denominator / self.numerator + 0.5) + self.last
 
         return self.timestamps[frame]
