@@ -4,6 +4,7 @@ test related to Timestamps class
 """
 
 import json
+import pytest
 from pysubs2 import SSAFile, Timestamps, TimeType
 import os.path as op
 
@@ -100,3 +101,84 @@ def test_timestamps_constructors():
     for i in range(500):
         assert ts_fps.frames_to_ms(i, TimeType.EXACT) == ts_video.frames_to_ms(i, TimeType.EXACT)
         assert ts_fps.frames_to_ms(i, TimeType.EXACT) == ts_file.frames_to_ms(i, TimeType.EXACT)
+
+
+def test_frames_to_ms():
+    timestamps = Timestamps([0, 1000, 1500, 2000, 2001, 2002, 2003])
+
+    assert 0 == timestamps.frames_to_ms(0, TimeType.EXACT)
+    assert 1000 == timestamps.frames_to_ms(1, TimeType.EXACT)
+    assert 1500 == timestamps.frames_to_ms(2, TimeType.EXACT)
+    assert 2000 == timestamps.frames_to_ms(3, TimeType.EXACT)
+    assert 2001 == timestamps.frames_to_ms(4, TimeType.EXACT)
+    assert 2002 == timestamps.frames_to_ms(5, TimeType.EXACT)
+    assert 2003 == timestamps.frames_to_ms(6, TimeType.EXACT)
+    with pytest.raises(ValueError) as exc_info:
+        timestamps.frames_to_ms(-1, TimeType.EXACT)
+    assert str(exc_info.value) == "You cannot specify a frame under 0."
+
+    assert 0 == timestamps.frames_to_ms(0, TimeType.START)
+    assert 0 < timestamps.frames_to_ms(1, TimeType.START) <= 1000
+    assert 1000 < timestamps.frames_to_ms(2, TimeType.START) <= 1500
+    assert 1500 < timestamps.frames_to_ms(3, TimeType.START) <= 2000
+    assert 2000 < timestamps.frames_to_ms(4, TimeType.START) <= 2001
+    assert 2001 < timestamps.frames_to_ms(5, TimeType.START) <= 2002
+    assert 2002 < timestamps.frames_to_ms(6, TimeType.START) <= 2003
+    with pytest.raises(ValueError) as exc_info:
+        timestamps.frames_to_ms(-1, TimeType.END)
+    assert str(exc_info.value) == "You cannot specify a frame under 0."
+
+    assert 0 < timestamps.frames_to_ms(0, TimeType.END) <= 1000
+    assert 1000 < timestamps.frames_to_ms(1, TimeType.END) <= 1500
+    assert 1500 < timestamps.frames_to_ms(2, TimeType.END) <= 2000
+    assert 2000 < timestamps.frames_to_ms(3, TimeType.END) <= 2001
+    assert 2001 < timestamps.frames_to_ms(4, TimeType.END) <= 2002
+    assert 2002 < timestamps.frames_to_ms(5, TimeType.END) <= 2003
+    assert 2003 < timestamps.frames_to_ms(6, TimeType.END)
+    with pytest.raises(ValueError) as exc_info:
+        timestamps.frames_to_ms(-1, TimeType.END)
+    assert str(exc_info.value) == "You cannot specify a frame under 0."
+
+
+def test_ms_to_frames():
+    timestamps = Timestamps([0, 1000, 1500, 2000, 2001, 2002, 2003])
+
+    assert 0 == timestamps.ms_to_frames(0, TimeType.EXACT)
+    assert 0 == timestamps.ms_to_frames(999, TimeType.EXACT)
+    assert 1 == timestamps.ms_to_frames(1000, TimeType.EXACT)
+    assert 1 == timestamps.ms_to_frames(1499, TimeType.EXACT)
+    assert 2 == timestamps.ms_to_frames(1500, TimeType.EXACT)
+    assert 2 == timestamps.ms_to_frames(1999, TimeType.EXACT)
+    assert 3 == timestamps.ms_to_frames(2000, TimeType.EXACT)
+    assert 4 == timestamps.ms_to_frames(2001, TimeType.EXACT)
+    assert 5 == timestamps.ms_to_frames(2002, TimeType.EXACT)
+    assert 6 == timestamps.ms_to_frames(2003, TimeType.EXACT)
+    assert 6 == timestamps.ms_to_frames(2004, TimeType.EXACT)
+    with pytest.raises(ValueError) as exc_info:
+        timestamps.ms_to_frames(-1, TimeType.EXACT)
+    assert str(exc_info.value) == "You cannot specify an time under 0."
+
+    assert 0 == timestamps.ms_to_frames(0, TimeType.START)
+    assert 1 == timestamps.ms_to_frames(1, TimeType.START)
+    assert 1 == timestamps.ms_to_frames(1000, TimeType.START)
+    assert 2 == timestamps.ms_to_frames(1001, TimeType.START)
+    assert 2 == timestamps.ms_to_frames(1500, TimeType.START)
+    assert 3 == timestamps.ms_to_frames(1501, TimeType.START)
+    assert 3 == timestamps.ms_to_frames(2000, TimeType.START)
+    assert 4 == timestamps.ms_to_frames(2001, TimeType.START)
+    assert 5 == timestamps.ms_to_frames(2002, TimeType.START)
+    assert 6 == timestamps.ms_to_frames(2003, TimeType.START)
+    assert 7 == timestamps.ms_to_frames(2004, TimeType.START)
+    with pytest.raises(ValueError) as exc_info:
+        timestamps.ms_to_frames(-1, TimeType.START)
+    assert str(exc_info.value) == "You cannot specify an time under 0."
+
+    assert -1 == timestamps.ms_to_frames(0, TimeType.END)
+    assert 0 == timestamps.ms_to_frames(1, TimeType.END)
+    assert 1 == timestamps.ms_to_frames(1500, TimeType.END)
+    assert 2 == timestamps.ms_to_frames(1501, TimeType.END)
+    assert 2 == timestamps.ms_to_frames(2000, TimeType.END)
+    assert 3 == timestamps.ms_to_frames(2001, TimeType.END)
+    with pytest.raises(ValueError) as exc_info:
+        timestamps.ms_to_frames(-1, TimeType.END)
+    assert str(exc_info.value) == "You cannot specify an time under 0."
