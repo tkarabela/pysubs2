@@ -13,7 +13,6 @@ YCbCr Matrix: TV.601
 
 [Aegisub Project Garbage]
 Timecodes File: timestamps.txt
-Active Line: 4
 
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
@@ -26,18 +25,8 @@ Comment: 0,0:00:00.00,0:00:00.00,Default,,0,0,0,,Apply the karaoke with this Aeg
 Comment: 0,0:00:00.00,0:00:00.00,Default,,0,0,0,,The loop is 33320, because it has 33315 frames and we want to test it few frame over the video end.
 Comment: 0,0:00:00.00,0:00:00.00,Default,,0,0,0,,Style mean ``x`` frame.
 Comment: 0,0:00:00.00,0:00:00.00,Default,,0,0,0,code once,function ms_from_frame(frame) line.style = frame line.start_time = _G.aegisub.ms_from_frame(frame) line.end_time = _G.aegisub.ms_from_frame(frame + 1) --[[it convert the start_time to end_time: https://github.com/Aegisub/Aegisub/blob/6f546951b4f004da16ce19ba638bf3eedefb9f31/libaegisub/common/vfr.cpp#L234-L245 ]] return '"start_time":'..line.start_time..',"end_time":'..line.end_time..'' end
-Comment: 0,0:00:00.00,0:00:00.00,Default,,0,0,0,template line loop 33320,{!ms_from_frame(j-10)!}
+Comment: 0,0:00:00.00,0:00:00.00,Default,,0,0,0,template line loop 33320,{!ms_from_frame(j)!}
 Comment: 0,0:00:00.00,0:00:00.00,Default,,0,0,0,karaoke,{\k731}
-Dialogue: 0,0:00:00.00,0:00:00.00,-9,,0,0,0,fx,{"start_time":-395,"end_time":-354}
-Dialogue: 0,0:00:00.00,0:00:00.00,-8,,0,0,0,fx,{"start_time":-354,"end_time":-312}
-Dialogue: 0,0:00:00.00,0:00:00.00,-7,,0,0,0,fx,{"start_time":-312,"end_time":-270}
-Dialogue: 0,0:00:00.00,0:00:00.00,-6,,0,0,0,fx,{"start_time":-270,"end_time":-229}
-Dialogue: 0,0:00:00.00,0:00:00.00,-5,,0,0,0,fx,{"start_time":-229,"end_time":-187}
-Dialogue: 0,0:00:00.00,0:00:00.00,-4,,0,0,0,fx,{"start_time":-187,"end_time":-145}
-Dialogue: 0,0:00:00.00,0:00:00.00,-3,,0,0,0,fx,{"start_time":-145,"end_time":-104}
-Dialogue: 0,0:00:00.00,0:00:00.00,-2,,0,0,0,fx,{"start_time":-104,"end_time":-62}
-Dialogue: 0,0:00:00.00,0:00:00.00,-1,,0,0,0,fx,{"start_time":-62,"end_time":-20}
-Dialogue: 0,0:00:00.00,0:00:00.02,0,,0,0,0,fx,{"start_time":-20,"end_time":21}
 Dialogue: 0,0:00:00.02,0:00:00.06,1,,0,0,0,fx,{"start_time":21,"end_time":63}
 Dialogue: 0,0:00:00.06,0:00:00.10,2,,0,0,0,fx,{"start_time":63,"end_time":104}
 Dialogue: 0,0:00:00.10,0:00:00.15,3,,0,0,0,fx,{"start_time":104,"end_time":146}
@@ -33348,3 +33337,13 @@ Dialogue: 0,0:23:08.28,0:23:08.33,33307,,0,0,0,fx,{"start_time":1388283,"end_tim
 Dialogue: 0,0:23:08.33,0:23:08.37,33308,,0,0,0,fx,{"start_time":1388325,"end_time":1388366}
 Dialogue: 0,0:23:08.37,0:23:08.41,33309,,0,0,0,fx,{"start_time":1388366,"end_time":1388408}
 Dialogue: 0,0:23:08.41,0:23:08.45,33310,,0,0,0,fx,{"start_time":1388408,"end_time":1388450}
+Dialogue: 0,0:23:08.45,0:23:08.49,33311,,0,0,0,fx,{"start_time":1388450,"end_time":1388491}
+Dialogue: 0,0:23:08.49,0:23:08.53,33312,,0,0,0,fx,{"start_time":1388491,"end_time":1388533}
+Dialogue: 0,0:23:08.53,0:23:08.58,33313,,0,0,0,fx,{"start_time":1388533,"end_time":1388575}
+Dialogue: 0,0:23:08.58,0:23:08.62,33314,,0,0,0,fx,{"start_time":1388575,"end_time":1388617}
+Dialogue: 0,0:23:08.62,0:23:08.66,33315,,0,0,0,fx,{"start_time":1388617,"end_time":1388659}
+Dialogue: 0,0:23:08.66,0:23:08.70,33316,,0,0,0,fx,{"start_time":1388659,"end_time":1388700}
+Dialogue: 0,0:23:08.70,0:23:08.74,33317,,0,0,0,fx,{"start_time":1388700,"end_time":1388742}
+Dialogue: 0,0:23:08.74,0:23:08.78,33318,,0,0,0,fx,{"start_time":1388742,"end_time":1388784}
+Dialogue: 0,0:23:08.78,0:23:08.83,33319,,0,0,0,fx,{"start_time":1388784,"end_time":1388825}
+Dialogue: 0,0:23:08.83,0:23:08.87,33320,,0,0,0,fx,{"start_time":1388825,"end_time":1388867}
