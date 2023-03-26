@@ -145,8 +145,11 @@ def test_frames_to_ms():
     assert frames_to_ms(100, 25, TimeType.EXACT) == 4000
     assert frames_to_ms(1, 23.976, TimeType.EXACT) == 42
     assert isinstance(frames_to_ms(1, 23.976, TimeType.EXACT), int)
-    assert frames_to_ms(-1, 23.976, TimeType.EXACT) == -41
-    
+   
+    # Negative frame handling
+    with pytest.raises(ValueError):
+        frames_to_ms(-1, 23.976, TimeType.EXACT)
+
     # framerate handling
     with pytest.raises(ValueError):
         frames_to_ms(frames=1, fps=0.0, time_type=TimeType.EXACT)
@@ -162,8 +165,11 @@ def test_ms_to_frames():
     assert ms_to_frames(4000, 25, TimeType.EXACT) == 100
     assert ms_to_frames(42, 23.976, TimeType.EXACT) == 1
     assert isinstance(ms_to_frames(42, 23.976, TimeType.EXACT), int)
-    assert ms_to_frames(-42, 23.976, TimeType.EXACT) == -2
     
+    # Negative ms handling
+    with pytest.raises(ValueError):
+        ms_to_frames(-42, 23.976, TimeType.EXACT)
+
     # framerate handling
     with pytest.raises(ValueError):
         ms_to_frames(1, fps=0.0, time_type=TimeType.EXACT)
