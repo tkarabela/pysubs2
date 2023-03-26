@@ -43,12 +43,12 @@ class MicroDVDFormat(FormatBase):
                 try:
                     fps = float(text)  # type: ignore[assignment]
                     subs.fps = fps
-                    timestamps = Timestamps.from_fps(fps)  # type: ignore[arg-type]
-                    continue
                 except ValueError:
                     raise UnknownFPSError("Framerate was not specified and "
                                           "cannot be read from "
                                           "the MicroDVD file.")
+                timestamps = Timestamps.from_fps(fps)  # type: ignore[arg-type]
+                continue
 
             start = timestamps.frames_to_ms(fstart, TimeType.START)
             end = timestamps.frames_to_ms(fend, TimeType.END)
