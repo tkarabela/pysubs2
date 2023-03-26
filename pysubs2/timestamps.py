@@ -1,5 +1,4 @@
 import json
-import math
 import os
 import shutil
 import subprocess
@@ -257,16 +256,10 @@ class Timestamps:
             return self.ms_to_frames(ms - 1, TimeType.EXACT)
 
         if ms > self.timestamps[-1]:
-            # It is mathematically impossible to isolate frame from this equation
-            # ms = round(frame * denominator / numerator)
-            # Because of that, we need to try both possibility (floor_frame and ceil_frame)
-            frame = ms * self.numerator / self.denominator
-
-            floor_frame = math.floor(frame)
-            ceil_frame = math.ceil(frame)
-
-            ceil_ms = math.floor(ceil_frame * self.denominator / self.numerator + 0.5)
-            return ceil_frame if ms == ceil_ms else floor_frame
+            # For explanation of this, see docs/Proof algorithm - ms_to_frames.md
+            upper_bound = (ms + 0.5) * self.numerator / self.denominator
+            trunc_frame = int(upper_bound)
+            return trunc_frame - 1 if upper_bound == trunc_frame else trunc_frame
 
         return bisect_right(self.timestamps, ms) - 1
 
@@ -276,7 +269,7 @@ class Timestamps:
         Parameters:
             frame (int): Frame.
             time_type (TimeType): The type of the provided time (start/end).
-            approximate (bool, optional): If True and if the frame is under 0 or over the video length, it will approximate the ms.
+            approximate (bool, optional): If True and ms is over the video length, it will approximate the ms.
         Returns:
             The output represents ``frames`` converted into ``ms``.
         """
@@ -307,6 +300,6 @@ class Timestamps:
 
         if frame > len(self.timestamps) - 1:
             frames_past_end = frame - len(self.timestamps) + 1
-            return math.floor(frames_past_end * self.denominator / self.numerator + 0.5) + self.last
+            return int(frames_past_end * self.denominator / self.numerator + 0.5) + self.last
 
         return self.timestamps[frame]
