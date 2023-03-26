@@ -118,7 +118,9 @@ class SSAEvent:
         if frames is None and fps is None:
             delta = make_time(h=h, m=m, s=s, ms=ms)
             self.start += delta
+            self.start = max(self.start, 0)
             self.end += delta
+            self.end = max(self.end, 0)
         elif frames is None or fps is None:
             raise ValueError("Both fps and frames must be specified")
         else:
@@ -135,8 +137,15 @@ class SSAEvent:
             start_frame += frames
             end_frame += frames
 
-            self.start = timestamps.frames_to_ms(start_frame, TimeType.START)
-            self.end = timestamps.frames_to_ms(end_frame, TimeType.END)
+            try:
+                self.start = timestamps.frames_to_ms(start_frame, TimeType.START)
+            except ValueError:
+                self.start = 0
+            
+            try:
+                self.end = timestamps.frames_to_ms(end_frame, TimeType.END)
+            except ValueError:
+                self.end = 0
 
     def copy(self) -> "SSAEvent":
         """Return a copy of the SSAEvent."""
