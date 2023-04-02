@@ -47,7 +47,7 @@ def test_simple_write():
     assert text.strip() == ref.strip()
 
 
-def test_writes_in_order():
+def test_writes_in_given_order():
     subs = SSAFile()
 
     e1 = SSAEvent()
@@ -65,13 +65,13 @@ def test_writes_in_order():
 
     ref = dedent("""\
     1
-    00:00:00,000 --> 00:01:00,000
-    An example subtitle.
-
-    2
     00:01:00,000 --> 00:02:00,000
     Subtitle number
     two.
+
+    2
+    00:00:00,000 --> 00:01:00,000
+    An example subtitle.
     """)
 
     text = subs.to_string("srt")

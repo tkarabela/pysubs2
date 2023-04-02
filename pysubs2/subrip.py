@@ -1,6 +1,8 @@
 import re
 import warnings
+from typing import List
 
+import pysubs2
 from .formatbase import FormatBase
 from .ssaevent import SSAEvent
 from .ssastyle import SSAStyle
@@ -151,7 +153,7 @@ class SubripFormat(FormatBase):
 
             return re.sub("\n+", "\n", "".join(body).strip())
 
-        visible_lines = sorted((line for line in subs if not line.is_comment), key=lambda line: line.start)
+        visible_lines = cls._get_visible_lines(subs)
 
         lineno = 1
         for line in visible_lines:
@@ -166,3 +168,8 @@ class SubripFormat(FormatBase):
             print(start, "-->", end, file=fp)
             print(text, end="\n\n", file=fp)
             lineno += 1
+
+    @classmethod
+    def _get_visible_lines(cls, subs: "pysubs2.SSAFile") -> List["pysubs2.SSAEvent"]:
+        visible_lines = [line for line in subs if not line.is_comment]
+        return visible_lines
