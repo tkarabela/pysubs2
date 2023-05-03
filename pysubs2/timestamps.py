@@ -159,7 +159,8 @@ class Timestamps:
             pts: List[int] = []
 
             for packet in packets:
-                pts.append(int(Decimal(packet["pts_time"]) * 1000))
+                # + 0.5 to round the result
+                pts.append(int(Decimal(packet["pts_time"]) * 1000 + Decimal(0.5)))
 
             pts.sort()
             return pts
