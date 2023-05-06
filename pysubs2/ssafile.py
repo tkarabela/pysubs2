@@ -2,9 +2,11 @@ from collections.abc import MutableSequence
 import io
 from io import open
 from itertools import chain
+from numbers import Real
 import os.path
 import logging
-from typing import Optional, List, Dict, Iterable, Any, overload, Iterator
+from typing import Optional, List, Dict, Iterable, Any, Union, overload, Iterator
+
 
 from .common import IntOrFloat
 from .formats import autodetect_format, get_format_class, get_format_identifier
@@ -12,6 +14,7 @@ from .substation import is_valid_field_content
 from .ssaevent import SSAEvent
 from .ssastyle import SSAStyle
 from .time import make_time, ms_to_str
+from .timestamps import Timestamps
 
 
 class SSAFile(MutableSequence):
@@ -245,7 +248,7 @@ class SSAFile(MutableSequence):
     # ------------------------------------------------------------------------
 
     def shift(self, h: IntOrFloat=0, m: IntOrFloat=0, s: IntOrFloat=0, ms: IntOrFloat=0,
-              frames: Optional[int]=None, fps: Optional[float]=None):
+              frames: Optional[int]=None, fps: Optional[Union[Real,Timestamps]]=None):
         """
         Shift all subtitles by constant time amount.
 
@@ -262,10 +265,8 @@ class SSAFile(MutableSequence):
             ValueError: Invalid fps or missing number of frames.
 
         """
-        delta = make_time(h=h, m=m, s=s, ms=ms, frames=frames, fps=fps)
         for line in self:
-            line.start += delta
-            line.end += delta
+            line.shift(h=h, m=m, s=s, ms=ms, frames=frames, fps=fps)
 
     def transform_framerate(self, in_fps: float, out_fps: float):
         """

@@ -1,10 +1,12 @@
+import dataclasses
 import re
 import warnings
-from typing import Optional, Dict, Any, ClassVar
-import dataclasses
+from numbers import Real
+from typing import Optional, Dict, Any, ClassVar, Union
 
 from .common import IntOrFloat
 from .time import ms_to_str, make_time
+from .timestamps import Timestamps, TimeType
 
 
 @dataclasses.dataclass(repr=False, eq=False, order=False)
@@ -106,16 +108,44 @@ class SSAEvent:
         self.text = text.replace("\n", r"\N")
 
     def shift(self, h: IntOrFloat=0, m: IntOrFloat=0, s: IntOrFloat=0, ms: IntOrFloat=0,
-              frames: Optional[int]=None, fps: Optional[float]=None):
+              frames: Optional[int]=None, fps: Optional[Union[Real,Timestamps]]=None):
         """
         Shift start and end times.
 
         See :meth:`SSAFile.shift()` for full description.
 
         """
-        delta = make_time(h=h, m=m, s=s, ms=ms, frames=frames, fps=fps)
-        self.start += delta
-        self.end += delta
+        if frames is None and fps is None:
+            delta = make_time(h=h, m=m, s=s, ms=ms)
+            self.start += delta
+            self.start = max(self.start, 0)
+            self.end += delta
+            self.end = max(self.end, 0)
+        elif frames is None or fps is None:
+            raise ValueError("Both fps and frames must be specified")
+        else:
+            if isinstance(fps, Real):
+                timestamps = Timestamps.from_fps(fps)
+            elif isinstance(fps, Timestamps):
+                timestamps = fps
+            else:
+                raise TypeError("Unexpected type for fps")
+
+            start_frame = timestamps.ms_to_frames(self.start, TimeType.START)
+            end_frame = timestamps.ms_to_frames(self.end, TimeType.END)
+
+            start_frame += frames
+            end_frame += frames
+
+            try:
+                self.start = timestamps.frames_to_ms(start_frame, TimeType.START)
+            except ValueError:
+                self.start = 0
+            
+            try:
+                self.end = timestamps.frames_to_ms(end_frame, TimeType.END)
+            except ValueError:
+                self.end = 0
 
     def copy(self) -> "SSAEvent":
         """Return a copy of the SSAEvent."""

@@ -67,3 +67,6 @@ temp/
 
 # mypy
 .mypy_cache/
+
+# vscode
+.vscode/

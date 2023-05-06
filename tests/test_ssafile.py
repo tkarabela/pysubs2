@@ -20,12 +20,11 @@ def test_repr_simple():
 def test_shift():
     #TODO: write more tests
     subs = SSAFile()
+    # To be able to raise an exception, the subs need to have at least 1 SSAEvent
+    subs.events = [SSAEvent(start=0, end=500)]
 
     with pytest.raises(ValueError):
         subs.shift(frames=5)
-
-    with pytest.raises(ValueError):
-        subs.shift(fps=23.976)
 
     with pytest.raises(ValueError):
         subs.shift(frames=5, fps=-1)

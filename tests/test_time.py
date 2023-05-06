@@ -140,37 +140,43 @@ def test_ms_to_times():
 
 def test_frames_to_ms():
     # basic tests
-    assert frames_to_ms(0, 25) == 0
-    assert isinstance(frames_to_ms(0, 25), int)
-    assert frames_to_ms(100, 25) == 4000
-    assert frames_to_ms(1, 23.976) == 42
-    assert isinstance(frames_to_ms(1, 23.976), int)
-    assert frames_to_ms(-1, 23.976) == -42
-    
+    assert frames_to_ms(0, 25, TimeType.EXACT) == 0
+    assert isinstance(frames_to_ms(0, 25, TimeType.EXACT), int)
+    assert frames_to_ms(100, 25, TimeType.EXACT) == 4000
+    assert frames_to_ms(1, 23.976, TimeType.EXACT) == 42
+    assert isinstance(frames_to_ms(1, 23.976, TimeType.EXACT), int)
+   
+    # Negative frame handling
+    with pytest.raises(ValueError):
+        frames_to_ms(-1, 23.976, TimeType.EXACT)
+
     # framerate handling
     with pytest.raises(ValueError):
-        frames_to_ms(frames=1, fps=0.0)
+        frames_to_ms(frames=1, fps=0.0, time_type=TimeType.EXACT)
     with pytest.raises(ValueError):
-        frames_to_ms(frames=1, fps=-25.0)
+        frames_to_ms(frames=1, fps=-25.0, time_type=TimeType.EXACT)
     with pytest.raises(TypeError):
-        frames_to_ms(frames=1, fps="pal")  # keyword aliases from PySubs 0.1 are no longer supported
+        frames_to_ms(frames=1, fps="pal", time_type=TimeType.EXACT)  # keyword aliases from PySubs 0.1 are no longer supported
 
 def test_ms_to_frames():
     # basic tests
-    assert ms_to_frames(0, 25) == 0
-    assert isinstance(ms_to_frames(0, 25), int)
-    assert ms_to_frames(4000, 25) == 100
-    assert ms_to_frames(42, 23.976) == 1
-    assert isinstance(ms_to_frames(42, 23.976), int)
-    assert ms_to_frames(-42, 23.976) == -1
+    assert ms_to_frames(0, 25, TimeType.EXACT) == 0
+    assert isinstance(ms_to_frames(0, 25, TimeType.EXACT), int)
+    assert ms_to_frames(4000, 25, TimeType.EXACT) == 100
+    assert ms_to_frames(42, 23.976, TimeType.EXACT) == 1
+    assert isinstance(ms_to_frames(42, 23.976, TimeType.EXACT), int)
     
+    # Negative ms handling
+    with pytest.raises(ValueError):
+        ms_to_frames(-42, 23.976, TimeType.EXACT)
+
     # framerate handling
     with pytest.raises(ValueError):
-        ms_to_frames(1, fps=0.0)
+        ms_to_frames(1, fps=0.0, time_type=TimeType.EXACT)
     with pytest.raises(ValueError):
-        ms_to_frames(1, fps=-25.0)
+        ms_to_frames(1, fps=-25.0, time_type=TimeType.EXACT)
     with pytest.raises(TypeError):
-        ms_to_frames(1, fps="pal")  # keyword aliases from PySubs 0.1 are no longer supported
+        ms_to_frames(1, fps="pal", time_type=TimeType.EXACT)  # keyword aliases from PySubs 0.1 are no longer supported
 
 def test_ms_to_str():
     assert ms_to_str(0) == "0:00:00"
