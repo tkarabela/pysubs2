@@ -57,7 +57,7 @@ That is 60,000 milliseconds, or one minute. pysubs2 uses plain :class:`int` mill
 
     >>> subs[1].start == pysubs2.make_time(s=2)
     True
-    >>> subs[1].start == pysubs2.make_time(frame=50, fps=25)
+    >>> subs[1].start == pysubs2.make_time(frames=50, fps=25)
     True
 
 .. tip:: :class:`pysubs2.SSAEvent` objects define ordering with respect to time, meaning you can sort them chronologically. There is :meth:`pysubs2.SSAFile.sort()` method for this purpose.
