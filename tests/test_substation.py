@@ -5,7 +5,7 @@ pysubs2.formats.substation tests
 
 from textwrap import dedent
 from pysubs2 import SSAFile, SSAEvent, SSAStyle, make_time, Color, Alignment
-from pysubs2.substation import color_to_ass_rgba, color_to_ssa_rgb, rgba_to_color, MAX_REPRESENTABLE_TIME
+from pysubs2.substation import color_to_ass_rgba, color_to_ssa_rgb, rgba_to_color, MAX_REPRESENTABLE_TIME, SubstationFormat
 import pytest
 import sys
 
@@ -426,3 +426,18 @@ def test_reading_invalid_alignment_raises_warning():
     with pytest.warns(RuntimeWarning):
         subs = SSAFile.from_string(ASS_WITH_MALFORMED_STYLE_INVALID_ALIGNMENT)
     assert subs.styles["Default"].alignment == Alignment.BOTTOM_CENTER
+
+
+def test_ass_ms_to_timestamp():
+    # see issue #76
+
+    assert SubstationFormat.ms_to_timestamp(4659990) == "1:17:39.99"
+    assert SubstationFormat.ms_to_timestamp(4659991) == "1:17:39.99"
+    assert SubstationFormat.ms_to_timestamp(4659992) == "1:17:39.99"
+    assert SubstationFormat.ms_to_timestamp(4659993) == "1:17:39.99"
+    assert SubstationFormat.ms_to_timestamp(4659994) == "1:17:39.99"
+    assert SubstationFormat.ms_to_timestamp(4659995) == "1:17:40.00"
+    assert SubstationFormat.ms_to_timestamp(4659996) == "1:17:40.00"
+    assert SubstationFormat.ms_to_timestamp(4659997) == "1:17:40.00"
+    assert SubstationFormat.ms_to_timestamp(4659998) == "1:17:40.00"
+    assert SubstationFormat.ms_to_timestamp(4659999) == "1:17:40.00"
