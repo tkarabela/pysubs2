@@ -146,18 +146,18 @@ class SubstationFormat(FormatBase):
     """SubStation Alpha (ASS, SSA) subtitle format implementation"""
 
     @staticmethod
-    def ms_to_timestamp(ms: int) -> str:
+    def ms_to_timestamp(requested_ms: int) -> str:
         """Convert ms to 'H:MM:SS.cc'"""
-        if ms < 0:
-            ms = 0
-        if ms > MAX_REPRESENTABLE_TIME:
+        if requested_ms < 0:
+            requested_ms = 0
+        if requested_ms > MAX_REPRESENTABLE_TIME:
             warnings.warn("Overflow in SubStation timestamp, clamping to MAX_REPRESENTABLE_TIME", RuntimeWarning)
-            ms = MAX_REPRESENTABLE_TIME
-
-        h, m, s, ms = ms_to_times(ms)
+            requested_ms = MAX_REPRESENTABLE_TIME
 
         # Aegisub does rounding, see https://github.com/Aegisub/Aegisub/blob/6f546951b4f004da16ce19ba638bf3eedefb9f31/libaegisub/include/libaegisub/ass/time.h#L32
-        cs = ((ms + 5) - (ms + 5) % 10) // 10
+        round_ms = ((requested_ms + 5) - (requested_ms + 5) % 10)
+        h, m, s, ms = ms_to_times(round_ms)
+        cs = ms // 10
 
         return f"{h:01d}:{m:02d}:{s:02d}.{cs:02d}"
 
