@@ -1,7 +1,6 @@
 import logging
 import re
 import warnings
-from numbers import Number
 from typing import Any, Union, Optional, Dict
 
 import pysubs2
@@ -340,8 +339,12 @@ class SubstationFormat(FormatBase):
                     return str(alignment.value)
             elif isinstance(v, bool):
                 return "-1" if v else "0"
-            elif isinstance(v, (str, Number)):
+            elif isinstance(v, int):
                 return str(v)
+            elif isinstance(v, float):
+                return str(int(v) if v.is_integer() else v)
+            elif isinstance(v, str):
+                return v
             elif isinstance(v, Color):
                 if format_ == "ass":
                     return color_to_ass_rgba(v)
