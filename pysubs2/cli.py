@@ -123,6 +123,10 @@ class Pysubs2CLI:
             exit("\nAborted by user.")
 
     def main(self, argv):
+        # Dealing with empty arguments
+        if argv == []:
+            argv = ["--help"]
+
         args = self.parser.parse_args(argv)
         errors = 0
 
