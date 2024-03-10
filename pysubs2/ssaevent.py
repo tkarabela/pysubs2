@@ -25,19 +25,19 @@ class SSAEvent:
         >>> ev = SSAEvent(start=make_time(s=1), end=make_time(s=2.5), text="Hello World!")
 
     """
-    OVERRIDE_SEQUENCE: ClassVar = re.compile(r"{[^}]*}")
+    OVERRIDE_SEQUENCE: ClassVar = re.compile(rb"{[^}]*}")
 
     start: int = 0  #: Subtitle start time (in milliseconds)
     end: int = 10000  #: Subtitle end time (in milliseconds)
-    text: str = ""  #: Text of subtitle (with SubStation override tags)
+    text: bytes = b""  #: Text of subtitle (with SubStation override tags)
     marked: bool = False  #: (SSA only)
     layer: int = 0  #: Layer number, 0 is the lowest layer (ASS only)
-    style: str = "Default"  #: Style name
-    name: str = ""  #: Actor name
+    style: bytes = b"Default"  #: Style name
+    name: bytes = b""  #: Actor name
     marginl: int = 0  #: Left margin
     marginr: int = 0  #: Right margin
     marginv: int = 0  #: Vertical margin
-    effect: str = ""  #: Line effect
+    effect: bytes = b""  #: Line effect
     type: str = "Dialogue"  #: Line type (Dialogue/Comment)
 
     @property
@@ -96,14 +96,14 @@ class SSAEvent:
         """
         text = self.text
         text = self.OVERRIDE_SEQUENCE.sub("", text)
-        text = text.replace(r"\h", " ")
-        text = text.replace(r"\n", "\n")
-        text = text.replace(r"\N", "\n")
+        text = text.replace(rb"\h", b" ")
+        text = text.replace(rb"\n", b"\n")
+        text = text.replace(rb"\N", b"\n")
         return text
 
     @plaintext.setter
     def plaintext(self, text: str):
-        self.text = text.replace("\n", r"\N")
+        self.text = text.replace(b"\n", rb"\N")
 
     def shift(self, h: IntOrFloat=0, m: IntOrFloat=0, s: IntOrFloat=0, ms: IntOrFloat=0,
               frames: Optional[int]=None, fps: Optional[float]=None):

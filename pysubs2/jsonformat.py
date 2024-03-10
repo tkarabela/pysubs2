@@ -24,7 +24,7 @@ class JSONFormat(FormatBase):
     @classmethod
     def guess_format(cls, text):
         """See :meth:`pysubs2.formats.FormatBase.guess_format()`"""
-        if text.startswith("{\""):
+        if text.startswith(b"{\""):
             return "json"
 
     @classmethod
@@ -39,7 +39,7 @@ class JSONFormat(FormatBase):
         for name, fields in data["styles"].items():
             subs.styles[name] = sty = SSAStyle()
             for k, v in fields.items():
-                if "color" in k:
+                if b"color" in k:
                     setattr(sty, k, Color(**v))
                 else:
                     setattr(sty, k, v)

@@ -8,7 +8,7 @@ from .substation import parse_tags
 from .time import ms_to_frames, frames_to_ms
 
 #: Matches a MicroDVD line.
-MICRODVD_LINE = re.compile(r" *\{ *(\d+) *\} *\{ *(\d+) *\}(.+)")
+MICRODVD_LINE = re.compile(rb" *\{ *(\d+) *\} *\{ *(\d+) *\}(.+)")
 
 
 class MicroDVDFormat(FormatBase):
@@ -46,16 +46,16 @@ class MicroDVDFormat(FormatBase):
             start, end = map(partial(frames_to_ms, fps=fps), (fstart, fend))
 
             def prepare_text(text):
-                text = text.replace("|", r"\N")
+                text = text.replace(b"|", rb"\N")
 
                 def style_replacer(match: re.Match) -> str:
-                    tags = [c for c in "biu" if c in match.group(0)]
-                    return "{%s}" % "".join(f"\\{c}1" for c in tags)
+                    tags = [c for c in b"biu" if c in match.group(0)]
+                    return b"{%s}" % b"".join(b"\\" + str(c).encode("ascii") + b"1" for c in tags)
 
-                text = re.sub(r"\{[Yy]:[^}]+\}", style_replacer, text)
-                text = re.sub(r"\{[Ff]:([^}]+)\}", r"{\\fn\1}", text)
-                text = re.sub(r"\{[Ss]:([^}]+)\}", r"{\\fs\1}", text)
-                text = re.sub(r"\{P:(\d+),(\d+)\}", r"{\\pos(\1,\2)}", text)
+                text = re.sub(rb"\{[Yy]:[^}]+\}", style_replacer, text)
+                text = re.sub(rb"\{[Ff]:([^}]+)\}", rb"{\\fn\1}", text)
+                text = re.sub(rb"\{[Ss]:([^}]+)\}", rb"{\\fs\1}", text)
+                text = re.sub(rb"\{P:(\d+),(\d+)\}", rb"{\\pos(\1,\2)}", text)
 
                 return text.strip()
 
@@ -85,24 +85,24 @@ class MicroDVDFormat(FormatBase):
         def is_entirely_italic(line: SSAEvent) -> bool:
             style = subs.styles.get(line.style, SSAStyle.DEFAULT_STYLE)
             for fragment, sty in parse_tags(line.text, style, subs.styles):
-                fragment = fragment.replace(r"\h", " ")
-                fragment = fragment.replace(r"\n", "\n")
-                fragment = fragment.replace(r"\N", "\n")
+                fragment = fragment.replace(rb"\h", b" ")
+                fragment = fragment.replace(rb"\n", b"\n")
+                fragment = fragment.replace(rb"\N", b"\n")
                 if not sty.italic and fragment and not fragment.isspace():
                     return False
             return True
 
         # insert an artificial first line telling the framerate
         if write_fps_declaration:
-            subs.insert(0, SSAEvent(start=0, end=0, text=str(fps)))
+            subs.insert(0, SSAEvent(start=0, end=0, text=str(fps).encode("ascii")))
 
         for line in subs:
             if line.is_comment or line.is_drawing:
                 continue
 
-            text = "|".join(line.plaintext.splitlines())
+            text = b"|".join(line.plaintext.splitlines())
             if apply_styles and is_entirely_italic(line):
-                text = "{Y:i}" + text
+                text = b"{Y:i}" + text
 
             start, end = map(to_frames, (line.start, line.end))
 
@@ -110,7 +110,7 @@ class MicroDVDFormat(FormatBase):
             if start < 0: start = 0
             if end < 0: end = 0
 
-            print("{%d}{%d}%s" % (start, end, text), file=fp)
+            print(b"{%d}{%d}%s" % (start, end, text), file=fp)
 
         # remove the artificial framerate-telling line
         if write_fps_declaration:

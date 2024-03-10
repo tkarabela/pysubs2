@@ -8,7 +8,7 @@ from .substation import parse_tags
 from .time import ms_to_times, make_time, TIMESTAMP_SHORT, timestamp_to_ms
 
 #: Pattern that matches TMP line
-TMP_LINE = re.compile(r"(\d{1,2}:\d{2}:\d{2}):(.+)")
+TMP_LINE = re.compile(rb"(\d{1,2}:\d{2}:\d{2}):(.+)")
 
 #: Largest timestamp allowed in Tmp, ie. 99:59:59.
 MAX_REPRESENTABLE_TIME = make_time(h=99, m=59, s=59)
@@ -31,7 +31,7 @@ class TmpFormat(FormatBase):
     @classmethod
     def guess_format(cls, text):
         """See :meth:`pysubs2.formats.FormatBase.guess_format()`"""
-        if "[Script Info]" in text or "[V4+ Styles]" in text:
+        if b"[Script Info]" in text or b"[V4+ Styles]" in text:
             # disambiguation vs. SSA/ASS
             return None
 
@@ -45,9 +45,9 @@ class TmpFormat(FormatBase):
         events = []
 
         def prepare_text(text):
-            text = text.replace("|", r"\N")  # convert newlines
-            text = re.sub(r"< *u *>", "{\\\\u1}", text) # not r" for Python 2.7 compat, triggers unicodeescape
-            text = re.sub(r"< */? *[a-zA-Z][^>]*>", "", text) # strip other HTML tags
+            text = text.replace(b"|", rb"\N")  # convert newlines
+            text = re.sub(rb"< *u *>", b"{\\\\u1}", text) # not rb" for Python 2.7 compat, triggers unicodeescape
+            text = re.sub(rb"< */? *[a-zA-Z][^>]*>", b"", text) # strip other HTML tags
             return text
 
         for line in fp:
@@ -86,9 +86,9 @@ class TmpFormat(FormatBase):
             body = []
             skip = False
             for fragment, sty in parse_tags(text, style, subs.styles):
-                fragment = fragment.replace(r"\h", " ")
-                fragment = fragment.replace(r"\n", "\n")
-                fragment = fragment.replace(r"\N", "\n")
+                fragment = fragment.replace(rb"\h", b" ")
+                fragment = fragment.replace(rb"\n", b"\n")
+                fragment = fragment.replace(rb"\N", b"\n")
                 if apply_styles:
                     if sty.italic: fragment = f"<i>{fragment}</i>"
                     if sty.underline: fragment = f"<u>{fragment}</u>"
@@ -99,7 +99,7 @@ class TmpFormat(FormatBase):
             if skip:
                 return ""
             else:
-                return re.sub("\n+", "\n", "".join(body).strip())
+                return re.sub(b"\n+", b"\n", "".join(body).strip())
 
         visible_lines = (line for line in subs if not line.is_comment)
 
@@ -107,4 +107,4 @@ class TmpFormat(FormatBase):
             start = cls.ms_to_timestamp(line.start)
             text = prepare_text(line.text, subs.styles.get(line.style, SSAStyle.DEFAULT_STYLE))
 
-            print(start + ":" + text, end="\n", file=fp)
+            print(start + b":" + text, end="\n", file=fp)

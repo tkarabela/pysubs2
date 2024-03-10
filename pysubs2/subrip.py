@@ -36,11 +36,11 @@ class SubripFormat(FormatBase):
     @classmethod
     def guess_format(cls, text):
         """See :meth:`pysubs2.formats.FormatBase.guess_format()`"""
-        if "[Script Info]" in text or "[V4+ Styles]" in text:
+        if b"[Script Info]" in text or b"[V4+ Styles]" in text:
             # disambiguation vs. SSA/ASS
             return None
 
-        if text.lstrip().startswith("WEBVTT"):
+        if text.lstrip().startswith(b"WEBVTT"):
             # disambiguation vs. WebVTT
             return None
 
@@ -87,25 +87,25 @@ class SubripFormat(FormatBase):
             # Handle the "happy" empty subtitle case, which is timestamp line followed by blank line(s)
             # followed by number line and timestamp line of the next subtitle. Fixes issue #11.
             if (len(lines) >= 2
-                    and all(re.match(r"\s*$", line) for line in lines[:-1])
-                    and re.match(r"\s*\d+\s*$", lines[-1])):
-                return ""
+                    and all(re.match(rb"\s*$", line) for line in lines[:-1])
+                    and re.match(rb"\s*\d+\s*$", lines[-1])):
+                return b""
 
             # Handle the general case.
-            s = "".join(lines).strip()
-            s = re.sub(r"\n+ *\d+ *$", "", s) # strip number of next subtitle
+            s = b"".join(lines).strip()
+            s = re.sub(rb"\n+ *\d+ *$", b"", s) # strip number of next subtitle
             if not keep_html_tags:
-                s = re.sub(r"< *i *>", r"{\\i1}", s)
-                s = re.sub(r"< */ *i *>", r"{\\i0}", s)
-                s = re.sub(r"< *s *>", r"{\\s1}", s)
-                s = re.sub(r"< */ *s *>", r"{\\s0}", s)
-                s = re.sub(r"< *u *>", r"{\\u1}", s)
-                s = re.sub(r"< */ *u *>", r"{\\u0}", s)
-                s = re.sub(r"< *b *>", r"{\\b1}", s)
-                s = re.sub(r"< */ *b *>", r"{\\b0}", s)
+                s = re.sub(rb"< *i *>", rb"{\\i1}", s)
+                s = re.sub(rb"< */ *i *>", rb"{\\i0}", s)
+                s = re.sub(rb"< *s *>", rb"{\\s1}", s)
+                s = re.sub(rb"< */ *s *>", rb"{\\s0}", s)
+                s = re.sub(rb"< *u *>", rb"{\\u1}", s)
+                s = re.sub(rb"< */ *u *>", rb"{\\u0}", s)
+                s = re.sub(rb"< *b *>", rb"{\\b1}", s)
+                s = re.sub(rb"< */ *b *>", rb"{\\b0}", s)
             if not (keep_html_tags or keep_unknown_html_tags):
-                s = re.sub(r"< */? *[a-zA-Z][^>]*>", "", s) # strip other HTML tags
-            s = re.sub(r"\n", r"\\N", s) # convert newlines
+                s = re.sub(rb"< */? *[a-zA-Z][^>]*>", b"", s) # strip other HTML tags
+            s = re.sub(rb"\n", rb"\\N", s) # convert newlines
             return s
 
         subs.events = [SSAEvent(start=start, end=end, text=prepare_text(lines))
@@ -134,10 +134,10 @@ class SubripFormat(FormatBase):
                 is SRT which doesn't use line styles - this shouldn't be much
                 of an issue in practice.)
         """
-        def prepare_text(text: str, style: SSAStyle):
-            text = text.replace(r"\h", " ")
-            text = text.replace(r"\n", "\n")
-            text = text.replace(r"\N", "\n")
+        def prepare_text(text: bytes, style: SSAStyle):
+            text = text.replace(rb"\h", b" ")
+            text = text.replace(rb"\n", b"\n")
+            text = text.replace(rb"\N", b"\n")
 
             body = []
             if keep_ssa_tags:
@@ -145,13 +145,13 @@ class SubripFormat(FormatBase):
             else:
                 for fragment, sty in parse_tags(text, style, subs.styles):
                     if apply_styles:
-                        if sty.italic: fragment = f"<i>{fragment}</i>"
-                        if sty.underline: fragment = f"<u>{fragment}</u>"
-                        if sty.strikeout: fragment = f"<s>{fragment}</s>"
+                        if sty.italic: fragment = b"<i>" + fragment + b"</i>"
+                        if sty.underline: fragment = b"<u>" + fragment + b"</u>"
+                        if sty.strikeout: fragment = b"<s>" + fragment + b"</s>"
                     if sty.drawing: raise ContentNotUsable
                     body.append(fragment)
 
-            return re.sub("\n+", "\n", "".join(body).strip())
+            return re.sub(b"\n+", b"\n", b"".join(body).strip())
 
         visible_lines = cls._get_visible_lines(subs)
 

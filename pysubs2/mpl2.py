@@ -6,7 +6,7 @@ from .ssaevent import SSAEvent
 
 
 # thanks to http://otsaloma.io/gaupol/doc/api/aeidon.files.mpl2_source.html
-MPL2_FORMAT = re.compile(r"^\[(-?\d+)\]\[(-?\d+)\](.*)", re.MULTILINE)
+MPL2_FORMAT = re.compile(rb"^\[(-?\d+)\]\[(-?\d+)\](.*)", re.MULTILINE)
 
 
 class MPL2Format(FormatBase):
@@ -22,15 +22,15 @@ class MPL2Format(FormatBase):
         """See :meth:`pysubs2.formats.FormatBase.from_file()`"""
         def prepare_text(lines):
             out = []
-            for s in lines.split("|"):
+            for s in lines.split(b"|"):
                 s = s.strip()
 
-                if s.startswith("/"):
+                if s.startswith(b"/"):
                     # line beginning with '/' is in italics
-                    s = r"{\i1}%s{\i0}" % s[1:].strip()
+                    s = rb"{\i1}%s{\i0}" % s[1:].strip()
 
                 out.append(s)
-            return "\\N".join(out)
+            return b"\\N".join(out)
 
         subs.events = [SSAEvent(start=times_to_ms(s=float(start) / 10), end=times_to_ms(s=float(end) / 10),
                        text=prepare_text(text)) for start, end, text in MPL2_FORMAT.findall(fp.getvalue())]
@@ -48,7 +48,7 @@ class MPL2Format(FormatBase):
             if line.is_comment:
                 continue
 
-            print("[{start}][{end}] {text}".format(start=int(line.start // 100),
+            print(b"[{start}][{end}] {text}".format(start=int(line.start // 100),
                                                    end=int(line.end // 100),
-                                                   text=line.plaintext.replace("\n", "|")),
+                                                   text=line.plaintext.replace(b"\n", b"|")),
                   file=fp)
