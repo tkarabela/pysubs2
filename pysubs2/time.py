@@ -4,10 +4,10 @@ from typing import Optional, List, Tuple, Sequence
 from pysubs2.common import IntOrFloat
 
 #: Pattern that matches both SubStation and SubRip timestamps.
-TIMESTAMP = re.compile(r"(\d{1,2}):(\d{1,2}):(\d{1,2})[.,](\d{1,3})")
+TIMESTAMP = re.compile(rb"(\d{1,2}):(\d{1,2}):(\d{1,2})[.,](\d{1,3})")
 
 #: Pattern that matches H:MM:SS or HH:MM:SS timestamps.
-TIMESTAMP_SHORT = re.compile(r"(\d{1,2}):(\d{2}):(\d{2})")
+TIMESTAMP_SHORT = re.compile(rb"(\d{1,2}):(\d{2}):(\d{2})")
 
 Times = namedtuple("Times", ["h", "m", "s", "ms"])
 
@@ -44,9 +44,9 @@ def timestamp_to_ms(groups: Sequence[str]):
     match to milliseconds.
     
     Example:
-        >>> timestamp_to_ms(TIMESTAMP.match("0:00:00.42").groups())
+        >>> timestamp_to_ms(TIMESTAMP.match(b"0:00:00.42").groups())
         420
-        >>> timestamp_to_ms(TIMESTAMP_SHORT.match("0:00:01").groups())
+        >>> timestamp_to_ms(TIMESTAMP_SHORT.match(b"0:00:01").groups())
         1000
 
     """

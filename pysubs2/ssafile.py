@@ -33,9 +33,9 @@ class SSAFile(MutableSequence):
     """
 
     DEFAULT_INFO = {
-        "WrapStyle": "0",
-        "ScaledBorderAndShadow": "yes",
-        "Collisions": "Normal"
+        b"WrapStyle": b"0",
+        b"ScaledBorderAndShadow": b"yes",
+        b"Collisions": b"Normal"
     }
 
     def __init__(self) -> None:
@@ -53,7 +53,7 @@ class SSAFile(MutableSequence):
     # ------------------------------------------------------------------------
 
     @classmethod
-    def load(cls, path: str, encoding: str="utf-8", format_: Optional[str]=None, fps: Optional[float]=None, **kwargs) -> "SSAFile":
+    def load(cls, path: str, format_: Optional[str]=None, fps: Optional[float]=None, **kwargs) -> "SSAFile":
         """
         Load subtitle file from given path.
 
@@ -66,8 +66,6 @@ class SSAFile(MutableSequence):
 
         Arguments:
             path (str): Path to subtitle file.
-            encoding (str): Character encoding of input file.
-                Defaults to UTF-8, you may need to change this.
             format_ (str): Optional, forces use of specific parser
                 (eg. `"srt"`, `"ass"`). Otherwise, format is detected
                 automatically from file contents. This argument should
@@ -100,19 +98,18 @@ class SSAFile(MutableSequence):
             >>> subs3 = pysubs2.load("subrip-subtitles-with-fancy-tags.srt", keep_unknown_html_tags=True)
 
         """
-        with open(path, encoding=encoding) as fp:
+        with open(path, "rb") as fp:
             return cls.from_file(fp, format_, fps=fps, **kwargs)
 
     @classmethod
-    def from_string(cls, string: str, format_: Optional[str]=None, fps: Optional[float]=None, **kwargs) -> "SSAFile":
+    def from_bytes(cls, _bytes: bytes, format_: Optional[str]=None, fps: Optional[float]=None, **kwargs) -> "SSAFile":
         """
         Load subtitle file from string.
 
         See :meth:`SSAFile.load()` for full description.
 
         Arguments:
-            string (str): Subtitle file in a string. Note that the string
-                must be Unicode (in Python 2).
+            _bytes (bytes): Subtitle file in a bytestring.
 
         Returns:
             SSAFile
@@ -126,11 +123,11 @@ class SSAFile(MutableSequence):
             >>> subs = SSAFile.from_string(text)
 
         """
-        fp = io.StringIO(string)
+        fp = io.BytesIO(_bytes)
         return cls.from_file(fp, format_, fps=fps, **kwargs)
 
     @classmethod
-    def from_file(cls, fp: io.TextIOBase, format_: Optional[str]=None, fps: Optional[float]=None, **kwargs) -> "SSAFile":
+    def from_file(cls, fp: io.RawIOBase, format_: Optional[str]=None, fps: Optional[float]=None, **kwargs) -> "SSAFile":
         """
         Read subtitle file from file object.
 
@@ -141,7 +138,7 @@ class SSAFile(MutableSequence):
             or :meth:`SSAFile.from_string()` is preferable.
 
         Arguments:
-            fp (file object): A file object, ie. :class:`io.TextIOBase` instance.
+            fp (file object): A file object, ie. :class:`io.RawIOBase` instance.
                 Note that the file must be opened in text mode (as opposed to binary).
 
         Returns:
@@ -152,10 +149,10 @@ class SSAFile(MutableSequence):
             # Autodetect subtitle format, then read again using correct parser.
             # The file might be a pipe and we need to read it twice,
             # so just buffer everything.
-            text = fp.read()
-            fragment = text[:10000]
+            _bytes = fp.read()
+            fragment = _bytes[:10000]
             format_ = autodetect_format(fragment)
-            fp = io.StringIO(text)
+            fp = io.BytesIO(_bytes)
 
         impl = get_format_class(format_)
         subs = cls() # an empty subtitle file
@@ -164,7 +161,7 @@ class SSAFile(MutableSequence):
         impl.from_file(subs, fp, format_, fps=fps, **kwargs)
         return subs
 
-    def save(self, path: str, encoding: str="utf-8", format_: Optional[str]=None, fps: Optional[float]=None, **kwargs):
+    def save(self, path: str, format_: Optional[str]=None, fps: Optional[float]=None, **kwargs):
         """
         Save subtitle file to given path.
 
@@ -177,8 +174,6 @@ class SSAFile(MutableSequence):
 
         Arguments:
             path (str): Path to subtitle file.
-            encoding (str): Character encoding of output file.
-                Defaults to UTF-8, which should be fine for most purposes.
             format_ (str): Optional, specifies desired subtitle format
                 (eg. `"srt"`, `"ass"`). Otherwise, format is detected
                 automatically from file extension. Thus, this argument
@@ -195,7 +190,6 @@ class SSAFile(MutableSequence):
 
         Raises:
             IOError
-            UnicodeEncodeError
             pysubs2.exceptions.UnknownFPSError
             pysubs2.exceptions.UnknownFormatIdentifierError
             pysubs2.exceptions.UnknownFileExtensionError
@@ -205,7 +199,7 @@ class SSAFile(MutableSequence):
             ext = os.path.splitext(path)[1].lower()
             format_ = get_format_identifier(ext)
 
-        with open(path, "w", encoding=encoding) as fp:
+        with open(path, "wb") as fp:
             self.to_file(fp, format_, fps=fps, **kwargs)
 
     def to_string(self, format_: str, fps: Optional[float]=None, **kwargs) -> str:
@@ -222,7 +216,7 @@ class SSAFile(MutableSequence):
         self.to_file(fp, format_, fps=fps, **kwargs)
         return fp.getvalue()
 
-    def to_file(self, fp: io.TextIOBase, format_: str, fps: Optional[float]=None, **kwargs):
+    def to_file(self, fp: io.RawIOBase, format_: str, fps: Optional[float]=None, **kwargs):
         """
         Write subtitle file to file object.
 
@@ -233,7 +227,7 @@ class SSAFile(MutableSequence):
             or :meth:`SSAFile.to_string()` is preferable.
 
         Arguments:
-            fp (file object): A file object, ie. :class:`io.TextIOBase` instance.
+            fp (file object): A file object, ie. :class:`io.RawIOBase` instance.
                 Note that the file must be opened in text mode (as opposed to binary).
 
         """
