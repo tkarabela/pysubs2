@@ -49,7 +49,7 @@ class SubripFormat(FormatBase):
                 return "srt"
 
     @classmethod
-    def from_file(cls, subs, fp, format_, keep_html_tags=False, keep_unknown_html_tags=False, **kwargs):
+    def from_file(cls, subs, fp, format_, keep_html_tags=False, keep_unknown_html_tags=False, keep_newlines=False, **kwargs):
         """
         See :meth:`pysubs2.formats.FormatBase.from_file()`
 
@@ -105,7 +105,8 @@ class SubripFormat(FormatBase):
                 s = re.sub(rb"< */ *b *>", rb"{\\b0}", s)
             if not (keep_html_tags or keep_unknown_html_tags):
                 s = re.sub(rb"< */? *[a-zA-Z][^>]*>", b"", s) # strip other HTML tags
-            s = re.sub(rb"\n", rb"\\N", s) # convert newlines
+            if not keep_newlines:
+                s = re.sub(rb"\n", rb"\\N", s) # convert newlines
             return s
 
         subs.events = [SSAEvent(start=start, end=end, text=prepare_text(lines))
