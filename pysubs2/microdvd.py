@@ -20,7 +20,7 @@ class MicroDVDFormat(FormatBase):
             return "microdvd"
 
     @classmethod
-    def from_file(cls, subs, fp, format_, fps=None, **kwargs):
+    def from_file(cls, subs, fp, format_, fps=None, keep_style_tags=False, **kwargs):
         """See :meth:`pysubs2.formats.FormatBase.from_file()`"""
         for line in fp:
             match = MICRODVD_LINE.match(line)
@@ -47,6 +47,9 @@ class MicroDVDFormat(FormatBase):
 
             def prepare_text(text):
                 text = text.replace(b"|", rb"\N")
+
+                if keep_style_tags:
+                    return text.strip()
 
                 def style_replacer(match: re.Match) -> str:
                     tags = [c for c in b"biu" if c in match.group(0)]
