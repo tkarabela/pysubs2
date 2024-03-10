@@ -49,7 +49,7 @@ class SubripFormat(FormatBase):
                 return "srt"
 
     @classmethod
-    def from_file(cls, subs, fp, format_, keep_html_tags=False, keep_unknown_html_tags=False, keep_newlines=False, **kwargs):
+    def from_file(cls, subs, fp, format_, keep_html_tags=False, keep_unknown_html_tags=False, keep_newlines=False, keep_original_newlines=False, **kwargs):
         """
         See :meth:`pysubs2.formats.FormatBase.from_file()`
 
@@ -93,6 +93,11 @@ class SubripFormat(FormatBase):
 
             # Handle the general case.
             s = b"".join(lines).strip()
+            if not keep_original_newlines:
+                # reading file to bytestring preserves the original line endings
+                # convert to unix line endings
+                s = re.sub(rb"\r\n", rb"\n", s)
+                s = re.sub(rb"\r", rb"\n", s)
             s = re.sub(rb"\n+ *\d+ *$", b"", s) # strip number of next subtitle
             if not keep_html_tags:
                 s = re.sub(rb"< *i *>", rb"{\\i1}", s)
