@@ -201,7 +201,7 @@ class SubstationFormat(FormatBase):
             elif f in {"bold", "underline", "italic", "strikeout"}:
                 return v == "-1"
             elif f in {"borderstyle", "encoding", "marginl", "marginr", "marginv", "layer", "alphalevel"}:
-                return int(v)
+                return int(v) if v != "" else 0
             elif f in {"fontsize", "scalex", "scaley", "spacing", "angle", "outline", "shadow"}:
                 return float(v)
             elif f == "marked":
