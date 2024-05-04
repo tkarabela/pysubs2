@@ -280,7 +280,7 @@ class SubstationFormat(FormatBase):
             elif line.startswith("Style:"):
                 _, rest = line.split(":", 1)
                 buf = rest.strip().split(",")
-                name, raw_fields = buf[0], buf[1:] # splat workaround for Python 2.7
+                name, *raw_fields = buf
                 field_dict = {f: string_to_field(f, v) for f, v in zip(STYLE_FIELDS[format_], raw_fields)}
                 sty = SSAStyle(**field_dict)
                 subs.styles[name] = sty

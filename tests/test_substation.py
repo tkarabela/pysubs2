@@ -321,12 +321,6 @@ def test_ascii_str_fields():
     style = SSAStyle()
     subs.styles[STYLE_NAME] = style
 
-    # if sys.version_info.major == 2:
-    #     # in Python 2, saving subtitles with non-unicode fields is tolerated
-    #     # as long as they do not fall outside of ASCII range
-    #     subs.to_string("ass")
-    # else:
-    #     # in Python 3, we are strict and enforce Unicode
     with pytest.raises(TypeError):
         subs.to_string("ass")
 
@@ -341,8 +335,6 @@ def test_non_ascii_str_fields():
     style = SSAStyle(fontname=FONT_NAME)
     subs.styles[STYLE_NAME] = style
 
-    # in all Pythons, saving subtitles with non-unicode fields
-    # fails when they are not in ASCII range
     with pytest.raises(TypeError):
         subs.to_string("ass")
 

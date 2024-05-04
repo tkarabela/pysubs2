@@ -111,8 +111,7 @@ class SSAFile(MutableSequence):
         See :meth:`SSAFile.load()` for full description.
 
         Arguments:
-            string (str): Subtitle file in a string. Note that the string
-                must be Unicode (in Python 2).
+            string (str): Subtitle file in a string. Note that the string must be Unicode (``str``, not ``bytes``).
 
         Returns:
             SSAFile
