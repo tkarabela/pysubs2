@@ -1,4 +1,7 @@
-from pysubs2 import SSAFile, SSAEvent, SSAStyle, Color
+import pytest
+import os.path as op
+from pysubs2 import SSAFile, SSAEvent, SSAStyle, Color, FormatAutodetectionError
+import tempfile
 
 def test_write_read():
     subs = SSAFile()
@@ -15,3 +18,13 @@ def test_write_read():
     subs2 = SSAFile.from_string(json_text, "json")
 
     assert subs2.equals(subs)
+
+
+def test_read_unsupported_json_issue_85():
+    with tempfile.TemporaryDirectory() as temp_dir:
+        path = op.join(temp_dir, "test.atpj")
+        with open(path, "w") as fp:
+            print("""{"some data": [1,2,3]}""", file=fp)
+
+        with pytest.raises(FormatAutodetectionError):
+            SSAFile.load(path)
