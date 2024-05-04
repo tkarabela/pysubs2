@@ -265,6 +265,23 @@ Dialogue: 0,0:00:00.00,0:01:00.00,Default,,0,0,0,,An, example, subtitle.
 """
 
 
+ASS_EMPTY_LAYERS_ISSUE_87 = r"""
+[Script Info]
+WrapStyle: 0
+ScaledBorderAndShadow: yes
+Collisions: Normal
+ScriptType: v4.00+
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Default,Arial,20.0,&H00FFFFFF,&H000000FF,&H00000000,&H00000000,0,0,0,0,100.0,100.0,0.0,0.0,1,2.0,2.0,2,10,10,10,1
+
+[Events]
+Format: Layer, Start, End, Style, Actor, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: ,0:00:22.98,0:00:24.85,Default,,0,0,0,,An, example, subtitle.
+"""
+
+
 def build_ref():
     subs = SSAFile()
     subs.info["My Custom Info"] = "Some: Test, String."
@@ -442,3 +459,9 @@ def test_bad_style_format_line_issue_89():
     assert subs.styles["Default"].italic
     assert not subs.styles["Default"].underline
     assert not subs.styles["Default"].strikeout
+
+
+def test_empty_layer_issue_87():
+    with pytest.warns(RuntimeWarning, match="Failed to parse layer"):
+        subs = SSAFile.from_string(ASS_EMPTY_LAYERS_ISSUE_87)
+    assert subs[0].layer == 0

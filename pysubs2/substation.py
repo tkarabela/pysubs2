@@ -205,7 +205,11 @@ class SubstationFormat(FormatBase):
             elif f in {"bold", "underline", "italic", "strikeout"}:
                 return v != "0"
             elif f in {"borderstyle", "encoding", "marginl", "marginr", "marginv", "layer", "alphalevel"}:
-                return int(v)
+                try:
+                    return int(v)
+                except ValueError:
+                    warnings.warn(f"Failed to parse {f}, using default", RuntimeWarning)
+                    return 0
             elif f in {"fontsize", "scalex", "scaley", "spacing", "angle", "outline", "shadow"}:
                 return float(v)
             elif f == "marked":
