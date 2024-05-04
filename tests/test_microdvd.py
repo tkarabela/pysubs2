@@ -8,7 +8,7 @@ def test_framerate_inference():
     fps = 1000.0
     
     has_fps = dedent("""\
-    {0}{0}1000.0
+    {1}{1}1000.0
     {10}{20}Hello!
     """)
     
@@ -17,12 +17,17 @@ def test_framerate_inference():
     """)
     
     ignored_fps = dedent("""\
-    {0}{0}23.976
+    {1}{1}23.976
     {10}{20}Hello!
     """)
     
     illegal_fps = dedent("""\
-    {0}{0}-23.976
+    {1}{1}-23.976
+    {10}{20}Hello!
+    """)
+
+    bad_frame_fps = dedent("""\
+    {10}{20}1000.0
     {10}{20}Hello!
     """)
     
@@ -40,7 +45,7 @@ def test_framerate_inference():
     subs3 = SSAFile.from_string(ignored_fps, fps=fps)
     assert subs3.fps == fps
     assert len(subs3) == 2
-    assert subs3[0] == SSAEvent(start=0, end=0, text="23.976")
+    assert subs3[0] == SSAEvent(start=1, end=1, text="23.976")
     assert subs3[1] == SSAEvent(start=10, end=20, text="Hello!")
     
     with pytest.raises(UnknownFPSError):
@@ -49,10 +54,20 @@ def test_framerate_inference():
     with pytest.raises(ValueError):
         SSAFile.from_string(illegal_fps)
 
+    with pytest.raises(UnknownFPSError):
+        # see issue #71
+        SSAFile.from_string(bad_frame_fps)
+
+    subs4 = SSAFile.from_string(bad_frame_fps, strict_fps_inference=False)
+    assert subs4.fps == fps
+    assert len(subs4) == 1
+    assert subs4[0] == SSAEvent(start=10, end=20, text="Hello!")
+
+
 def test_extra_whitespace_parsing():
     f = dedent("""\
     
-       { 0 } { 0 }  1000.0   
+       { 1 } { 1 }  1000.0   
     
      {    10 }{    20}   Hello!      
     
@@ -92,7 +107,7 @@ def test_parser_skipping_lines():
     f = dedent("""\
     Ook!
     
-    {0}{0}23.976
+    {1}{1}23.976
     > Hi!
     {10}{20}Hello!
     1
@@ -116,7 +131,7 @@ def test_writer_tags():
                    SSAEvent(start=0, end=10, text=r"Not {\i1}italic.")]
     
     f = dedent("""\
-    {0}{0}1000
+    {1}{1}1000
     {0}{10}Plain.
     {0}{10}{Y:i}Inline.
     {0}{10}{Y:i}Styled.
@@ -132,7 +147,7 @@ def test_writer_uses_original_fps():
     subs.fps = 1000
     
     f = dedent("""\
-    {0}{0}1000
+    {1}{1}1000
     {0}{10}Hello!
     """)
     
@@ -145,7 +160,7 @@ def test_writer_skips_comment_lines():
     subs[0].is_comment = True
     
     f = dedent("""\
-    {0}{0}1000
+    {1}{1}1000
     {0}{10}World!
     """)
     
@@ -157,7 +172,7 @@ def test_writer_handles_whitespace():
                          text=r"Hello,\hworld!\NSo many\N\nNewlines."))
     
     f = dedent("""\
-    {0}{0}1000
+    {1}{1}1000
     {0}{10}Hello, world!|So many||Newlines.
     """)
     
@@ -168,7 +183,7 @@ def test_writer_strips_tags():
     subs.append(SSAEvent(start=0, end=10, text="Let me tell you{a secret}."))
     
     f = dedent("""\
-    {0}{0}1000
+    {1}{1}1000
     {0}{10}Let me tell you.
     """)
     
@@ -180,7 +195,7 @@ def test_write_drawing():
     subs.append(SSAEvent(start=10, end=20, text="Let me tell you."))
 
     f = dedent("""\
-    {0}{0}1000
+    {1}{1}1000
     {10}{20}Let me tell you.
     """)
 

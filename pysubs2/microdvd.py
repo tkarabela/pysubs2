@@ -20,8 +20,19 @@ class MicroDVDFormat(FormatBase):
             return "microdvd"
 
     @classmethod
-    def from_file(cls, subs, fp, format_, fps=None, **kwargs):
-        """See :meth:`pysubs2.formats.FormatBase.from_file()`"""
+    def from_file(cls, subs, fp, format_, fps=None, strict_fps_inference: bool = True, **kwargs):
+        """
+        See :meth:`pysubs2.formats.FormatBase.from_file()`
+
+        Keyword args:
+            strict_fps_inference: If True (default), in the case when ``fps`` is not given, it will be read
+                from the first subtitle text only if the start and end frame of this subtitle is ``{1}{1}``
+                (matches VLC Player behaviour), otherwise `UnknownFPSError` is raised. When ``strict_fps_inference``
+                is False, framerate will be read from the first subtitle text in this case regardless of
+                start and end frame (which may result in bogus result, if the first subtitle is not supposed
+                to contain framerate). Before introduction of this option, the library behaved as if this
+                option was False.
+        """
         for line in fp:
             match = MICRODVD_LINE.match(line)
             if not match:
@@ -31,10 +42,14 @@ class MicroDVDFormat(FormatBase):
             fstart, fend = map(int, (fstart, fend))
 
             if fps is None:
-                # We don't know the framerate, but it is customary to include
-                # it as text of the first subtitle. In that case, we skip
-                # this auxiliary subtitle and proceed with reading.
+                # We don't know the framerate, but it is customary to include it as text of the first subtitle,
+                # in the format {1}{1}fps, see pysubs2 issue #71 or VLC player source:
+                # https://code.videolan.org/videolan/vlc/-/blob/dccda0e133ff0a2e85de727cf19ddbc634f06b67/modules/demux/subtitle.c#L1014
+                # In that case, we skip this auxiliary subtitle and proceed with reading.
                 try:
+                    if strict_fps_inference and not (fstart == 1 and fend == 1):
+                        raise ValueError("Frame mismatch, expected {1}{1}")
+
                     fps = float(text)
                     subs.fps = fps
                     continue
@@ -70,7 +85,7 @@ class MicroDVDFormat(FormatBase):
         The only supported styling is marking whole lines italic.
 
         Keyword args:
-            write_fps_declaration: If True, create a zero-duration first subtitle which will contain
+            write_fps_declaration: If True, create a zero-duration first subtitle ``{1}{1}`` which will contain
                 the fps.
             apply_styles: If False, do not write any styling.
 
@@ -94,7 +109,7 @@ class MicroDVDFormat(FormatBase):
 
         # insert an artificial first line telling the framerate
         if write_fps_declaration:
-            subs.insert(0, SSAEvent(start=0, end=0, text=str(fps)))
+            subs.insert(0, SSAEvent(start=1, end=1, text=str(fps)))
 
         for line in subs.get_text_events():
             text = "|".join(line.plaintext.splitlines())

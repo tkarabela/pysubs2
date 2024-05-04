@@ -18,7 +18,7 @@ two.
 """
 
 TEST_MICRODVD_FILE = """\
-{0}{0}1000.0
+{1}{1}1000.0
 {0}{60000}An example subtitle.
 {60000}{120000}Subtitle number|two.
 """
