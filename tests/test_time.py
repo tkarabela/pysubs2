@@ -6,14 +6,23 @@ pysubs2.time tests
 from fractions import Fraction 
 import pytest
 
-from pysubs2.time import *
+from pysubs2.time import TIMESTAMP, TIMESTAMP_SHORT, timestamp_to_ms, times_to_ms, ms_to_times, Times, frames_to_ms, \
+    ms_to_frames, ms_to_str
 
 
 # helper functions
-cs2ms = lambda cs: 10 * cs
-s2ms  = lambda s:  1000 * s
-m2ms  = lambda m:  60 * 1000 * m
-h2ms  = lambda h:  60 * 60 * 1000 * h
+def cs2ms(cs):
+    return 10 * cs
+
+def s2ms(s):
+    return 1000 * s
+
+def m2ms(m):
+    return 60 * 1000 * m
+
+def h2ms(h):
+    return 60 * 60 * 1000 * h
+
 
 
 def test_timestamp():

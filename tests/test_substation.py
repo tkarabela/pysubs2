@@ -7,7 +7,7 @@ from textwrap import dedent
 from pysubs2 import SSAFile, SSAEvent, SSAStyle, make_time, Color, Alignment
 from pysubs2.substation import color_to_ass_rgba, color_to_ssa_rgb, rgba_to_color, MAX_REPRESENTABLE_TIME
 import pytest
-import sys
+
 
 SIMPLE_ASS_REF = """
 [Script Info]

@@ -107,8 +107,10 @@ class MicroDVDFormat(FormatBase):
             start, end = map(to_frames, (line.start, line.end))
 
             # XXX warn on underflow?
-            if start < 0: start = 0
-            if end < 0: end = 0
+            if start < 0:
+                start = 0
+            if end < 0:
+                end = 0
 
             print("{%d}{%d}%s" % (start, end, text), file=fp)
 

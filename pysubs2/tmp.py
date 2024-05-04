@@ -90,10 +90,14 @@ class TmpFormat(FormatBase):
                 fragment = fragment.replace(r"\n", "\n")
                 fragment = fragment.replace(r"\N", "\n")
                 if apply_styles:
-                    if sty.italic: fragment = f"<i>{fragment}</i>"
-                    if sty.underline: fragment = f"<u>{fragment}</u>"
-                    if sty.strikeout: fragment = f"<s>{fragment}</s>"
-                if sty.drawing: skip = True
+                    if sty.italic:
+                        fragment = f"<i>{fragment}</i>"
+                    if sty.underline:
+                        fragment = f"<u>{fragment}</u>"
+                    if sty.strikeout:
+                        fragment = f"<s>{fragment}</s>"
+                if sty.drawing:
+                    skip = True
                 body.append(fragment)
 
             if skip:

@@ -1,3 +1,5 @@
+# ruff: noqa: F401 F403
+
 from .ssafile import SSAFile
 from .ssaevent import SSAEvent
 from .ssastyle import SSAStyle

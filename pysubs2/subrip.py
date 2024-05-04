@@ -145,10 +145,14 @@ class SubripFormat(FormatBase):
             else:
                 for fragment, sty in parse_tags(text, style, subs.styles):
                     if apply_styles:
-                        if sty.italic: fragment = f"<i>{fragment}</i>"
-                        if sty.underline: fragment = f"<u>{fragment}</u>"
-                        if sty.strikeout: fragment = f"<s>{fragment}</s>"
-                    if sty.drawing: raise ContentNotUsable
+                        if sty.italic:
+                            fragment = f"<i>{fragment}</i>"
+                        if sty.underline:
+                            fragment = f"<u>{fragment}</u>"
+                        if sty.strikeout:
+                            fragment = f"<s>{fragment}</s>"
+                    if sty.drawing:
+                        raise ContentNotUsable
                     body.append(fragment)
 
             return re.sub("\n+", "\n", "".join(body).strip())

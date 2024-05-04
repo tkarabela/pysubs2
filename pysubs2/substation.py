@@ -121,10 +121,14 @@ def parse_tags(text: str, style: SSAStyle = SSAStyle.DEFAULT_STYLE, styles: Opti
                     # reset to named style
                     s = styles[name].copy()  # type: ignore[index]
             else:
-                if "i" in tag: s.italic = "1" in tag
-                elif "b" in tag: s.bold = "1" in tag
-                elif "u" in tag: s.underline = "1" in tag
-                elif "s" in tag: s.strikeout = "1" in tag
+                if "i" in tag:
+                    s.italic = "1" in tag
+                elif "b" in tag:
+                    s.bold = "1" in tag
+                elif "u" in tag:
+                    s.underline = "1" in tag
+                elif "s" in tag:
+                    s.strikeout = "1" in tag
                 elif "p" in tag:
                     try:
                         scale = int(tag[2:])
@@ -244,7 +248,8 @@ class SubstationFormat(FormatBase):
                 inside_font_section = "Fonts" in line
                 inside_graphic_section = "Graphics" in line
             elif inside_info_section or inside_aegisub_section:
-                if line.startswith(";"): continue # skip comments
+                if line.startswith(";"):
+                    continue  # skip comments
                 try:
                     k, v = line.split(":", 1)
                     if inside_info_section:

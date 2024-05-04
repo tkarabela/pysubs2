@@ -434,7 +434,8 @@ class SSAFile(MutableSequence):
                     return False
                 elif self_style != other_style:
                     for k in self_style.FIELDS:
-                        if getattr(self_style, k) != getattr(other_style, k): logging.debug("difference in field %r", k)
+                        if getattr(self_style, k) != getattr(other_style, k):
+                            logging.debug("difference in field %r", k)
                     logging.debug("style %r differs (self=%r, other=%r)", key, self_style.as_dict(), other_style.as_dict())
                     return False
 
@@ -445,7 +446,8 @@ class SSAFile(MutableSequence):
             for i, (self_event, other_event) in enumerate(zip(self.events, other.events)):
                 if not self_event.equals(other_event):
                     for k in self_event.FIELDS:
-                        if getattr(self_event, k) != getattr(other_event, k): logging.debug("difference in field %r", k)
+                        if getattr(self_event, k) != getattr(other_event, k):
+                            logging.debug("difference in field %r", k)
                     logging.debug("event %d differs (self=%r, other=%r)", i, self_event.as_dict(), other_event.as_dict())
                     return False
 
