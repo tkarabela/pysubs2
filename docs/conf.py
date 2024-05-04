@@ -14,7 +14,7 @@
 
 import sys
 import os
-import sphinx_rtd_theme
+import sphinx_rtd_theme   # noqa: F401
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -51,7 +51,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'pysubs2'
-copyright = u'2014-2021, Tomas Karabela'
+copyright = u'2014-2023, Tomas Karabela'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

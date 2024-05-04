@@ -1,17 +1,8 @@
 import pysubs2
 import tempfile
 import subprocess
-import shutil
 import os.path as op
-from contextlib import contextmanager
 from io import open
-
-@contextmanager
-def temp_dir():
-    """tempfile.TemporaryDirectory alike (for Python 2.7)"""
-    path = tempfile.mkdtemp()
-    yield path
-    shutil.rmtree(path)
 
 
 TEST_SRT_FILE = """\
@@ -33,7 +24,7 @@ TEST_MICRODVD_FILE = """\
 """
 
 def test_srt_to_microdvd():
-    with temp_dir() as dirpath:
+    with tempfile.TemporaryDirectory() as dirpath:
         inpath = op.join(dirpath, "test.srt")
         with open(inpath, "w", encoding="utf-8") as fp:
             fp.write(TEST_SRT_FILE)
@@ -53,7 +44,7 @@ def test_srt_to_microdvd_subprocess_pipe():
 
 def test_srt_to_microdvd_multiple_files():
     N = 3
-    with temp_dir() as dirpath:
+    with tempfile.TemporaryDirectory() as dirpath:
         inpaths = [op.join(dirpath, f"test-{i}.srt") for i in range(N)]
         for inpath in inpaths:
             with open(inpath, "w", encoding="utf-8") as fp:
@@ -69,7 +60,7 @@ def test_srt_to_microdvd_multiple_files():
                 assert out == TEST_MICRODVD_FILE
 
 def test_microdvd_to_srt():
-    with temp_dir() as dirpath:
+    with tempfile.TemporaryDirectory() as dirpath:
         inpath = op.join(dirpath, "test.sub")
         with open(inpath, "w", encoding="utf-8") as fp:
             fp.write(TEST_MICRODVD_FILE)
@@ -95,7 +86,7 @@ two.
 """
 
 def test_srt_shift():
-    with temp_dir() as dirpath:
+    with tempfile.TemporaryDirectory() as dirpath:
         inpath = outpath = op.join(dirpath, "test.srt")
         with open(inpath, "w", encoding="utf-8") as fp:
             fp.write(TEST_SRT_FILE)
@@ -108,7 +99,7 @@ def test_srt_shift():
             assert out == TEST_SRT_FILE_SHIFTED
 
 def test_srt_shift_back():
-    with temp_dir() as dirpath:
+    with tempfile.TemporaryDirectory() as dirpath:
         inpath = outpath = op.join(dirpath, "test.srt")
         with open(inpath, "w", encoding="utf-8") as fp:
             fp.write(TEST_SRT_FILE_SHIFTED)
@@ -121,12 +112,12 @@ def test_srt_shift_back():
             assert out == TEST_SRT_FILE
 
 def test_srt_shift_to_output_dir():
-    with temp_dir() as indirpath:
+    with tempfile.TemporaryDirectory() as indirpath:
         inpath = op.join(indirpath, "test.srt")
         with open(inpath, "w", encoding="utf-8") as fp:
             fp.write(TEST_SRT_FILE)
 
-        with temp_dir() as outdirpath:
+        with tempfile.TemporaryDirectory() as outdirpath:
             outdirpath2 = op.join(outdirpath, "subdir-that-must-be-created")
             outpath = op.join(outdirpath2, "test.srt")
 
@@ -250,7 +241,7 @@ Some unsupported <blink>tag</blink>
 
 def test_srt_clean():
     # see issue #37
-    with temp_dir() as dirpath:
+    with tempfile.TemporaryDirectory() as dirpath:
         inpath = op.join(dirpath, "test.ass")
         outpath = op.join(dirpath, "test.srt")
 
@@ -267,7 +258,7 @@ def test_srt_clean():
 
 def test_srt_clean_styling():
     # see issue #39
-    with temp_dir() as dirpath:
+    with tempfile.TemporaryDirectory() as dirpath:
         inpath = op.join(dirpath, "test.ass")
         outpath = op.join(dirpath, "test.srt")
 
@@ -293,7 +284,7 @@ def test_srt_clean_styling():
 
 def test_srt_keep_ssa_tags():
     # see issue #48
-    with temp_dir() as dirpath:
+    with tempfile.TemporaryDirectory() as dirpath:
         path = op.join(dirpath, "test.srt")
 
         # test standard
@@ -320,7 +311,7 @@ def test_srt_keep_ssa_tags():
 
 def test_srt_keep_ssa_tags_mixed_with_html():
     # see issue #48
-    with temp_dir() as dirpath:
+    with tempfile.TemporaryDirectory() as dirpath:
         path = op.join(dirpath, "test.srt")
 
         # test standard - does not pass
@@ -358,7 +349,7 @@ def test_srt_keep_ssa_tags_mixed_with_html():
 
 
 def test_srt_keep_unknown_html_tags():
-    with temp_dir() as dirpath:
+    with tempfile.TemporaryDirectory() as dirpath:
         path = op.join(dirpath, "test.srt")
 
         # test standard

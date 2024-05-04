@@ -68,6 +68,16 @@ def test_overlapping_read():
     assert subs[1].end == subs[2].start == make_time(s=18)
     assert subs[2].end == subs[3].start == make_time(s=22)
 
+def test_styled_read():
+    text = dedent("""\
+    00:00:00:ten--chars--<u>underline</u>
+    00:01:00:ten--chars--<b><xxx>some--tags</xxx></b>
+    """)
+
+    subs = SSAFile.from_string(text)
+    assert subs[0].text == r"ten--chars--{\u1}underline"
+    assert subs[1].text == "ten--chars--some--tags"
+
 def test_write_drawing():
     subs = SSAFile()
 
@@ -92,7 +102,6 @@ def test_write_drawing():
     subs.append(e3)
 
     ref = dedent("""\
-    00:00:00:
     00:01:00:ten--chars-ten-chars
     """)
 

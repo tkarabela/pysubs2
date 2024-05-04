@@ -111,8 +111,7 @@ class SSAFile(MutableSequence):
         See :meth:`SSAFile.load()` for full description.
 
         Arguments:
-            string (str): Subtitle file in a string. Note that the string
-                must be Unicode (in Python 2).
+            string (str): Subtitle file in a string. Note that the string must be Unicode (``str``, not ``bytes``).
 
         Returns:
             SSAFile
@@ -376,6 +375,12 @@ class SSAFile(MutableSequence):
 
         self.events = new_events
 
+    def get_text_events(self) -> List[SSAEvent]:
+        """
+        Return list of events excluding SSA comment lines and lines with SSA drawing tags
+        """
+        return [e for e in self if e.is_text]
+
     def equals(self, other: "SSAFile"):
         """
         Equality of two SSAFiles.
@@ -435,7 +440,8 @@ class SSAFile(MutableSequence):
                     return False
                 elif self_style != other_style:
                     for k in self_style.FIELDS:
-                        if getattr(self_style, k) != getattr(other_style, k): logging.debug("difference in field %r", k)
+                        if getattr(self_style, k) != getattr(other_style, k):
+                            logging.debug("difference in field %r", k)
                     logging.debug("style %r differs (self=%r, other=%r)", key, self_style.as_dict(), other_style.as_dict())
                     return False
 
@@ -446,7 +452,8 @@ class SSAFile(MutableSequence):
             for i, (self_event, other_event) in enumerate(zip(self.events, other.events)):
                 if not self_event.equals(other_event):
                     for k in self_event.FIELDS:
-                        if getattr(self_event, k) != getattr(other_event, k): logging.debug("difference in field %r", k)
+                        if getattr(self_event, k) != getattr(other_event, k):
+                            logging.debug("difference in field %r", k)
                     logging.debug("event %d differs (self=%r, other=%r)", i, self_event.as_dict(), other_event.as_dict())
                     return False
 

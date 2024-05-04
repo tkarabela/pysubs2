@@ -1,6 +1,13 @@
 Release Notes
 =============
 
+**1.6.1** --- released on 2023-04-02
+
+- WebVTT now correctly writes events in cue start order, patch by Anton Melser (https://github.com/AntonOfTheWoods)
+- Improved type hints
+- Minor documentation fixes and improvements
+- Migrated CI from CircleCI to GitHub, added Codecov to CI (we're currently at 93% test coverage)
+
 **1.6.0** --- released on 2022-11-28
 
 - Basic support for ``[Graphics]`` in SubStation files (Issue #59)

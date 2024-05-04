@@ -121,10 +121,14 @@ def parse_tags(text: str, style: SSAStyle = SSAStyle.DEFAULT_STYLE, styles: Opti
                     # reset to named style
                     s = styles[name].copy()  # type: ignore[index]
             else:
-                if "i" in tag: s.italic = "1" in tag
-                elif "b" in tag: s.bold = "1" in tag
-                elif "u" in tag: s.underline = "1" in tag
-                elif "s" in tag: s.strikeout = "1" in tag
+                if "i" in tag:
+                    s.italic = "1" in tag
+                elif "b" in tag:
+                    s.bold = "1" in tag
+                elif "u" in tag:
+                    s.underline = "1" in tag
+                elif "s" in tag:
+                    s.strikeout = "1" in tag
                 elif "p" in tag:
                     try:
                         scale = int(tag[2:])
@@ -199,9 +203,13 @@ class SubstationFormat(FormatBase):
                 v = v.strip()
                 return rgba_to_color(v)
             elif f in {"bold", "underline", "italic", "strikeout"}:
-                return v == "-1"
+                return v != "0"
             elif f in {"borderstyle", "encoding", "marginl", "marginr", "marginv", "layer", "alphalevel"}:
-                return int(v)
+                try:
+                    return int(v)
+                except ValueError:
+                    warnings.warn(f"Failed to parse {f}, using default", RuntimeWarning)
+                    return 0
             elif f in {"fontsize", "scalex", "scaley", "spacing", "angle", "outline", "shadow"}:
                 return float(v)
             elif f == "marked":
@@ -244,7 +252,8 @@ class SubstationFormat(FormatBase):
                 inside_font_section = "Fonts" in line
                 inside_graphic_section = "Graphics" in line
             elif inside_info_section or inside_aegisub_section:
-                if line.startswith(";"): continue # skip comments
+                if line.startswith(";"):
+                    continue  # skip comments
                 try:
                     k, v = line.split(":", 1)
                     if inside_info_section:
@@ -280,7 +289,7 @@ class SubstationFormat(FormatBase):
             elif line.startswith("Style:"):
                 _, rest = line.split(":", 1)
                 buf = rest.strip().split(",")
-                name, raw_fields = buf[0], buf[1:] # splat workaround for Python 2.7
+                name, *raw_fields = buf
                 field_dict = {f: string_to_field(f, v) for f, v in zip(STYLE_FIELDS[format_], raw_fields)}
                 sty = SSAStyle(**field_dict)
                 subs.styles[name] = sty

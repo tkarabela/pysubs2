@@ -46,7 +46,7 @@ class TmpFormat(FormatBase):
 
         def prepare_text(text):
             text = text.replace("|", r"\N")  # convert newlines
-            text = re.sub(r"< *u *>", "{\\\\u1}", text) # not r" for Python 2.7 compat, triggers unicodeescape
+            text = re.sub(r"< *u *>", r"{\\u1}", text)
             text = re.sub(r"< */? *[a-zA-Z][^>]*>", "", text) # strip other HTML tags
             return text
 
@@ -84,26 +84,22 @@ class TmpFormat(FormatBase):
         """
         def prepare_text(text, style):
             body = []
-            skip = False
             for fragment, sty in parse_tags(text, style, subs.styles):
                 fragment = fragment.replace(r"\h", " ")
                 fragment = fragment.replace(r"\n", "\n")
                 fragment = fragment.replace(r"\N", "\n")
                 if apply_styles:
-                    if sty.italic: fragment = f"<i>{fragment}</i>"
-                    if sty.underline: fragment = f"<u>{fragment}</u>"
-                    if sty.strikeout: fragment = f"<s>{fragment}</s>"
-                if sty.drawing: skip = True
+                    if sty.italic:
+                        fragment = f"<i>{fragment}</i>"
+                    if sty.underline:
+                        fragment = f"<u>{fragment}</u>"
+                    if sty.strikeout:
+                        fragment = f"<s>{fragment}</s>"
                 body.append(fragment)
 
-            if skip:
-                return ""
-            else:
-                return re.sub("\n+", "\n", "".join(body).strip())
+            return re.sub("\n+", "\n", "".join(body).strip())
 
-        visible_lines = (line for line in subs if not line.is_comment)
-
-        for line in visible_lines:
+        for line in subs.get_text_events():
             start = cls.ms_to_timestamp(line.start)
             text = prepare_text(line.text, subs.styles.get(line.style, SSAStyle.DEFAULT_STYLE))
 

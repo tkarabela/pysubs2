@@ -24,7 +24,7 @@ class JSONFormat(FormatBase):
     @classmethod
     def guess_format(cls, text):
         """See :meth:`pysubs2.formats.FormatBase.guess_format()`"""
-        if text.startswith("{\""):
+        if text.startswith("{\"") and "\"info:\"" in text:
             return "json"
 
     @classmethod
