@@ -65,7 +65,3 @@ class FormatAutodetectionError(Pysubs2Error):
         else:
             msg = f"Multiple suitable formats ({formats!r})"
         super().__init__(msg)
-
-
-class ContentNotUsable(Pysubs2Error):
-    """Current content not usable for specified format"""

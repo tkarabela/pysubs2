@@ -102,7 +102,6 @@ def test_write_drawing():
     subs.append(e3)
 
     ref = dedent("""\
-    00:00:00:
     00:01:00:ten--chars-ten-chars
     """)
 

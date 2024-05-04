@@ -375,6 +375,12 @@ class SSAFile(MutableSequence):
 
         self.events = new_events
 
+    def get_text_events(self) -> List[SSAEvent]:
+        """
+        Return list of events excluding SSA comment lines and lines with SSA drawing tags
+        """
+        return [e for e in self if e.is_text]
+
     def equals(self, other: "SSAFile"):
         """
         Equality of two SSAFiles.

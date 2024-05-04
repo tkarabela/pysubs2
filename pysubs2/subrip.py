@@ -7,7 +7,6 @@ from .formatbase import FormatBase
 from .ssaevent import SSAEvent
 from .ssastyle import SSAStyle
 from .substation import parse_tags
-from .exceptions import ContentNotUsable
 from .time import ms_to_times, make_time, TIMESTAMP, timestamp_to_ms
 
 #: Largest timestamp allowed in SubRip, ie. 99:59:59,999.
@@ -151,22 +150,14 @@ class SubripFormat(FormatBase):
                             fragment = f"<u>{fragment}</u>"
                         if sty.strikeout:
                             fragment = f"<s>{fragment}</s>"
-                    if sty.drawing:
-                        raise ContentNotUsable
                     body.append(fragment)
 
             return re.sub("\n+", "\n", "".join(body).strip())
 
-        visible_lines = cls._get_visible_lines(subs)
-
-        lineno = 1
-        for line in visible_lines:
+        for lineno, line in enumerate(cls._get_visible_lines(subs), 1):
             start = cls.ms_to_timestamp(line.start)
             end = cls.ms_to_timestamp(line.end)
-            try:
-                text = prepare_text(line.text, subs.styles.get(line.style, SSAStyle.DEFAULT_STYLE))
-            except ContentNotUsable:
-                continue
+            text = prepare_text(line.text, subs.styles.get(line.style, SSAStyle.DEFAULT_STYLE))
 
             print(lineno, file=fp)
             print(start, "-->", end, file=fp)
@@ -175,5 +166,4 @@ class SubripFormat(FormatBase):
 
     @classmethod
     def _get_visible_lines(cls, subs: "pysubs2.SSAFile") -> List["pysubs2.SSAEvent"]:
-        visible_lines = [line for line in subs if not line.is_comment]
-        return visible_lines
+        return subs.get_text_events()

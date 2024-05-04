@@ -46,6 +46,6 @@ class WebVTTFormat(SubripFormat):
 
     @classmethod
     def _get_visible_lines(cls, subs: "pysubs2.SSAFile") -> List["pysubs2.SSAEvent"]:
-        visible_lines = [line for line in subs if not line.is_comment]
+        visible_lines = super()._get_visible_lines(subs)
         visible_lines.sort(key=lambda e: e.start)
         return visible_lines

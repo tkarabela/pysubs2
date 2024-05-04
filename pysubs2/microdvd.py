@@ -96,10 +96,7 @@ class MicroDVDFormat(FormatBase):
         if write_fps_declaration:
             subs.insert(0, SSAEvent(start=0, end=0, text=str(fps)))
 
-        for line in subs:
-            if line.is_comment or line.is_drawing:
-                continue
-
+        for line in subs.get_text_events():
             text = "|".join(line.plaintext.splitlines())
             if apply_styles and is_entirely_italic(line):
                 text = "{Y:i}" + text

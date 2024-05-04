@@ -87,6 +87,15 @@ class SSAEvent:
         return any(sty.drawing for _, sty in parse_tags(self.text))
 
     @property
+    def is_text(self) -> bool:
+        """
+        Returns False for SSA drawings and comment lines, True otherwise
+
+        In general, for non-SSA formats these events should be ignored.
+        """
+        return not (self.is_comment or self.is_drawing)
+
+    @property
     def plaintext(self) -> str:
         """
         Subtitle text as multi-line string with no tags (read/write property).

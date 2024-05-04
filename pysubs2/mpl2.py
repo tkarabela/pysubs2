@@ -44,10 +44,7 @@ class MPL2Format(FormatBase):
 
         """
         # TODO handle italics
-        for line in subs:
-            if line.is_comment:
-                continue
-
+        for line in subs.get_text_events():
             print("[{start}][{end}] {text}".format(start=int(line.start // 100),
                                                    end=int(line.end // 100),
                                                    text=line.plaintext.replace("\n", "|")),

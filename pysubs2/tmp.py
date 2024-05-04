@@ -84,7 +84,6 @@ class TmpFormat(FormatBase):
         """
         def prepare_text(text, style):
             body = []
-            skip = False
             for fragment, sty in parse_tags(text, style, subs.styles):
                 fragment = fragment.replace(r"\h", " ")
                 fragment = fragment.replace(r"\n", "\n")
@@ -96,18 +95,11 @@ class TmpFormat(FormatBase):
                         fragment = f"<u>{fragment}</u>"
                     if sty.strikeout:
                         fragment = f"<s>{fragment}</s>"
-                if sty.drawing:
-                    skip = True
                 body.append(fragment)
 
-            if skip:
-                return ""
-            else:
-                return re.sub("\n+", "\n", "".join(body).strip())
+            return re.sub("\n+", "\n", "".join(body).strip())
 
-        visible_lines = (line for line in subs if not line.is_comment)
-
-        for line in visible_lines:
+        for line in subs.get_text_events():
             start = cls.ms_to_timestamp(line.start)
             text = prepare_text(line.text, subs.styles.get(line.style, SSAStyle.DEFAULT_STYLE))
 
