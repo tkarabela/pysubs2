@@ -248,6 +248,22 @@ Dialogue: 1,0:0:0.04,0:0:4.00,Default,,0000,0000,0000,,{\k100}{\k33}SUN{\k4}{\k4
 Dialogue: 1,0:0:3.42,0:0:7.88,Default,,0000,0000,0000,,{\k100}{\k4}me{\k4}{\k8}ku{\k4}{\k38}t{\k4}{\k17}te {\k4}{\k17}CA{\k4}{\k33}LEN{\k4}{\k29}DAR {\k4}{\k38}GIRL {\k4}{\k8}wa{\k4}{\k8}ta{\k4}{\k13}shi {\k4}{\k17}no {\k4}{\k13}mai{\k4}{\k8}ni{\k8}{\k33}chi
 """
 
+ASS_STYLES_FORMAT_ISSUE_89 = """
+[Script Info]
+WrapStyle: 0
+ScaledBorderAndShadow: yes
+Collisions: Normal
+ScriptType: v4.00+
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Default,Alegreya Sans,140.0,&H00FFFFFF,&H000000FF,&H00000000,&H00000000,1,1,0,0,100.0,100.0,0.0,0.0,1,2.0,2.0,2,192,192,108,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.00,0:01:00.00,Default,,0,0,0,,An, example, subtitle.
+"""
+
 
 def build_ref():
     subs = SSAFile()
@@ -426,3 +442,11 @@ def test_reading_invalid_alignment_raises_warning():
     with pytest.warns(RuntimeWarning):
         subs = SSAFile.from_string(ASS_WITH_MALFORMED_STYLE_INVALID_ALIGNMENT)
     assert subs.styles["Default"].alignment == Alignment.BOTTOM_CENTER
+
+
+def test_bad_style_format_line_issue_89():
+    subs = SSAFile.from_string(ASS_STYLES_FORMAT_ISSUE_89)
+    assert subs.styles["Default"].bold
+    assert subs.styles["Default"].italic
+    assert not subs.styles["Default"].underline
+    assert not subs.styles["Default"].strikeout

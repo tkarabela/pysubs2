@@ -199,7 +199,7 @@ class SubstationFormat(FormatBase):
                 v = v.strip()
                 return rgba_to_color(v)
             elif f in {"bold", "underline", "italic", "strikeout"}:
-                return v == "-1"
+                return v != "0"
             elif f in {"borderstyle", "encoding", "marginl", "marginr", "marginv", "layer", "alphalevel"}:
                 return int(v)
             elif f in {"fontsize", "scalex", "scaley", "spacing", "angle", "outline", "shadow"}:
