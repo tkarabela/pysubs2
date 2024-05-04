@@ -80,6 +80,7 @@ Misc methods
 
 .. automodule:: pysubs2.exceptions
    :members:
+   :show-inheritance:
 
 ``pysubs2.formats`` --- subtitle format implementations
 -------------------------------------------------------
@@ -112,24 +113,31 @@ Here you can find specific details regarding support of the individual subtitle 
 
 .. autoclass:: pysubs2.substation.SubstationFormat
    :members:
+   :show-inheritance:
 
 .. autoclass:: pysubs2.subrip.SubripFormat
    :members:
+   :show-inheritance:
 
 .. autoclass:: pysubs2.mpl2.MPL2Format
    :members:
+   :show-inheritance:
 
 .. autoclass:: pysubs2.tmp.TmpFormat
    :members:
+   :show-inheritance:
 
 .. autoclass:: pysubs2.webvtt.WebVTTFormat
    :members:
+   :show-inheritance:
 
 .. autoclass:: pysubs2.microdvd.MicroDVDFormat
    :members:
+   :show-inheritance:
 
 .. autoclass:: pysubs2.jsonformat.JSONFormat
    :members:
+   :show-inheritance:
 
 Misc functions
 --------------
