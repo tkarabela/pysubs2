@@ -75,6 +75,6 @@ def autodetect_format(content: str) -> str:
     if len(formats) == 1:
         return formats.pop()
     elif not formats:
-        raise FormatAutodetectionError("No suitable formats")
+        raise FormatAutodetectionError(content=content, formats=[])
     else:
-        raise FormatAutodetectionError(f"Multiple suitable formats ({formats!r})")
+        raise FormatAutodetectionError(content=content, formats=list(formats))
