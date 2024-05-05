@@ -6,8 +6,6 @@ import logging
 from typing import Optional, List, Dict, Iterable, Any, overload, Iterator, TextIO, Tuple, MutableSequence
 
 from .common import IntOrFloat
-from .formats import autodetect_format, get_format_class, get_format_identifier
-from .substation import is_valid_field_content
 from .ssaevent import SSAEvent
 from .ssastyle import SSAStyle
 from .time import make_time, ms_to_str
@@ -62,7 +60,7 @@ class SSAFile(MutableSequence[SSAEvent]):
         See also:
             Specific formats may implement additional loading options,
             please refer to documentation of the implementation classes
-            (eg. :meth:`pysubs2.subrip.SubripFormat.from_file()`)
+            (eg. :meth:`pysubs2.formats.subrip.SubripFormat.from_file()`)
 
         Arguments:
             path (str): Path to subtitle file.
@@ -193,7 +191,7 @@ class SSAFile(MutableSequence[SSAEvent]):
         See also:
             Specific formats may implement additional saving options,
             please refer to documentation of the implementation classes
-            (eg. :meth:`pysubs2.subrip.SubripFormat.to_file()`)
+            (eg. :meth:`pysubs2.formats.subrip.SubripFormat.to_file()`)
 
         Arguments:
             path (str): Path to subtitle file.
@@ -331,6 +329,8 @@ class SSAFile(MutableSequence[SSAEvent]):
                 or new_name is taken.
 
         """
+        from .formats.substation import is_valid_field_content
+
         if old_name not in self.styles:
             raise KeyError(f"Style {old_name!r} not found")
         if new_name in self.styles:
@@ -558,3 +558,6 @@ class SSAFile(MutableSequence[SSAEvent]):
             self.events.insert(index, value)
         else:
             raise TypeError("SSAFile.events must contain only SSAEvent objects")
+
+
+from .formats import autodetect_format, get_format_class, get_format_identifier  # noqa: E402

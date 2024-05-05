@@ -1,14 +1,13 @@
 import re
 import warnings
-from typing import List, Sequence, Optional, TextIO, Any, Tuple, TYPE_CHECKING
+from typing import List, Sequence, Optional, TextIO, Any, Tuple
 
-from .formatbase import FormatBase
-from .ssaevent import SSAEvent
-from .ssastyle import SSAStyle
+from .base import FormatBase
+from ..ssaevent import SSAEvent
+from ..ssastyle import SSAStyle
 from .substation import parse_tags
-from .time import ms_to_times, make_time, TIMESTAMP, timestamp_to_ms
-if TYPE_CHECKING:
-    from .ssafile import SSAFile
+from ..time import ms_to_times, make_time, TIMESTAMP, timestamp_to_ms
+from ..ssafile import SSAFile
 
 
 #: Largest timestamp allowed in SubRip, ie. 99:59:59,999.

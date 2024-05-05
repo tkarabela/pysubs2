@@ -2,15 +2,14 @@ import logging
 import re
 import warnings
 from numbers import Number
-from typing import Any, Union, Optional, Dict, Tuple, List, TextIO, TYPE_CHECKING
+from typing import Any, Union, Optional, Dict, Tuple, List, TextIO
 
-from .formatbase import FormatBase
-from .ssaevent import SSAEvent
-from .ssastyle import SSAStyle
-from .common import Color, Alignment, SSA_ALIGNMENT
-from .time import make_time, ms_to_times, timestamp_to_ms, TIMESTAMP, TIMESTAMP_SHORT
-if TYPE_CHECKING:
-    from .ssafile import SSAFile
+from .base import FormatBase
+from ..ssaevent import SSAEvent
+from ..ssastyle import SSAStyle
+from ..common import Color, Alignment, SSA_ALIGNMENT
+from ..time import make_time, ms_to_times, timestamp_to_ms, TIMESTAMP, TIMESTAMP_SHORT
+from ..ssafile import SSAFile
 
 
 def ass_to_ssa_alignment(i: int) -> int:

@@ -1,15 +1,14 @@
 from functools import partial
 import re
-from typing import Optional, TextIO, Any, Match, TYPE_CHECKING
+from typing import Optional, TextIO, Any, Match
 
-from .exceptions import UnknownFPSError
-from .ssaevent import SSAEvent
-from .ssastyle import SSAStyle
-from .formatbase import FormatBase
+from ..exceptions import UnknownFPSError
+from ..ssaevent import SSAEvent
+from ..ssastyle import SSAStyle
+from .base import FormatBase
 from .substation import parse_tags
-from .time import ms_to_frames, frames_to_ms
-if TYPE_CHECKING:
-    from .ssafile import SSAFile
+from ..time import ms_to_frames, frames_to_ms
+from ..ssafile import SSAFile
 
 
 #: Matches a MicroDVD line.

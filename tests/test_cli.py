@@ -1,3 +1,5 @@
+from typing import Any
+
 import pysubs2
 import tempfile
 import subprocess
@@ -385,7 +387,7 @@ def test_srt_keep_unknown_html_tags() -> None:
             assert out.strip() == TEST_SRT_KEEP_UNKNOWN_HTML_TAGS.strip()
 
 
-def test_print_help_on_empty_tty_input(capsys, monkeypatch) -> None:
+def test_print_help_on_empty_tty_input(capsys: Any, monkeypatch: Any) -> None:
     monkeypatch.setattr("sys.stdin", StringIO())
     monkeypatch.setattr("sys.stdin.isatty", (lambda: True))
 
@@ -396,7 +398,7 @@ def test_print_help_on_empty_tty_input(capsys, monkeypatch) -> None:
     assert captured.out.startswith("usage: pysubs2")
 
 
-def test_empty_notty_input_doesnt_print_help(capsys, monkeypatch) -> None:
+def test_empty_notty_input_doesnt_print_help(capsys: Any, monkeypatch: Any) -> None:
     with tempfile.TemporaryDirectory() as temp_dir:
         path = op.join(temp_dir, "test.srt")
         with open(path, "w+") as in_fp:

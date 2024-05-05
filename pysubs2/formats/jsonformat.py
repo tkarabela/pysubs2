@@ -1,13 +1,12 @@
 import dataclasses
 import json
-from typing import Any, Optional, TextIO, TYPE_CHECKING
+from typing import Any, Optional, TextIO
 
-from .common import Color
-from .ssaevent import SSAEvent
-from .ssastyle import SSAStyle
-from .formatbase import FormatBase
-if TYPE_CHECKING:
-    from .ssafile import SSAFile
+from ..common import Color
+from ..ssaevent import SSAEvent
+from ..ssastyle import SSAStyle
+from .base import FormatBase
+from ..ssafile import SSAFile
 
 
 # We're using Color dataclass

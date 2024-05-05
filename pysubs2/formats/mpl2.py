@@ -1,10 +1,9 @@
 import re
-from typing import Optional, Any, TextIO, TYPE_CHECKING
-from .time import times_to_ms
-from .formatbase import FormatBase
-from .ssaevent import SSAEvent
-if TYPE_CHECKING:
-    from .ssafile import SSAFile
+from typing import Optional, Any, TextIO
+from ..time import times_to_ms
+from .base import FormatBase
+from ..ssaevent import SSAEvent
+from ..ssafile import SSAFile
 
 
 # thanks to http://otsaloma.io/gaupol/doc/api/aeidon.files.mpl2_source.html

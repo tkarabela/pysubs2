@@ -1,14 +1,13 @@
 import re
 import warnings
-from typing import Optional, TextIO, Any, TYPE_CHECKING
+from typing import Optional, TextIO, Any
 
-from .formatbase import FormatBase
-from .ssaevent import SSAEvent
-from .ssastyle import SSAStyle
+from .base import FormatBase
+from ..ssaevent import SSAEvent
+from ..ssastyle import SSAStyle
 from .substation import parse_tags
-from .time import ms_to_times, make_time, TIMESTAMP_SHORT, timestamp_to_ms
-if TYPE_CHECKING:
-    from .ssafile import SSAFile
+from ..time import ms_to_times, make_time, TIMESTAMP_SHORT, timestamp_to_ms
+from ..ssafile import SSAFile
 
 
 #: Pattern that matches TMP line

@@ -1,6 +1,15 @@
 from typing import List
 
 
+__all__ = [
+    "Pysubs2Error",
+    "UnknownFPSError",
+    "UnknownFileExtensionError",
+    "UnknownFormatIdentifierError",
+    "FormatAutodetectionError",
+]
+
+
 class Pysubs2Error(Exception):
     """Base class for pysubs2 exceptions."""
 

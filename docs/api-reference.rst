@@ -85,10 +85,10 @@ Misc methods
 ``pysubs2.formats`` --- subtitle format implementations
 -------------------------------------------------------
 
-.. note:: This submodule contains pysubs2 internals. It's mostly of interest if you're looking to implement
+.. note:: This subpackage contains pysubs2 internals. It's mostly of interest if you're looking to implement
           a subtitle format not supported by the library. In that case, have a look at :class:`pysubs2.formats.FormatBase`.
 
-.. autofunction:: pysubs2.substation.parse_tags
+.. autofunction:: pysubs2.formats.substation.parse_tags
 
 .. automodule:: pysubs2.formats
    :members:
@@ -111,31 +111,31 @@ Here you can find specific details regarding support of the individual subtitle 
    These are used to customize the parser/writer behaviour.
 
 
-.. autoclass:: pysubs2.substation.SubstationFormat
+.. autoclass:: pysubs2.formats.substation.SubstationFormat
    :members:
    :show-inheritance:
 
-.. autoclass:: pysubs2.subrip.SubripFormat
+.. autoclass:: pysubs2.formats.subrip.SubripFormat
    :members:
    :show-inheritance:
 
-.. autoclass:: pysubs2.mpl2.MPL2Format
+.. autoclass:: pysubs2.formats.mpl2.MPL2Format
    :members:
    :show-inheritance:
 
-.. autoclass:: pysubs2.tmp.TmpFormat
+.. autoclass:: pysubs2.formats.tmp.TmpFormat
    :members:
    :show-inheritance:
 
-.. autoclass:: pysubs2.webvtt.WebVTTFormat
+.. autoclass:: pysubs2.formats.webvtt.WebVTTFormat
    :members:
    :show-inheritance:
 
-.. autoclass:: pysubs2.microdvd.MicroDVDFormat
+.. autoclass:: pysubs2.formats.microdvd.MicroDVDFormat
    :members:
    :show-inheritance:
 
-.. autoclass:: pysubs2.jsonformat.JSONFormat
+.. autoclass:: pysubs2.formats.jsonformat.JSONFormat
    :members:
    :show-inheritance:
 

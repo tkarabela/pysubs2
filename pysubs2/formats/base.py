@@ -1,6 +1,5 @@
-from typing import Optional, TYPE_CHECKING, Any, TextIO
-if TYPE_CHECKING:
-    from .ssafile import SSAFile
+from typing import Optional, Any, TextIO
+from ..ssafile import SSAFile
 
 
 class FormatBase:

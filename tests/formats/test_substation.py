@@ -5,7 +5,7 @@ pysubs2.formats.substation tests
 import typing
 from textwrap import dedent
 from pysubs2 import SSAFile, SSAEvent, SSAStyle, make_time, Color, Alignment
-from pysubs2.substation import color_to_ass_rgba, color_to_ssa_rgb, rgba_to_color, MAX_REPRESENTABLE_TIME, SubstationFormat
+from pysubs2.formats.substation import color_to_ass_rgba, color_to_ssa_rgb, rgba_to_color, MAX_REPRESENTABLE_TIME, SubstationFormat
 import pytest
 
 

@@ -7,7 +7,7 @@ from textwrap import dedent
 import pytest
 
 from pysubs2 import SSAFile, SSAEvent, make_time
-from pysubs2.subrip import MAX_REPRESENTABLE_TIME
+from pysubs2.formats.subrip import MAX_REPRESENTABLE_TIME
 
 
 def test_simple_write() -> None:

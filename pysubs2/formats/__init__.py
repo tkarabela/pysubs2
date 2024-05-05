@@ -1,6 +1,6 @@
 from typing import Dict, Type
 
-from .formatbase import FormatBase
+from .base import FormatBase
 from .microdvd import MicroDVDFormat
 from .subrip import SubripFormat
 from .jsonformat import JSONFormat
@@ -8,7 +8,7 @@ from .substation import SubstationFormat
 from .mpl2 import MPL2Format
 from .tmp import TmpFormat
 from .webvtt import WebVTTFormat
-from .exceptions import UnknownFormatIdentifierError, UnknownFileExtensionError, FormatAutodetectionError
+from ..exceptions import UnknownFormatIdentifierError, UnknownFileExtensionError, FormatAutodetectionError
 
 #: Dict mapping file extensions to format identifiers.
 FILE_EXTENSION_TO_FORMAT_IDENTIFIER: Dict[str, str] = {

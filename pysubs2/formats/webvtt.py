@@ -1,18 +1,17 @@
 import re
-from typing import List, Sequence, Optional, TextIO, Any, TYPE_CHECKING
+from typing import List, Sequence, Optional, TextIO, Any
 
-from .ssaevent import SSAEvent
+from ..ssaevent import SSAEvent
 from .subrip import SubripFormat
-from .time import make_time
-if TYPE_CHECKING:
-    from .ssafile import SSAFile
+from ..time import make_time
+from ..ssafile import SSAFile
 
 
 class WebVTTFormat(SubripFormat):
     """
     Web Video Text Tracks (WebVTT) subtitle format implementation
 
-    Currently, this shares implementation with :class:`pysubs2.subrip.SubripFormat`.
+    Currently, this shares implementation with :class:`pysubs2.formats.subrip.SubripFormat`.
     """
     TIMESTAMP = re.compile(r"(\d{0,4}:)?(\d{2}):(\d{2})\.(\d{2,3})")
 
@@ -42,7 +41,7 @@ class WebVTTFormat(SubripFormat):
     @classmethod
     def to_file(cls, subs: "SSAFile", fp: TextIO, format_: str, **kwargs: Any) -> None:  # type: ignore[override]
         """
-        See :meth:`pysubs2.SubripFormat.to_file()`, additional SRT options are supported by VTT as well
+        See :meth:`pysubs2.formats.SubripFormat.to_file()`, additional SRT options are supported by VTT as well
         """
         print("WEBVTT\n", file=fp)
         return super(WebVTTFormat, cls).to_file(
