@@ -34,7 +34,7 @@ jobs:
         pip install -r requirements-dev.txt
     - name: Typecheck with mypy
       run: |
-        mypy
+        mypy --strict
     - name: Check with ruff
       run: |
         ruff check
