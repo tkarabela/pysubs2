@@ -29,3 +29,5 @@ Your branch should also pass Ruff and strict MyPy checks with no errors:
 mypy --strict
 ruff check
 ```
+
+You can run all checks via `make test`.
