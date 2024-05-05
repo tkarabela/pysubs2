@@ -126,10 +126,6 @@ class Pysubs2CLI:
             return 1
 
     def main(self, argv: List[str]) -> int:
-        # Dealing with empty arguments
-        if not argv:
-            argv = ["--help"]
-
         args = self.parser.parse_args(argv)
         errors = 0
 
@@ -186,7 +182,7 @@ class Pysubs2CLI:
                     with open(outpath, "w", encoding=args.output_enc) as outfile:
                         subs.to_file(outfile, output_format, args.fps, apply_styles=not args.clean,
                                      **extra_output_args)
-        else:
+        elif not sys.stdin.isatty():
             infile = io.TextIOWrapper(sys.stdin.buffer, args.input_enc)
             outfile = io.TextIOWrapper(sys.stdout.buffer, args.output_enc)
 
@@ -195,6 +191,9 @@ class Pysubs2CLI:
             output_format = args.output_format or subs.format
             assert output_format is not None, "output_format must not be None (it's either given or inferred at read time)"
             subs.to_file(outfile, output_format, args.fps, apply_styles=not args.clean)
+        else:
+            self.parser.print_help()
+            errors += 1
 
         return 0 if errors == 0 else 1
 
