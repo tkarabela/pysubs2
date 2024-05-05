@@ -2,8 +2,7 @@ import pysubs2
 import tempfile
 import subprocess
 import os.path as op
-from io import open
-
+from io import StringIO
 
 TEST_SRT_FILE = """\
 1
@@ -384,3 +383,25 @@ def test_srt_keep_unknown_html_tags() -> None:
         with open(path, encoding="utf-8") as fp:
             out = fp.read()
             assert out.strip() == TEST_SRT_KEEP_UNKNOWN_HTML_TAGS.strip()
+
+
+def test_print_help_on_empty_tty_input(capsys, monkeypatch) -> None:
+    monkeypatch.setattr("sys.stdin", StringIO())
+    monkeypatch.setattr("sys.stdin.isatty", (lambda: True))
+
+    cli = pysubs2.cli.Pysubs2CLI()
+    cli([])
+
+    captured = capsys.readouterr()
+    assert captured.out.startswith("usage: pysubs2")
+
+
+def test_empty_notty_input_doesnt_print_help(capsys, monkeypatch) -> None:
+    with tempfile.TemporaryDirectory() as temp_dir:
+        path = op.join(temp_dir, "test.srt")
+        with open(path, "w+") as in_fp:
+            cmd = ["python", "-m", "pysubs2"]
+            p = subprocess.run(cmd, stdin=in_fp, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            assert p.returncode == 1
+            assert not p.stdout.startswith("usage: pysubs2")
+            assert "FormatAutodetectionError" in p.stderr
