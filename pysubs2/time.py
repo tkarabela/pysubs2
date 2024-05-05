@@ -1,6 +1,5 @@
-from collections import namedtuple
 import re
-from typing import Optional, Tuple, Sequence
+from typing import Optional, Sequence, NamedTuple
 from pysubs2.common import IntOrFloat
 
 #: Pattern that matches both SubStation and SubRip timestamps.
@@ -9,7 +8,13 @@ TIMESTAMP = re.compile(r"(\d{1,2}):(\d{1,2}):(\d{1,2})[.,](\d{1,3})")
 #: Pattern that matches H:MM:SS or HH:MM:SS timestamps.
 TIMESTAMP_SHORT = re.compile(r"(\d{1,2}):(\d{2}):(\d{2})")
 
-Times = namedtuple("Times", ["h", "m", "s", "ms"])
+
+class Times(NamedTuple):
+    """Named tuple (h, m, s, ms) of ints."""
+    h: int
+    m: int
+    s: int
+    ms: int
 
 
 def make_time(h: IntOrFloat=0, m: IntOrFloat=0, s: IntOrFloat=0, ms: IntOrFloat=0,
@@ -124,7 +129,7 @@ def ms_to_frames(ms: IntOrFloat, fps: float) -> int:
     return int(round((ms / 1000) * fps))
 
 
-def ms_to_times(ms: IntOrFloat) -> Tuple[int, int, int, int]:
+def ms_to_times(ms: IntOrFloat) -> Times:
     """
     Convert milliseconds to normalized tuple (h, m, s, ms).
     
