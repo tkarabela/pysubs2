@@ -3,7 +3,7 @@
 from .ssafile import SSAFile
 from .ssaevent import SSAEvent
 from .ssastyle import SSAStyle
-from . import time, formats, cli, whisper
+from . import time, formats, cli, whisper, exceptions
 from .exceptions import *
 from .common import Color, Alignment, VERSION
 
@@ -18,3 +18,20 @@ make_time = time.make_time
 
 #: Alias for `pysubs2.common.VERSION`.
 __version__ = VERSION
+
+__all__ = [
+    "SSAFile",
+    "SSAEvent",
+    "SSAStyle",
+    "time",
+    "formats",
+    "cli",
+    "whisper",
+    "exceptions",
+    "Color",
+    "Alignment",
+    "VERSION",
+    "load",
+    "load_from_whisper",
+    "make_time",
+]

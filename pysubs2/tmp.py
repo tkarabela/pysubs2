@@ -1,11 +1,15 @@
 import re
 import warnings
+from typing import Optional, TextIO, Any, TYPE_CHECKING
 
 from .formatbase import FormatBase
 from .ssaevent import SSAEvent
 from .ssastyle import SSAStyle
 from .substation import parse_tags
 from .time import ms_to_times, make_time, TIMESTAMP_SHORT, timestamp_to_ms
+if TYPE_CHECKING:
+    from .ssafile import SSAFile
+
 
 #: Pattern that matches TMP line
 TMP_LINE = re.compile(r"(\d{1,2}:\d{2}:\d{2}):(.+)")
@@ -29,7 +33,7 @@ class TmpFormat(FormatBase):
         return f"{h:02d}:{m:02d}:{s:02d}"
 
     @classmethod
-    def guess_format(cls, text):
+    def guess_format(cls, text: str) -> Optional[str]:
         """See :meth:`pysubs2.formats.FormatBase.guess_format()`"""
         if "[Script Info]" in text or "[V4+ Styles]" in text:
             # disambiguation vs. SSA/ASS
@@ -39,12 +43,14 @@ class TmpFormat(FormatBase):
             if TMP_LINE.match(line) and len(TMP_LINE.findall(line)) == 1:
                 return "tmp"
 
+        return None
+
     @classmethod
-    def from_file(cls, subs, fp, format_, **kwargs):
+    def from_file(cls, subs: "SSAFile", fp: TextIO, format_: str, **kwargs: Any) -> None:
         """See :meth:`pysubs2.formats.FormatBase.from_file()`"""
         events = []
 
-        def prepare_text(text):
+        def prepare_text(text: str) -> str:
             text = text.replace("|", r"\N")  # convert newlines
             text = re.sub(r"< *u *>", r"{\\u1}", text)
             text = re.sub(r"< */? *[a-zA-Z][^>]*>", "", text) # strip other HTML tags
@@ -56,7 +62,9 @@ class TmpFormat(FormatBase):
                 continue
 
             start, text = match.groups()
-            start = timestamp_to_ms(TIMESTAMP_SHORT.match(start).groups())
+            match2 = TIMESTAMP_SHORT.match(start)
+            assert match2 is not None, "TMP_LINE contains TIMESTAMP_SHORT"
+            start = timestamp_to_ms(match2.groups())
 
             # Unfortunately, end timestamp is not given; try to estimate something reasonable:
             # start + 500 ms + 67 ms/character (15 chars per second)
@@ -72,7 +80,7 @@ class TmpFormat(FormatBase):
         subs.events = events
 
     @classmethod
-    def to_file(cls, subs, fp, format_, apply_styles=True, **kwargs):
+    def to_file(cls, subs: "SSAFile", fp: TextIO, format_: str, apply_styles: bool = True, **kwargs: Any) -> None:
         """
         See :meth:`pysubs2.formats.FormatBase.to_file()`
 
@@ -82,7 +90,7 @@ class TmpFormat(FormatBase):
             apply_styles: If False, do not write any styling.
 
         """
-        def prepare_text(text, style):
+        def prepare_text(text: str, style: SSAStyle) -> str:
             body = []
             for fragment, sty in parse_tags(text, style, subs.styles):
                 fragment = fragment.replace(r"\h", " ")

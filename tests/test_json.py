@@ -3,7 +3,8 @@ import os.path as op
 from pysubs2 import SSAFile, SSAEvent, SSAStyle, Color, FormatAutodetectionError
 import tempfile
 
-def test_write_read():
+
+def test_write_read() -> None:
     subs = SSAFile()
     e1 = SSAEvent(text="Hello, world!")
     e2 = SSAEvent(text="The other subtitle.\\NWith two lines.", style="custom style")
@@ -20,7 +21,7 @@ def test_write_read():
     assert subs2.equals(subs)
 
 
-def test_read_unsupported_json_issue_85():
+def test_read_unsupported_json_issue_85() -> None:
     with tempfile.TemporaryDirectory() as temp_dir:
         path = op.join(temp_dir, "test.atpj")
         with open(path, "w") as fp:

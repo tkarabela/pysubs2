@@ -1,11 +1,16 @@
 from functools import partial
 import re
+from typing import Optional, TextIO, Any, TYPE_CHECKING
+
 from .exceptions import UnknownFPSError
 from .ssaevent import SSAEvent
 from .ssastyle import SSAStyle
 from .formatbase import FormatBase
 from .substation import parse_tags
 from .time import ms_to_frames, frames_to_ms
+if TYPE_CHECKING:
+    from .ssafile import SSAFile
+
 
 #: Matches a MicroDVD line.
 MICRODVD_LINE = re.compile(r" *\{ *(\d+) *\} *\{ *(\d+) *\}(.+)")
@@ -14,13 +19,16 @@ MICRODVD_LINE = re.compile(r" *\{ *(\d+) *\} *\{ *(\d+) *\}(.+)")
 class MicroDVDFormat(FormatBase):
     """MicroDVD subtitle format implementation"""
     @classmethod
-    def guess_format(cls, text):
+    def guess_format(cls, text: str) -> Optional[str]:
         """See :meth:`pysubs2.formats.FormatBase.guess_format()`"""
         if any(map(MICRODVD_LINE.match, text.splitlines())):
             return "microdvd"
+        else:
+            return None
 
     @classmethod
-    def from_file(cls, subs, fp, format_, fps=None, strict_fps_inference: bool = True, **kwargs):
+    def from_file(cls, subs: "SSAFile", fp: TextIO, format_: str, fps: Optional[float] = None,
+                  strict_fps_inference: bool = True, **kwargs: Any) -> None:
         """
         See :meth:`pysubs2.formats.FormatBase.from_file()`
 
@@ -60,10 +68,10 @@ class MicroDVDFormat(FormatBase):
 
             start, end = map(partial(frames_to_ms, fps=fps), (fstart, fend))
 
-            def prepare_text(text):
+            def prepare_text(text: str) -> str:
                 text = text.replace("|", r"\N")
 
-                def style_replacer(match: re.Match) -> str:
+                def style_replacer(match: re.Match[str]) -> str:
                     tags = [c for c in "biu" if c in match.group(0)]
                     return "{%s}" % "".join(f"\\{c}1" for c in tags)
 
@@ -78,7 +86,8 @@ class MicroDVDFormat(FormatBase):
             subs.append(ev)
 
     @classmethod
-    def to_file(cls, subs, fp, format_, fps=None, write_fps_declaration=True, apply_styles=True, **kwargs):
+    def to_file(cls, subs: "SSAFile", fp: TextIO, format_: str, fps: Optional[float] = None,
+                write_fps_declaration: bool = True, apply_styles: bool = True, **kwargs: Any) -> None:
         """
         See :meth:`pysubs2.formats.FormatBase.to_file()`
 

@@ -23,7 +23,8 @@ TEST_MICRODVD_FILE = """\
 {60000}{120000}Subtitle number|two.
 """
 
-def test_srt_to_microdvd():
+
+def test_srt_to_microdvd() -> None:
     with tempfile.TemporaryDirectory() as dirpath:
         inpath = op.join(dirpath, "test.srt")
         with open(inpath, "w", encoding="utf-8") as fp:
@@ -37,12 +38,14 @@ def test_srt_to_microdvd():
             out = fp.read()
             assert out == TEST_MICRODVD_FILE
 
-def test_srt_to_microdvd_subprocess_pipe():
+
+def test_srt_to_microdvd_subprocess_pipe() -> None:
     cmd = ["python", "-m", "pysubs2", "--to", "microdvd", "--fps", "1000"]
     output = subprocess.check_output(cmd, input=TEST_SRT_FILE, text=True)
     assert output.strip() == TEST_MICRODVD_FILE.strip()
 
-def test_srt_to_microdvd_multiple_files():
+
+def test_srt_to_microdvd_multiple_files() -> None:
     N = 3
     with tempfile.TemporaryDirectory() as dirpath:
         inpaths = [op.join(dirpath, f"test-{i}.srt") for i in range(N)]
@@ -59,7 +62,8 @@ def test_srt_to_microdvd_multiple_files():
                 out = fp.read()
                 assert out == TEST_MICRODVD_FILE
 
-def test_microdvd_to_srt():
+
+def test_microdvd_to_srt() -> None:
     with tempfile.TemporaryDirectory() as dirpath:
         inpath = op.join(dirpath, "test.sub")
         with open(inpath, "w", encoding="utf-8") as fp:
@@ -73,6 +77,7 @@ def test_microdvd_to_srt():
             out = fp.read()
             assert out == TEST_SRT_FILE
 
+
 TEST_SRT_FILE_SHIFTED = """\
 1
 01:00:01,500 --> 01:01:01,500
@@ -85,7 +90,8 @@ two.
 
 """
 
-def test_srt_shift():
+
+def test_srt_shift() -> None:
     with tempfile.TemporaryDirectory() as dirpath:
         inpath = outpath = op.join(dirpath, "test.srt")
         with open(inpath, "w", encoding="utf-8") as fp:
@@ -98,7 +104,8 @@ def test_srt_shift():
             out = fp.read()
             assert out == TEST_SRT_FILE_SHIFTED
 
-def test_srt_shift_back():
+
+def test_srt_shift_back() -> None:
     with tempfile.TemporaryDirectory() as dirpath:
         inpath = outpath = op.join(dirpath, "test.srt")
         with open(inpath, "w", encoding="utf-8") as fp:
@@ -111,7 +118,8 @@ def test_srt_shift_back():
             out = fp.read()
             assert out == TEST_SRT_FILE
 
-def test_srt_shift_to_output_dir():
+
+def test_srt_shift_to_output_dir() -> None:
     with tempfile.TemporaryDirectory() as indirpath:
         inpath = op.join(indirpath, "test.srt")
         with open(inpath, "w", encoding="utf-8") as fp:
@@ -131,6 +139,7 @@ def test_srt_shift_to_output_dir():
             with open(inpath, encoding="utf-8") as fp:
                 out = fp.read()
                 assert out == TEST_SRT_FILE
+
 
 TEST_SUBSTATION_WITH_KARAOKE = r"""
 [Script Info]
@@ -239,7 +248,8 @@ TEST_SRT_KEEP_UNKNOWN_HTML_TAGS = """
 Some unsupported <blink>tag</blink>
 """
 
-def test_srt_clean():
+
+def test_srt_clean() -> None:
     # see issue #37
     with tempfile.TemporaryDirectory() as dirpath:
         inpath = op.join(dirpath, "test.ass")
@@ -256,7 +266,7 @@ def test_srt_clean():
             assert out.strip() == TEST_SUBSTATION_WITH_KARAOKE_SRT_CLEAN_OUTPUT.strip()
 
 
-def test_srt_clean_styling():
+def test_srt_clean_styling() -> None:
     # see issue #39
     with tempfile.TemporaryDirectory() as dirpath:
         inpath = op.join(dirpath, "test.ass")
@@ -282,7 +292,7 @@ def test_srt_clean_styling():
             assert out.strip() == TEST_SUBSTATION_WITH_ITALICS_SRT_CLEAN_OUTPUT.strip()
 
 
-def test_srt_keep_ssa_tags():
+def test_srt_keep_ssa_tags() -> None:
     # see issue #48
     with tempfile.TemporaryDirectory() as dirpath:
         path = op.join(dirpath, "test.srt")
@@ -309,7 +319,8 @@ def test_srt_keep_ssa_tags():
             out = fp.read()
             assert out.strip() == TEST_SRT_KEEP_SSA_TAGS.strip()
 
-def test_srt_keep_ssa_tags_mixed_with_html():
+
+def test_srt_keep_ssa_tags_mixed_with_html() -> None:
     # see issue #48
     with tempfile.TemporaryDirectory() as dirpath:
         path = op.join(dirpath, "test.srt")
@@ -348,7 +359,7 @@ def test_srt_keep_ssa_tags_mixed_with_html():
             assert out.strip() == TEST_SRT_KEEP_SSA_TAGS_MIXED_WITH_HTML.strip()
 
 
-def test_srt_keep_unknown_html_tags():
+def test_srt_keep_unknown_html_tags() -> None:
     with tempfile.TemporaryDirectory() as dirpath:
         path = op.join(dirpath, "test.srt")
 

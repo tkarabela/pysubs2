@@ -1,8 +1,10 @@
 import re
-
+from typing import Optional, Any, TextIO, TYPE_CHECKING
 from .time import times_to_ms
 from .formatbase import FormatBase
 from .ssaevent import SSAEvent
+if TYPE_CHECKING:
+    from .ssafile import SSAFile
 
 
 # thanks to http://otsaloma.io/gaupol/doc/api/aeidon.files.mpl2_source.html
@@ -12,13 +14,15 @@ MPL2_FORMAT = re.compile(r"^\[(-?\d+)\]\[(-?\d+)\](.*)", re.MULTILINE)
 class MPL2Format(FormatBase):
     """MPL2 subtitle format implementation"""
     @classmethod
-    def guess_format(cls, text):
+    def guess_format(cls, text: str) -> Optional[str]:
         """See :meth:`pysubs2.formats.FormatBase.guess_format()`"""
         if MPL2_FORMAT.search(text):
             return "mpl2"
+        else:
+            return None
 
     @classmethod
-    def from_file(cls, subs, fp, format_, **kwargs):
+    def from_file(cls, subs: "SSAFile", fp: TextIO, format_: str, **kwargs: Any) -> None:
         """See :meth:`pysubs2.formats.FormatBase.from_file()`"""
         def prepare_text(lines: str) -> str:
             out = []
@@ -42,7 +46,7 @@ class MPL2Format(FormatBase):
             subs.append(e)
 
     @classmethod
-    def to_file(cls, subs, fp, format_, **kwargs):
+    def to_file(cls, subs: "SSAFile", fp: TextIO, format_: str, **kwargs: Any) -> None:
         """
         See :meth:`pysubs2.formats.FormatBase.to_file()`
 

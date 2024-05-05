@@ -6,7 +6,8 @@ pysubs2.formats.vtt tests
 from textwrap import dedent
 from pysubs2 import SSAFile, SSAEvent, make_time
 
-def test_simple_write():
+
+def test_simple_write() -> None:
     subs = SSAFile()
 
     e1 = SSAEvent()
@@ -45,7 +46,8 @@ def test_simple_write():
     text = subs.to_string("vtt")
     assert text.strip() == ref.strip()
 
-def test_writes_in_time_order():
+
+def test_writes_in_time_order() -> None:
     subs = SSAFile()
 
     e1 = SSAEvent()
@@ -77,7 +79,8 @@ def test_writes_in_time_order():
     text = subs.to_string("vtt")
     assert text.strip() == ref.strip()
 
-def test_simple_read():
+
+def test_simple_read() -> None:
     text = dedent("""\
     WEBVTT
     
@@ -98,7 +101,8 @@ def test_simple_read():
     subs = SSAFile.from_string(text)
     assert subs.equals(ref)
 
-def test_read_complex():
+
+def test_read_complex() -> None:
     # regression test for #30
     text = dedent("""\
     WEBVTT

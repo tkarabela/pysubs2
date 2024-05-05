@@ -7,6 +7,8 @@ import io
 from io import open
 import sys
 from textwrap import dedent
+from typing import List
+
 from .formats import get_file_extension, FORMAT_IDENTIFIERS
 from .time import make_time
 from .ssafile import SSAFile
@@ -42,7 +44,7 @@ def change_ext(path: str, ext: str) -> str:
 
 
 class Pysubs2CLI:
-    def __init__(self):
+    def __init__(self) -> None:
         parser = self.parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
                                                        prog="pysubs2",
                                                        description=dedent("""
@@ -116,15 +118,16 @@ class Pysubs2CLI:
         extra_sub_options.add_argument("--sub-no-write-fps-declaration", action="store_true",
                                        help="(output) omit writing FPS as first zero-length subtitle")
 
-    def __call__(self, argv):
+    def __call__(self, argv: List[str]) -> int:
         try:
-            self.main(argv)
+            return self.main(argv)
         except KeyboardInterrupt:
-            exit("\nAborted by user.")
+            print("\nAborted by user.", file=sys.stderr)
+            return 1
 
-    def main(self, argv):
+    def main(self, argv: List[str]) -> int:
         # Dealing with empty arguments
-        if argv == []:
+        if not argv:
             argv = ["--help"]
 
         args = self.parser.parse_args(argv)
@@ -169,10 +172,12 @@ class Pysubs2CLI:
                     if args.output_format is None:
                         outpath = path
                         output_format = subs.format
+                        assert output_format is not None, "subs.format must not be None (it was read from file)"
                     else:
                         ext = get_file_extension(args.output_format)
                         outpath = change_ext(path, ext)
                         output_format = args.output_format
+                        assert output_format is not None, "args.output_format must not be None (see if/else)"
 
                     if args.output_dir is not None:
                         _, filename = op.split(outpath)
@@ -188,12 +193,13 @@ class Pysubs2CLI:
             subs = SSAFile.from_file(infile, args.input_format, args.fps)
             self.process(subs, args)
             output_format = args.output_format or subs.format
+            assert output_format is not None, "output_format must not be None (it's either given or inferred at read time)"
             subs.to_file(outfile, output_format, args.fps, apply_styles=not args.clean)
 
-        return (0 if errors == 0 else 1)
+        return 0 if errors == 0 else 1
 
     @staticmethod
-    def process(subs, args):
+    def process(subs: SSAFile, args: argparse.Namespace) -> None:
         if args.shift is not None:
             subs.shift(ms=args.shift)
         elif args.shift_back is not None:
@@ -206,7 +212,7 @@ class Pysubs2CLI:
             subs.remove_miscellaneous_events()
 
 
-def __main__():
+def __main__() -> None:
     cli = Pysubs2CLI()
     rv = cli(sys.argv[1:])
     sys.exit(rv)

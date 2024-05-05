@@ -2,21 +2,22 @@ import logging
 import re
 import warnings
 from numbers import Number
-from typing import Any, Union, Optional, Dict
+from typing import Any, Union, Optional, Dict, Tuple, List, TextIO, TYPE_CHECKING
 
-import pysubs2
 from .formatbase import FormatBase
 from .ssaevent import SSAEvent
 from .ssastyle import SSAStyle
 from .common import Color, Alignment, SSA_ALIGNMENT
 from .time import make_time, ms_to_times, timestamp_to_ms, TIMESTAMP, TIMESTAMP_SHORT
+if TYPE_CHECKING:
+    from .ssafile import SSAFile
 
 
-def ass_to_ssa_alignment(i):
+def ass_to_ssa_alignment(i: int) -> int:
     warnings.warn("ass_to_ssa_alignment function is deprecated, please use the Alignment enum", DeprecationWarning)
     return SSA_ALIGNMENT[i-1]
 
-def ssa_to_ass_alignment(i):
+def ssa_to_ass_alignment(i: int) -> int:
     warnings.warn("ssa_to_ass_alignment function is deprecated, please use the Alignment enum", DeprecationWarning)
     return SSA_ALIGNMENT.index(i) + 1
 
@@ -86,7 +87,8 @@ def is_valid_field_content(s: str) -> bool:
     return "\n" not in s and "," not in s
 
 
-def parse_tags(text: str, style: SSAStyle = SSAStyle.DEFAULT_STYLE, styles: Optional[Dict[str, SSAStyle]] = None):
+def parse_tags(text: str, style: SSAStyle = SSAStyle.DEFAULT_STYLE,
+               styles: Optional[Dict[str, SSAStyle]] = None) -> List[Tuple[str, SSAStyle]]:
     """
     Split text into fragments with computed SSAStyles.
     
@@ -117,9 +119,9 @@ def parse_tags(text: str, style: SSAStyle = SSAStyle.DEFAULT_STYLE, styles: Opti
                 s = style.copy() # reset to original line style
             elif tag.startswith(r"\r"):
                 name = tag[2:]
-                if name in styles:  # type: ignore[operator]
+                if name in styles:
                     # reset to named style
-                    s = styles[name].copy()  # type: ignore[index]
+                    s = styles[name].copy()
             else:
                 if "i" in tag:
                     s.italic = "1" in tag
@@ -166,18 +168,20 @@ class SubstationFormat(FormatBase):
         return f"{h:01d}:{m:02d}:{s:02d}.{cs:02d}"
 
     @classmethod
-    def guess_format(cls, text):
+    def guess_format(cls, text: str) -> Optional[str]:
         """See :meth:`pysubs2.formats.FormatBase.guess_format()`"""
         if re.search(r"V4\+ Styles", text, re.IGNORECASE):
             return "ass"
         elif re.search(r"V4 Styles", text, re.IGNORECASE):
             return "ssa"
+        else:
+            return None
 
     @classmethod
-    def from_file(cls, subs: "pysubs2.SSAFile", fp, format_, **kwargs):
+    def from_file(cls, subs: "SSAFile", fp: TextIO, format_: str, **kwargs: Any) -> None:
         """See :meth:`pysubs2.formats.FormatBase.from_file()`"""
 
-        def string_to_field(f: str, v: str):
+        def string_to_field(f: str, v: str) -> Any:
             # Per issue #45, we should handle the case where there is extra whitespace around the values.
             # Extra whitespace is removed in non-string fields where it would break the parser otherwise,
             # and in font name (where it doesn't really make sense). It is preserved in Dialogue string
@@ -316,7 +320,7 @@ class SubstationFormat(FormatBase):
             current_attachment_name = None
 
     @classmethod
-    def to_file(cls, subs: "pysubs2.SSAFile", fp, format_, header_notice=NOTICE, **kwargs):
+    def to_file(cls, subs: "SSAFile", fp: TextIO, format_: str, header_notice: str = NOTICE, **kwargs: Any) -> None:
         """See :meth:`pysubs2.formats.FormatBase.to_file()`"""
         print("[Script Info]", file=fp)
         for line in header_notice.splitlines(False):
@@ -331,7 +335,7 @@ class SubstationFormat(FormatBase):
             for k, v in subs.aegisub_project.items():
                 print(k, v, sep=": ", file=fp)
 
-        def field_to_string(f: str, v: Any, line: Union[SSAEvent, SSAStyle]):
+        def field_to_string(f: str, v: Any, line: Union[SSAEvent, SSAStyle]) -> str:
             if f in {"start", "end"}:
                 return cls.ms_to_timestamp(v)
             elif f == "marked":

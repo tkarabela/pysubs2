@@ -15,7 +15,7 @@ TRANSCRIBE_RESULT = {
                   'no_speech_prob': 0.0026147987227886915}], 'language': 'en'}
 
 
-def test_read_whisper_transcript_dict():
+def test_read_whisper_transcript_dict() -> None:
     subs = pysubs2.load_from_whisper(TRANSCRIBE_RESULT)
 
     e1, e2 = subs
@@ -27,8 +27,8 @@ def test_read_whisper_transcript_dict():
     assert e2.text == "ask what you can do for your country."
 
 
-def test_read_whisper_segments_list():
-    subs = pysubs2.load_from_whisper(TRANSCRIBE_RESULT["segments"])
+def test_read_whisper_segments_list() -> None:
+    subs = pysubs2.load_from_whisper(TRANSCRIBE_RESULT["segments"])  # type: ignore[arg-type]
 
     e1, e2 = subs
     assert e1.start == 0

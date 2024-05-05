@@ -1,23 +1,27 @@
 from pysubs2 import SSAStyle
 from pysubs2.substation import parse_tags
 
-def test_no_tags():
+
+def test_no_tags() -> None:
     text = "Hello, world!"
     assert parse_tags(text) == [(text, SSAStyle())]
 
-def test_i_tag():
+
+def test_i_tag() -> None:
     text = "Hello, {\\i1}world{\\i0}!"
     assert parse_tags(text) == [("Hello, ", SSAStyle()),
                                 ("world", SSAStyle(italic=True)),
                                 ("!", SSAStyle())]
 
-def test_r_tag():
+
+def test_r_tag() -> None:
     text = "{\\i1}Hello, {\\r}world!"
     assert parse_tags(text) == [("", SSAStyle()),
                                 ("Hello, ", SSAStyle(italic=True)),
                                 ("world!", SSAStyle())]
 
-def test_r_named_tag():
+
+def test_r_named_tag() -> None:
     styles = {"other style": SSAStyle(bold=True)}
     text = "Hello, {\\rother style\\i1}world!"
     
@@ -25,7 +29,8 @@ def test_r_named_tag():
         [("Hello, ", SSAStyle()),
          ("world!", SSAStyle(italic=True, bold=True))]
 
-def test_drawing_tag():
+
+def test_drawing_tag() -> None:
     text = r"{\p1}m 0 0 l 100 0 100 100 0 100{\p0}test"
 
     fragments = parse_tags(text)
@@ -43,7 +48,8 @@ def test_drawing_tag():
     assert drawing_text == "test"
     assert drawing_style.drawing is False
 
-def test_no_drawing_tag():
+
+def test_no_drawing_tag() -> None:
     text = r"test{\paws}test"
 
     fragments = parse_tags(text)

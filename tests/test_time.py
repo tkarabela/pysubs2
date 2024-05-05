@@ -2,8 +2,8 @@
 pysubs2.time tests
 
 """
-
-from fractions import Fraction 
+import typing
+from fractions import Fraction
 import pytest
 
 from pysubs2.time import TIMESTAMP, TIMESTAMP_SHORT, timestamp_to_ms, times_to_ms, ms_to_times, Times, frames_to_ms, \
@@ -11,21 +11,21 @@ from pysubs2.time import TIMESTAMP, TIMESTAMP_SHORT, timestamp_to_ms, times_to_m
 
 
 # helper functions
-def cs2ms(cs):
+def cs2ms(cs: int) -> int:
     return 10 * cs
 
-def s2ms(s):
+def s2ms(s: int) -> int:
     return 1000 * s
 
-def m2ms(m):
+def m2ms(m: int) -> int:
     return 60 * 1000 * m
 
-def h2ms(h):
+def h2ms(h: int) -> int:
     return 60 * 60 * 1000 * h
 
 
-
-def test_timestamp():
+@typing.no_type_check
+def test_timestamp() -> None:
     # proper SSA
     assert TIMESTAMP.match("1:23:45.67").groups() == ("1", "23", "45", "67")
     
@@ -56,7 +56,8 @@ def test_timestamp():
     assert TIMESTAMP.match(":12:45.67") is None
 
 
-def test_timestamp_short():
+@typing.no_type_check
+def test_timestamp_short() -> None:
     # proper TMP
     assert TIMESTAMP_SHORT.match("01:23:45").groups() == ("01", "23", "45")
 
@@ -73,7 +74,8 @@ def test_timestamp_short():
     assert TIMESTAMP_SHORT.match(":12:45") is None
 
 
-def test_timestamp_to_ms():
+@typing.no_type_check
+def test_timestamp_to_ms() -> None:
     # proper SSA
     assert timestamp_to_ms(TIMESTAMP.match("1:23:45.67").groups()) == \
         h2ms(1) + m2ms(23) + s2ms(45) + cs2ms(67)
@@ -94,7 +96,8 @@ def test_timestamp_to_ms():
            h2ms(10) + m2ms(23) + s2ms(45)
 
 
-def test_times_to_ms():
+@typing.no_type_check
+def test_times_to_ms() -> None:
     # basic tests
     assert times_to_ms() == 0
     assert times_to_ms(h=5) == h2ms(5)
@@ -119,7 +122,8 @@ def test_times_to_ms():
     assert times_to_ms(*ms_to_times(123456)) == 123456
 
 
-def test_ms_to_times():
+@typing.no_type_check
+def test_ms_to_times() -> None:
     # basic tests
     assert ms_to_times(0) == (0, 0, 0, 0)
     assert isinstance(ms_to_times(0), Times)
@@ -147,7 +151,8 @@ def test_ms_to_times():
     assert ms_to_times(times_to_ms(h=1,m=2,s=3,ms=4)) == (1, 2, 3, 4)
 
 
-def test_frames_to_ms():
+@typing.no_type_check
+def test_frames_to_ms() -> None:
     # basic tests
     assert frames_to_ms(0, 25) == 0
     assert isinstance(frames_to_ms(0, 25), int)
@@ -164,7 +169,9 @@ def test_frames_to_ms():
     with pytest.raises(TypeError):
         frames_to_ms(frames=1, fps="pal")  # keyword aliases from PySubs 0.1 are no longer supported
 
-def test_ms_to_frames():
+
+@typing.no_type_check
+def test_ms_to_frames() -> None:
     # basic tests
     assert ms_to_frames(0, 25) == 0
     assert isinstance(ms_to_frames(0, 25), int)
@@ -181,7 +188,8 @@ def test_ms_to_frames():
     with pytest.raises(TypeError):
         ms_to_frames(1, fps="pal")  # keyword aliases from PySubs 0.1 are no longer supported
 
-def test_ms_to_str():
+
+def test_ms_to_str() -> None:
     assert ms_to_str(0) == "0:00:00"
     assert ms_to_str(0, fractions=True) == "0:00:00.000"
     assert ms_to_str(1) == "0:00:00"

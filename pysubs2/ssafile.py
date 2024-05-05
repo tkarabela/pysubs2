@@ -4,7 +4,7 @@ from io import open
 from itertools import chain
 import os.path
 import logging
-from typing import Optional, List, Dict, Iterable, Any, overload, Iterator
+from typing import Optional, List, Dict, Iterable, Any, overload, Iterator, TextIO, Tuple
 
 from .common import IntOrFloat
 from .formats import autodetect_format, get_format_class, get_format_identifier
@@ -14,7 +14,7 @@ from .ssastyle import SSAStyle
 from .time import make_time, ms_to_str
 
 
-class SSAFile(MutableSequence):
+class SSAFile(MutableSequence[SSAEvent]):
     """
     Subtitle file in SubStation Alpha format.
 
@@ -32,7 +32,7 @@ class SSAFile(MutableSequence):
 
     """
 
-    DEFAULT_INFO = {
+    DEFAULT_INFO: Dict[str, str] = {
         "WrapStyle": "0",
         "ScaledBorderAndShadow": "yes",
         "Collisions": "Normal"
@@ -53,7 +53,8 @@ class SSAFile(MutableSequence):
     # ------------------------------------------------------------------------
 
     @classmethod
-    def load(cls, path: str, encoding: str="utf-8", format_: Optional[str]=None, fps: Optional[float]=None, **kwargs) -> "SSAFile":
+    def load(cls, path: str, encoding: str = "utf-8", format_: Optional[str] = None, fps: Optional[float] = None,
+             **kwargs: Any) -> "SSAFile":
         """
         Load subtitle file from given path.
 
@@ -104,7 +105,8 @@ class SSAFile(MutableSequence):
             return cls.from_file(fp, format_, fps=fps, **kwargs)
 
     @classmethod
-    def from_string(cls, string: str, format_: Optional[str]=None, fps: Optional[float]=None, **kwargs) -> "SSAFile":
+    def from_string(cls, string: str, format_: Optional[str] = None, fps: Optional[float] = None,
+                    **kwargs: Any) -> "SSAFile":
         """
         Load subtitle file from string.
 
@@ -112,6 +114,15 @@ class SSAFile(MutableSequence):
 
         Arguments:
             string (str): Subtitle file in a string. Note that the string must be Unicode (``str``, not ``bytes``).
+            format_ (str): Optional, forces use of specific parser
+                (eg. `"srt"`, `"ass"`). Otherwise, format is detected
+                automatically from file contents. This argument should
+                be rarely needed.
+            fps (float): Framerate for frame-based formats (MicroDVD),
+                for other formats this argument is ignored. Framerate might
+                be detected from the file, in which case you don't need
+                to specify it here (when given, this argument overrides
+                autodetection).
 
         Returns:
             SSAFile
@@ -129,7 +140,8 @@ class SSAFile(MutableSequence):
         return cls.from_file(fp, format_, fps=fps, **kwargs)
 
     @classmethod
-    def from_file(cls, fp: io.TextIOBase, format_: Optional[str]=None, fps: Optional[float]=None, **kwargs) -> "SSAFile":
+    def from_file(cls, fp: TextIO, format_: Optional[str] = None, fps: Optional[float] = None,
+                  **kwargs: Any) -> "SSAFile":
         """
         Read subtitle file from file object.
 
@@ -142,6 +154,15 @@ class SSAFile(MutableSequence):
         Arguments:
             fp (file object): A file object, ie. :class:`io.TextIOBase` instance.
                 Note that the file must be opened in text mode (as opposed to binary).
+            format_ (str): Optional, forces use of specific parser
+                (eg. `"srt"`, `"ass"`). Otherwise, format is detected
+                automatically from file contents. This argument should
+                be rarely needed.
+            fps (float): Framerate for frame-based formats (MicroDVD),
+                for other formats this argument is ignored. Framerate might
+                be detected from the file, in which case you don't need
+                to specify it here (when given, this argument overrides
+                autodetection).
 
         Returns:
             SSAFile
@@ -163,7 +184,8 @@ class SSAFile(MutableSequence):
         impl.from_file(subs, fp, format_, fps=fps, **kwargs)
         return subs
 
-    def save(self, path: str, encoding: str="utf-8", format_: Optional[str]=None, fps: Optional[float]=None, **kwargs):
+    def save(self, path: str, encoding: str = "utf-8", format_: Optional[str] = None, fps: Optional[float] = None,
+             **kwargs: Any) -> None:
         """
         Save subtitle file to given path.
 
@@ -207,7 +229,7 @@ class SSAFile(MutableSequence):
         with open(path, "w", encoding=encoding) as fp:
             self.to_file(fp, format_, fps=fps, **kwargs)
 
-    def to_string(self, format_: str, fps: Optional[float]=None, **kwargs) -> str:
+    def to_string(self, format_: str, fps: Optional[float] = None, **kwargs: Any) -> str:
         """
         Get subtitle file as a string.
 
@@ -221,7 +243,7 @@ class SSAFile(MutableSequence):
         self.to_file(fp, format_, fps=fps, **kwargs)
         return fp.getvalue()
 
-    def to_file(self, fp: io.TextIOBase, format_: str, fps: Optional[float]=None, **kwargs):
+    def to_file(self, fp: TextIO, format_: str, fps: Optional[float] = None, **kwargs: Any) -> None:
         """
         Write subtitle file to file object.
 
@@ -243,8 +265,8 @@ class SSAFile(MutableSequence):
     # Retiming subtitles
     # ------------------------------------------------------------------------
 
-    def shift(self, h: IntOrFloat=0, m: IntOrFloat=0, s: IntOrFloat=0, ms: IntOrFloat=0,
-              frames: Optional[int]=None, fps: Optional[float]=None):
+    def shift(self, h: IntOrFloat = 0, m: IntOrFloat = 0, s: IntOrFloat = 0, ms: IntOrFloat = 0,
+              frames: Optional[int] = None, fps: Optional[float] = None) -> None:
         """
         Shift all subtitles by constant time amount.
 
@@ -252,7 +274,10 @@ class SSAFile(MutableSequence):
         case, specify both frames and fps. h, m, s, ms will be ignored.
 
         Arguments:
-            h, m, s, ms: Integer or float values, may be positive or negative.
+            h: Integer or float values, may be positive or negative (hours).
+            m: Integer or float values, may be positive or negative (minutes).
+            s: Integer or float values, may be positive or negative (seconds).
+            ms: Integer or float values, may be positive or negative (milliseconds).
             frames (int): When specified, must be an integer number of frames.
                 May be positive or negative. fps must be also specified.
             fps (float): When specified, must be a positive number.
@@ -266,7 +291,7 @@ class SSAFile(MutableSequence):
             line.start += delta
             line.end += delta
 
-    def transform_framerate(self, in_fps: float, out_fps: float):
+    def transform_framerate(self, in_fps: float, out_fps: float) -> None:
         """
         Rescale all timestamps by ratio of in_fps/out_fps.
 
@@ -293,7 +318,7 @@ class SSAFile(MutableSequence):
     # Working with styles
     # ------------------------------------------------------------------------
 
-    def rename_style(self, old_name: str, new_name: str):
+    def rename_style(self, old_name: str, new_name: str) -> None:
         """
         Rename a style, including references to it.
 
@@ -322,7 +347,7 @@ class SSAFile(MutableSequence):
             if line.style == old_name:
                 line.style = new_name
 
-    def import_styles(self, subs: "SSAFile", overwrite: bool=True):
+    def import_styles(self, subs: "SSAFile", overwrite: bool = True) -> None:
         """
         Merge in styles from other SSAFile.
 
@@ -343,7 +368,7 @@ class SSAFile(MutableSequence):
     # Helper methods
     # ------------------------------------------------------------------------
 
-    def remove_miscellaneous_events(self):
+    def remove_miscellaneous_events(self) -> None:
         """
         Remove subtitles which appear to be non-essential (the --clean in CLI)
 
@@ -356,7 +381,7 @@ class SSAFile(MutableSequence):
         new_events = []
 
         duplicate_text_ids = set()
-        times_to_texts = {}
+        times_to_texts: Dict[Tuple[int, int], List[str]] = {}
         for i, e in enumerate(self):
             tmp = times_to_texts.setdefault((e.start, e.end), [])
             if tmp.count(e.plaintext) > 0:
@@ -381,7 +406,7 @@ class SSAFile(MutableSequence):
         """
         return [e for e in self if e.is_text]
 
-    def equals(self, other: "SSAFile"):
+    def equals(self, other: "SSAFile") -> bool:
         """
         Equality of two SSAFiles.
 
@@ -461,7 +486,7 @@ class SSAFile(MutableSequence):
         else:
             raise TypeError("Cannot compare to non-SSAFile object")
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         if self.events:
             max_time = max(ev.end for ev in self)
             s = f"<SSAFile with {len(self)} events and {len(self.styles)} styles, last timestamp {ms_to_str(max_time)}>"
@@ -474,7 +499,7 @@ class SSAFile(MutableSequence):
     # MutableSequence implementation + sort()
     # ------------------------------------------------------------------------
 
-    def sort(self):
+    def sort(self) -> None:
         """Sort subtitles time-wise, in-place."""
         self.events.sort()
 
@@ -483,24 +508,24 @@ class SSAFile(MutableSequence):
 
     @overload
     def __getitem__(self, item: int) -> SSAEvent:
-        return self.events[item]
+        pass
 
     @overload
     def __getitem__(self, s: slice) -> List[SSAEvent]:
-        return self.events[s]
+        pass
 
-    def __getitem__(self, item):
+    def __getitem__(self, item: Any) -> Any:
         return self.events[item]
 
     @overload
-    def __setitem__(self, key: int, value: SSAEvent):
+    def __setitem__(self, key: int, value: SSAEvent) -> None:
         pass
 
     @overload
-    def __setitem__(self, keys: slice, values: Iterable[SSAEvent]):
+    def __setitem__(self, keys: slice, values: Iterable[SSAEvent]) -> None:
         pass
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key: Any, value: Any) -> None:
         if isinstance(key, int):
             if isinstance(value, SSAEvent):
                 self.events[key] = value
@@ -516,20 +541,20 @@ class SSAFile(MutableSequence):
             raise TypeError("Bad key type")
 
     @overload
-    def __delitem__(self, key: int):
+    def __delitem__(self, key: int) -> None:
         pass
 
     @overload
-    def __delitem__(self, s: slice):
+    def __delitem__(self, s: slice) -> None:
         pass
 
-    def __delitem__(self, key):
+    def __delitem__(self, key: Any) -> None:
         del self.events[key]
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.events)
 
-    def insert(self, index: int, value: SSAEvent):
+    def insert(self, index: int, value: SSAEvent) -> None:
         if isinstance(value, SSAEvent):
             self.events.insert(index, value)
         else:

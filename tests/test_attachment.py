@@ -13,7 +13,7 @@ FONT_SUBS_NO_EVENTS_PATH = op.join(op.dirname(__file__), "data/subtitle_with_att
 IMAGE_SUBS_AEGISUB_PATH = op.join(op.dirname(__file__), "data/subtitle_with_attached_images_aegisub.ass")
 IMAGE_SUBS_PYSUBS_PATH = op.join(op.dirname(__file__), "data/subtitle_with_attached_images_pysubs2_ref.ass")
 
-def test_font_passthrough_from_aegisub():
+def test_font_passthrough_from_aegisub() -> None:
     subs_aegisub = SSAFile.load(FONT_SUBS_AEGISUB_PATH)
     subs_pysubs2_ref = SSAFile.load(FONT_SUBS_PYSUBS_PATH)
     assert subs_aegisub.equals(subs_pysubs2_ref)  # sanity check for input
@@ -30,12 +30,14 @@ def test_font_passthrough_from_aegisub():
     subs_pysubs2 = SSAFile.from_string(subs_pysubs2_text)
     assert subs_pysubs2_ref.equals(subs_pysubs2)
 
-def test_file_ending_with_font_section():
+
+def test_file_ending_with_font_section() -> None:
     subs = SSAFile.load(FONT_SUBS_NO_EVENTS_PATH)
     subs_ref = SSAFile.load(FONT_SUBS_PYSUBS_PATH)
     assert set(subs.fonts_opaque.keys()) == set(subs_ref.fonts_opaque.keys())
 
-def test_image_passthrough_from_aegisub():
+
+def test_image_passthrough_from_aegisub() -> None:
     subs_aegisub = SSAFile.load(IMAGE_SUBS_AEGISUB_PATH)
     subs_pysubs2_ref = SSAFile.load(IMAGE_SUBS_PYSUBS_PATH)
     assert subs_aegisub.equals(subs_pysubs2_ref)  # sanity check for input

@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Union
+from typing import Tuple, Union
 from enum import IntEnum
 
 
@@ -54,7 +54,7 @@ class Alignment(IntEnum):
         return SSA_ALIGNMENT[self.value - 1]
 
 
-SSA_ALIGNMENT = (1, 2, 3, 9, 10, 11, 5, 6, 7)
+SSA_ALIGNMENT: Tuple[int, ...] = (1, 2, 3, 9, 10, 11, 5, 6, 7)
 
 
 #: Version of the pysubs2 library.
