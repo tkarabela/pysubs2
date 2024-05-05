@@ -4,7 +4,6 @@ import os
 import re
 import os.path as op
 import io
-from io import open
 import sys
 from textwrap import dedent
 from typing import List

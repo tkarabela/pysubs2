@@ -1,5 +1,4 @@
 import io
-from io import open
 from itertools import chain
 import os.path
 import logging
@@ -149,7 +148,7 @@ class SSAFile(MutableSequence[SSAEvent]):
             or :meth:`SSAFile.from_string()` is preferable.
 
         Arguments:
-            fp (file object): A file object, ie. :class:`io.TextIOBase` instance.
+            fp (file object): A file object, ie. :class:`TextIO` instance.
                 Note that the file must be opened in text mode (as opposed to binary).
             format_ (str): Optional, forces use of specific parser
                 (eg. `"srt"`, `"ass"`). Otherwise, format is detected
@@ -251,7 +250,7 @@ class SSAFile(MutableSequence[SSAEvent]):
             or :meth:`SSAFile.to_string()` is preferable.
 
         Arguments:
-            fp (file object): A file object, ie. :class:`io.TextIOBase` instance.
+            fp (file object): A file object, ie. :class:`TextIO` instance.
                 Note that the file must be opened in text mode (as opposed to binary).
 
         """
