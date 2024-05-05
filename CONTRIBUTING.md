@@ -23,8 +23,9 @@ pip install -r requirements-dev.txt
 pytest
 ```
 
-Your branch should also pass MyPy typecheck with no errors:
+Your branch should also pass Ruff and strict MyPy checks with no errors:
 
 ```sh
-mypy
+mypy --strict
+ruff check
 ```
