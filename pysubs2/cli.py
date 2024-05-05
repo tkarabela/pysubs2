@@ -3,7 +3,7 @@ import codecs
 import os
 import re
 import os.path as op
-import io
+from io import TextIOWrapper
 import sys
 from textwrap import dedent
 from typing import List
@@ -81,6 +81,12 @@ class Pysubs2CLI:
                                  "If you wish to convert between encodings, make sure --input-enc is set correctly! "
                                  "Otherwise, your output files will probably be corrupted. It's a good idea to "
                                  "back up your files or use the -o option.")
+        parser.add_argument("--enc-error-handling", choices=("strict", "surrogateescape"),
+                            default="surrogateescape",
+                            help="Character encoding error handling for input and output. Defaults to 'surrogateescape' "
+                                 "which passes through unrecognized characters to output unchanged. Use 'strict' if "
+                                 "you want the command to fail when encountering a character incompatible with selected "
+                                 "input/output encoding.")
         parser.add_argument("--fps", metavar="FPS", type=positive_float,
                             help="This argument specifies framerate for MicroDVD files. By default, framerate "
                                  "is detected from the file. Use this when framerate specification is missing "
@@ -159,7 +165,7 @@ class Pysubs2CLI:
                     print("Skipping", path, "(not a file)")
                     errors += 1
                 else:
-                    with open(path, encoding=args.input_enc) as infile:
+                    with open(path, encoding=args.input_enc, errors=args.enc_error_handling) as infile:
                         subs = SSAFile.from_file(infile, args.input_format, args.fps, **extra_input_args)
 
                     self.process(subs, args)
@@ -178,12 +184,12 @@ class Pysubs2CLI:
                         _, filename = op.split(outpath)
                         outpath = op.join(args.output_dir, filename)
 
-                    with open(outpath, "w", encoding=args.output_enc) as outfile:
+                    with open(outpath, "w", encoding=args.output_enc, errors=args.enc_error_handling) as outfile:
                         subs.to_file(outfile, output_format, args.fps, apply_styles=not args.clean,
                                      **extra_output_args)
         elif not sys.stdin.isatty():
-            infile = io.TextIOWrapper(sys.stdin.buffer, args.input_enc)
-            outfile = io.TextIOWrapper(sys.stdout.buffer, args.output_enc)
+            infile = TextIOWrapper(sys.stdin.buffer, encoding=args.input_enc, errors=args.enc_error_handling)
+            outfile = TextIOWrapper(sys.stdout.buffer, encoding=args.output_enc, errors=args.enc_error_handling)
 
             subs = SSAFile.from_file(infile, args.input_format, args.fps)
             self.process(subs, args)

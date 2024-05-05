@@ -2,7 +2,8 @@
 pysubs2.formats.subrip tests
 
 """
-
+import os.path as op
+import tempfile
 from textwrap import dedent
 import pytest
 
@@ -302,3 +303,168 @@ def test_overflow_timestamp_write() -> None:
         text = ref.to_string("srt")
     subs = SSAFile.from_string(text)
     assert subs[0].end == MAX_REPRESENTABLE_TIME
+
+
+def test_win1250_passthrough_with_surrogateescape() -> None:
+    input_text = dedent("""\
+    1
+    00:00:00,000 --> 00:01:00,000
+    The quick brown fox jumps over the lazy dog
+
+    2
+    00:01:00,000 --> 00:02:00,000
+    Příliš žluťoučký kůň úpěl ďábelské ódy
+    
+    """)
+
+    input_bytes_win1250 = input_text.encode("windows-1250")
+
+    with tempfile.TemporaryDirectory() as temp_dir:
+        input_path = op.join(temp_dir, "input.srt")
+        output_path = op.join(temp_dir, "output.srt")
+        with open(input_path, "wb") as fp:
+            fp.write(input_bytes_win1250)
+
+        with pytest.raises(UnicodeDecodeError):
+            # legacy behaviour
+            SSAFile.load(input_path, errors=None)
+
+        subs = SSAFile.load(input_path)
+
+        assert subs[0].text == "The quick brown fox jumps over the lazy dog"
+        assert subs[1].text.startswith("P") and subs[1].text.endswith("dy")
+
+        subs.save(output_path)
+
+        with open(output_path, "rb") as fp:
+            output_bytes = fp.read()
+
+        assert input_bytes_win1250 == output_bytes
+
+
+def test_multiencoding_passthrough_with_surrogateescape() -> None:
+    input_text = dedent("""\
+    1
+    00:00:00,000 --> 00:01:00,000
+    The quick brown fox jumps over the lazy dog""")
+
+    input_bytes = input_text.encode("ascii")
+    input_bytes += b"\n" + "Příliš žluťoučký kůň úpěl ďábelské ódy".encode("windows-1250")
+    input_bytes += b"\n" + "Vamp quäkt: Grüß Felix bzw. Jody schön!".encode("utf-8")
+    input_bytes += b"\n" + "日本国".encode("shift-jis")
+    input_bytes += b"\n" + "道德經".encode("big5")
+    input_bytes += b"\n\n"
+
+    with tempfile.TemporaryDirectory() as temp_dir:
+        input_path = op.join(temp_dir, "input.srt")
+        output_path = op.join(temp_dir, "output.srt")
+        with open(input_path, "wb") as fp:
+            fp.write(input_bytes)
+
+        with pytest.raises(UnicodeDecodeError):
+            # legacy behaviour
+            SSAFile.load(input_path, errors=None)
+
+        subs = SSAFile.load(input_path)
+
+        assert subs[0].text.startswith("The quick brown fox jumps over the lazy dog")
+        assert "Felix bzw. Jody" in subs[0].text
+
+        subs.save(output_path)
+
+        with open(output_path, "rb") as fp:
+            output_bytes = fp.read()
+
+        assert input_bytes == output_bytes
+
+
+def test_utf8_read_write() -> None:
+    input_text = dedent("""\
+    1
+    00:00:00,000 --> 00:01:00,000
+    The quick brown fox jumps over the lazy dog
+    Příliš žluťoučký kůň úpěl ďábelské ódy
+    Vamp quäkt: Grüß Felix bzw. Jody schön!
+    日本国
+    道德經
+    
+    """)
+
+    input_bytes = input_text.encode("utf-8")
+
+    with tempfile.TemporaryDirectory() as temp_dir:
+        input_path = op.join(temp_dir, "input.srt")
+        output_path = op.join(temp_dir, "output.srt")
+        with open(input_path, "wb") as fp:
+            fp.write(input_bytes)
+
+        # legacy behaviour
+        subs_legacy = SSAFile.load(input_path, errors=None)
+        subs = SSAFile.load(input_path)
+        assert subs.equals(subs_legacy)
+
+        subs.save(output_path)
+
+        with open(output_path, "rb") as fp:
+            output_bytes = fp.read()
+
+        assert input_bytes == output_bytes
+
+
+def test_win1250_read_write() -> None:
+    input_text = dedent("""\
+    1
+    00:00:00,000 --> 00:01:00,000
+    The quick brown fox jumps over the lazy dog
+    Příliš žluťoučký kůň úpěl ďábelské ódy
+
+    """)
+
+    input_bytes = input_text.encode("windows-1250")
+
+    with tempfile.TemporaryDirectory() as temp_dir:
+        input_path = op.join(temp_dir, "input.srt")
+        output_path = op.join(temp_dir, "output.srt")
+        with open(input_path, "wb") as fp:
+            fp.write(input_bytes)
+
+        # legacy behaviour
+        subs_legacy = SSAFile.load(input_path, encoding="windows-1250", errors=None)
+        subs = SSAFile.load(input_path, encoding="windows-1250")
+        assert subs.equals(subs_legacy)
+
+        subs.save(output_path, encoding="windows-1250")
+
+        with open(output_path, "rb") as fp:
+            output_bytes = fp.read()
+
+        assert input_bytes == output_bytes
+
+
+def test_big5_read_write() -> None:
+    input_text = dedent("""\
+    1
+    00:00:00,000 --> 00:01:00,000
+    道德經
+
+    """)
+
+    input_bytes = input_text.encode("big5")
+
+    with tempfile.TemporaryDirectory() as temp_dir:
+        input_path = op.join(temp_dir, "input.srt")
+        output_path = op.join(temp_dir, "output.srt")
+        with open(input_path, "wb") as fp:
+            fp.write(input_bytes)
+
+        # legacy behaviour
+        subs_legacy = SSAFile.load(input_path, encoding="big5", errors=None)
+        subs = SSAFile.load(input_path, encoding="big5")
+        assert subs.equals(subs_legacy)
+
+        subs.save(output_path, encoding="big5")
+
+        with open(output_path, "rb") as fp:
+            output_bytes = fp.read()
+
+        assert input_bytes == output_bytes

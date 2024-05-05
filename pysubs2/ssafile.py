@@ -50,7 +50,7 @@ class SSAFile(MutableSequence[SSAEvent]):
 
     @classmethod
     def load(cls, path: str, encoding: str = "utf-8", format_: Optional[str] = None, fps: Optional[float] = None,
-             **kwargs: Any) -> "SSAFile":
+             errors: Optional[str] = "surrogateescape", **kwargs: Any) -> "SSAFile":
         """
         Load subtitle file from given path.
 
@@ -65,6 +65,15 @@ class SSAFile(MutableSequence[SSAEvent]):
             path (str): Path to subtitle file.
             encoding (str): Character encoding of input file.
                 Defaults to UTF-8, you may need to change this.
+            errors (Optional[str]): Error handling for character encoding
+                of input file. Defaults to ``"surrogateescape"``. See documentation
+                of builtin ``open()`` function for more.
+
+                .. versionchanged:: 2.0.0
+                    The ``errors`` parameter was introduced to facilitate
+                    pass-through of subtitle files with unknown text encoding.
+                    Previous versions of the library behaved as if ``errors=None``.
+
             format_ (str): Optional, forces use of specific parser
                 (eg. `"srt"`, `"ass"`). Otherwise, format is detected
                 automatically from file contents. This argument should
@@ -93,11 +102,11 @@ class SSAFile(MutableSequence[SSAEvent]):
 
         Example:
             >>> subs1 = pysubs2.load("subrip-subtitles.srt")
-            >>> subs2 = pysubs2.load("microdvd-subtitles.sub", fps=23.976)
-            >>> subs3 = pysubs2.load("subrip-subtitles-with-fancy-tags.srt", keep_unknown_html_tags=True)
+            >>> subs2 = pysubs2.load("microdvd-subtitles.sub",fps=23.976)
+            >>> subs3 = pysubs2.load("subrip-subtitles-with-fancy-tags.srt",keep_unknown_html_tags=True)
 
         """
-        with open(path, encoding=encoding) as fp:
+        with open(path, encoding=encoding, errors=errors) as fp:
             return cls.from_file(fp, format_, fps=fps, **kwargs)
 
     @classmethod
@@ -181,7 +190,7 @@ class SSAFile(MutableSequence[SSAEvent]):
         return subs
 
     def save(self, path: str, encoding: str = "utf-8", format_: Optional[str] = None, fps: Optional[float] = None,
-             **kwargs: Any) -> None:
+             errors: Optional[str] = "surrogateescape", **kwargs: Any) -> None:
         """
         Save subtitle file to given path.
 
@@ -208,6 +217,15 @@ class SSAFile(MutableSequence[SSAEvent]):
                 different framerate, use this argument. See also
                 :meth:`SSAFile.transform_framerate()` for fixing bad
                 frame-based to time-based conversions.
+            errors (Optional[str]): Error handling for character encoding,
+                defaults to ``"surrogateescape"``. See documentation
+                of builtin ``open()`` function for more.
+
+                .. versionchanged:: 2.0.0
+                    The ``errors`` parameter was introduced to facilitate
+                    pass-through of subtitle files with unknown text encoding.
+                    Previous versions of the library behaved as if ``errors=None``.
+
             kwargs: Extra options for the writer.
 
         Raises:
@@ -222,7 +240,7 @@ class SSAFile(MutableSequence[SSAEvent]):
             ext = os.path.splitext(path)[1].lower()
             format_ = get_format_identifier(ext)
 
-        with open(path, "w", encoding=encoding) as fp:
+        with open(path, "w", encoding=encoding, errors=errors) as fp:
             self.to_file(fp, format_, fps=fps, **kwargs)
 
     def to_string(self, format_: str, fps: Optional[float] = None, **kwargs: Any) -> str:

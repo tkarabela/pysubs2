@@ -30,7 +30,19 @@ Now that we have a real file on the harddrive, let's import pysubs2 and load it.
     >>> subs
     <SSAFile with 2 events and 1 styles, last timestamp 0:02:00>
 
-.. tip:: By default, pysubs2 uses UTF-8 encoding when reading and writing files. Use the ``encoding`` keyword argument in case you need something else.
+.. note::
+   By default, pysubs2 uses UTF-8 encoding when reading and writing files, with surrogate pair escape error handling.
+   This works best if your file is either:
+
+      * in UTF-8 encoding or
+      * in a similar ASCII-like encoding (line ``latin-1``) and you don't need to work with the text (only convert subtitle format, shift time, etc.).
+
+   Use the ``encoding`` and ``errors`` keyword arguments in the :meth:`pysubs2.SSAFile.load()` and :meth:`pysubs2.SSAFile.save()` methods in case you need something else,
+   or you can do the processing yourself and work only with ``str`` using :meth:`pysubs2.SSAFile.from_string()` and :meth:`pysubs2.SSAFile.to_string()`.
+
+   If you use the default settings, you can get the input ``bytes`` for a particular subtitle using:
+
+   >>> subs[0].text.encode("utf-8", "surrogateescape")
 
 Now we have a subtitle file, the :class:`pysubs2.SSAFile` object. It has two "events", ie. subtitles. You can treat ``subs`` as a list:
 
@@ -38,12 +50,20 @@ Now we have a subtitle file, the :class:`pysubs2.SSAFile` object. It has two "ev
     "Once upon a time,"
     >>> for line in subs:
     ...     print(line.text)
-    "Once upon a time,"
-    "there was a SubRip file\\Nwith two subtitles."
+    Once upon a time,
+    there was a SubRip file\\Nwith two subtitles.
 
 Individual subtitles are :class:`pysubs2.SSAEvent` objects and have the attributes you'd expect, like ``start``, ``end`` and ``text``. Notice that the second subtitle text doesn't contain a newline, but literal "backlash N", which is how SubStation represents newlines. There could also be override tags like ``{\i1}`` for italics.
 
-.. tip:: If you don't entertain SubStation, there is also a :attr:`pysubs2.SSAEvent.plaintext` property which hides override tags and translates newlines for you. Be warned, however, that writing to this property throws away any override tags.
+.. tip::
+   If you don't entertain SubStation, there is also a :attr:`pysubs2.SSAEvent.plaintext` property which hides override tags
+   and translates newlines for you. Be warned, however, that writing to this property throws away any override tags.
+
+    >>> for line in subs:
+    ...     print(line.plaintext)
+    Once upon a time,
+    there was a SubRip file
+    with two subtitles.
 
 Working with timing
 -------------------

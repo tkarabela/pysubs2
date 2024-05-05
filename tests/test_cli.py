@@ -18,6 +18,14 @@ two.
 
 """
 
+TEST_SRT_FILE_WIN1250 = """\
+1
+00:00:00,000 --> 00:01:00,000
+An example subtitle.
+Příliš žluťoučký kůň úpěl ďábelské ódy
+
+"""
+
 TEST_MICRODVD_FILE = """\
 {1}{1}1000.0
 {0}{60000}An example subtitle.
@@ -407,3 +415,22 @@ def test_empty_notty_input_doesnt_print_help(capsys: Any, monkeypatch: Any) -> N
             assert p.returncode == 1
             assert not p.stdout.startswith("usage: pysubs2")
             assert "FormatAutodetectionError" in p.stderr
+
+
+def test_win1250_passthrough_with_surrogateescape() -> None:
+    input_bytes_win1250 = TEST_SRT_FILE_WIN1250.encode("windows-1250")
+
+    with tempfile.TemporaryDirectory() as temp_dir:
+        input_path = op.join(temp_dir, "input.srt")
+        output_dir = op.join(temp_dir, "output")
+        output_path = op.join(output_dir, "input.srt")
+        with open(input_path, "wb") as fp:
+            fp.write(input_bytes_win1250)
+
+        cmd = ["python", "-m", "pysubs2", "-o", output_dir, input_path]
+        subprocess.check_call(cmd)
+
+        with open(output_path, "rb") as fp:
+            output_bytes = fp.read()
+
+        assert input_bytes_win1250 == output_bytes
