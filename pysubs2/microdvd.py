@@ -1,6 +1,6 @@
 from functools import partial
 import re
-from typing import Optional, TextIO, Any, TYPE_CHECKING
+from typing import Optional, TextIO, Any, Match, TYPE_CHECKING
 
 from .exceptions import UnknownFPSError
 from .ssaevent import SSAEvent
@@ -71,7 +71,7 @@ class MicroDVDFormat(FormatBase):
             def prepare_text(text: str) -> str:
                 text = text.replace("|", r"\N")
 
-                def style_replacer(match: re.Match[str]) -> str:
+                def style_replacer(match: Match[str]) -> str:
                     tags = [c for c in "biu" if c in match.group(0)]
                     return "{%s}" % "".join(f"\\{c}1" for c in tags)
 

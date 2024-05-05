@@ -1,10 +1,9 @@
-from collections.abc import MutableSequence
 import io
 from io import open
 from itertools import chain
 import os.path
 import logging
-from typing import Optional, List, Dict, Iterable, Any, overload, Iterator, TextIO, Tuple
+from typing import Optional, List, Dict, Iterable, Any, overload, Iterator, TextIO, Tuple, MutableSequence
 
 from .common import IntOrFloat
 from .formats import autodetect_format, get_format_class, get_format_identifier
