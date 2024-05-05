@@ -1,18 +1,10 @@
+from typing import Any
+
 import pysubs2
 import tempfile
 import subprocess
-import shutil
 import os.path as op
-from contextlib import contextmanager
-from io import open
-
-@contextmanager
-def temp_dir():
-    """tempfile.TemporaryDirectory alike (for Python 2.7)"""
-    path = tempfile.mkdtemp()
-    yield path
-    shutil.rmtree(path)
-
+from io import StringIO
 
 TEST_SRT_FILE = """\
 1
@@ -27,13 +19,14 @@ two.
 """
 
 TEST_MICRODVD_FILE = """\
-{0}{0}1000.0
+{1}{1}1000.0
 {0}{60000}An example subtitle.
 {60000}{120000}Subtitle number|two.
 """
 
-def test_srt_to_microdvd():
-    with temp_dir() as dirpath:
+
+def test_srt_to_microdvd() -> None:
+    with tempfile.TemporaryDirectory() as dirpath:
         inpath = op.join(dirpath, "test.srt")
         with open(inpath, "w", encoding="utf-8") as fp:
             fp.write(TEST_SRT_FILE)
@@ -46,14 +39,16 @@ def test_srt_to_microdvd():
             out = fp.read()
             assert out == TEST_MICRODVD_FILE
 
-def test_srt_to_microdvd_subprocess_pipe():
+
+def test_srt_to_microdvd_subprocess_pipe() -> None:
     cmd = ["python", "-m", "pysubs2", "--to", "microdvd", "--fps", "1000"]
     output = subprocess.check_output(cmd, input=TEST_SRT_FILE, text=True)
     assert output.strip() == TEST_MICRODVD_FILE.strip()
 
-def test_srt_to_microdvd_multiple_files():
+
+def test_srt_to_microdvd_multiple_files() -> None:
     N = 3
-    with temp_dir() as dirpath:
+    with tempfile.TemporaryDirectory() as dirpath:
         inpaths = [op.join(dirpath, f"test-{i}.srt") for i in range(N)]
         for inpath in inpaths:
             with open(inpath, "w", encoding="utf-8") as fp:
@@ -68,8 +63,9 @@ def test_srt_to_microdvd_multiple_files():
                 out = fp.read()
                 assert out == TEST_MICRODVD_FILE
 
-def test_microdvd_to_srt():
-    with temp_dir() as dirpath:
+
+def test_microdvd_to_srt() -> None:
+    with tempfile.TemporaryDirectory() as dirpath:
         inpath = op.join(dirpath, "test.sub")
         with open(inpath, "w", encoding="utf-8") as fp:
             fp.write(TEST_MICRODVD_FILE)
@@ -81,6 +77,7 @@ def test_microdvd_to_srt():
         with open(outpath, encoding="utf-8") as fp:
             out = fp.read()
             assert out == TEST_SRT_FILE
+
 
 TEST_SRT_FILE_SHIFTED = """\
 1
@@ -94,8 +91,9 @@ two.
 
 """
 
-def test_srt_shift():
-    with temp_dir() as dirpath:
+
+def test_srt_shift() -> None:
+    with tempfile.TemporaryDirectory() as dirpath:
         inpath = outpath = op.join(dirpath, "test.srt")
         with open(inpath, "w", encoding="utf-8") as fp:
             fp.write(TEST_SRT_FILE)
@@ -107,8 +105,9 @@ def test_srt_shift():
             out = fp.read()
             assert out == TEST_SRT_FILE_SHIFTED
 
-def test_srt_shift_back():
-    with temp_dir() as dirpath:
+
+def test_srt_shift_back() -> None:
+    with tempfile.TemporaryDirectory() as dirpath:
         inpath = outpath = op.join(dirpath, "test.srt")
         with open(inpath, "w", encoding="utf-8") as fp:
             fp.write(TEST_SRT_FILE_SHIFTED)
@@ -120,13 +119,14 @@ def test_srt_shift_back():
             out = fp.read()
             assert out == TEST_SRT_FILE
 
-def test_srt_shift_to_output_dir():
-    with temp_dir() as indirpath:
+
+def test_srt_shift_to_output_dir() -> None:
+    with tempfile.TemporaryDirectory() as indirpath:
         inpath = op.join(indirpath, "test.srt")
         with open(inpath, "w", encoding="utf-8") as fp:
             fp.write(TEST_SRT_FILE)
 
-        with temp_dir() as outdirpath:
+        with tempfile.TemporaryDirectory() as outdirpath:
             outdirpath2 = op.join(outdirpath, "subdir-that-must-be-created")
             outpath = op.join(outdirpath2, "test.srt")
 
@@ -140,6 +140,7 @@ def test_srt_shift_to_output_dir():
             with open(inpath, encoding="utf-8") as fp:
                 out = fp.read()
                 assert out == TEST_SRT_FILE
+
 
 TEST_SUBSTATION_WITH_KARAOKE = r"""
 [Script Info]
@@ -248,9 +249,10 @@ TEST_SRT_KEEP_UNKNOWN_HTML_TAGS = """
 Some unsupported <blink>tag</blink>
 """
 
-def test_srt_clean():
+
+def test_srt_clean() -> None:
     # see issue #37
-    with temp_dir() as dirpath:
+    with tempfile.TemporaryDirectory() as dirpath:
         inpath = op.join(dirpath, "test.ass")
         outpath = op.join(dirpath, "test.srt")
 
@@ -265,9 +267,9 @@ def test_srt_clean():
             assert out.strip() == TEST_SUBSTATION_WITH_KARAOKE_SRT_CLEAN_OUTPUT.strip()
 
 
-def test_srt_clean_styling():
+def test_srt_clean_styling() -> None:
     # see issue #39
-    with temp_dir() as dirpath:
+    with tempfile.TemporaryDirectory() as dirpath:
         inpath = op.join(dirpath, "test.ass")
         outpath = op.join(dirpath, "test.srt")
 
@@ -291,9 +293,9 @@ def test_srt_clean_styling():
             assert out.strip() == TEST_SUBSTATION_WITH_ITALICS_SRT_CLEAN_OUTPUT.strip()
 
 
-def test_srt_keep_ssa_tags():
+def test_srt_keep_ssa_tags() -> None:
     # see issue #48
-    with temp_dir() as dirpath:
+    with tempfile.TemporaryDirectory() as dirpath:
         path = op.join(dirpath, "test.srt")
 
         # test standard
@@ -318,9 +320,10 @@ def test_srt_keep_ssa_tags():
             out = fp.read()
             assert out.strip() == TEST_SRT_KEEP_SSA_TAGS.strip()
 
-def test_srt_keep_ssa_tags_mixed_with_html():
+
+def test_srt_keep_ssa_tags_mixed_with_html() -> None:
     # see issue #48
-    with temp_dir() as dirpath:
+    with tempfile.TemporaryDirectory() as dirpath:
         path = op.join(dirpath, "test.srt")
 
         # test standard - does not pass
@@ -357,8 +360,8 @@ def test_srt_keep_ssa_tags_mixed_with_html():
             assert out.strip() == TEST_SRT_KEEP_SSA_TAGS_MIXED_WITH_HTML.strip()
 
 
-def test_srt_keep_unknown_html_tags():
-    with temp_dir() as dirpath:
+def test_srt_keep_unknown_html_tags() -> None:
+    with tempfile.TemporaryDirectory() as dirpath:
         path = op.join(dirpath, "test.srt")
 
         # test standard
@@ -382,3 +385,25 @@ def test_srt_keep_unknown_html_tags():
         with open(path, encoding="utf-8") as fp:
             out = fp.read()
             assert out.strip() == TEST_SRT_KEEP_UNKNOWN_HTML_TAGS.strip()
+
+
+def test_print_help_on_empty_tty_input(capsys: Any, monkeypatch: Any) -> None:
+    monkeypatch.setattr("sys.stdin", StringIO())
+    monkeypatch.setattr("sys.stdin.isatty", (lambda: True))
+
+    cli = pysubs2.cli.Pysubs2CLI()
+    cli([])
+
+    captured = capsys.readouterr()
+    assert captured.out.startswith("usage: pysubs2")
+
+
+def test_empty_notty_input_doesnt_print_help(capsys: Any, monkeypatch: Any) -> None:
+    with tempfile.TemporaryDirectory() as temp_dir:
+        path = op.join(temp_dir, "test.srt")
+        with open(path, "w+") as in_fp:
+            cmd = ["python", "-m", "pysubs2"]
+            p = subprocess.run(cmd, stdin=in_fp, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            assert p.returncode == 1
+            assert not p.stdout.startswith("usage: pysubs2")
+            assert "FormatAutodetectionError" in p.stderr

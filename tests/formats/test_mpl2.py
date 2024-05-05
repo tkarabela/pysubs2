@@ -3,7 +3,7 @@ from textwrap import dedent
 from pysubs2 import SSAFile, SSAEvent, make_time
 
 
-def test_simple_parsing():
+def test_simple_parsing() -> None:
     test_input1 = "[123][456] Line 1"
     subs1 = SSAFile.from_string(test_input1)
     assert len(subs1) == 1
@@ -29,7 +29,7 @@ def test_simple_parsing():
     assert subs3[2] == SSAEvent(start=make_time(ms=78900), end=make_time(ms=123400), text=r"{\i1}Line 4{\i0}")
 
 
-def test_simple_writing():
+def test_simple_writing() -> None:
     subs = SSAFile()
     subs.append(SSAEvent(start=0, end=1000, text="Hello!"))
     subs.append(SSAEvent(start=1000, end=2000, text="Hello World!\\NTwo-line subtitle!"))

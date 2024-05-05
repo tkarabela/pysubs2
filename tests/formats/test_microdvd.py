@@ -4,11 +4,11 @@ import pytest
 from pysubs2 import SSAFile, SSAEvent, SSAStyle, UnknownFPSError
 
 
-def test_framerate_inference():
+def test_framerate_inference() -> None:
     fps = 1000.0
     
     has_fps = dedent("""\
-    {0}{0}1000.0
+    {1}{1}1000.0
     {10}{20}Hello!
     """)
     
@@ -17,12 +17,17 @@ def test_framerate_inference():
     """)
     
     ignored_fps = dedent("""\
-    {0}{0}23.976
+    {1}{1}23.976
     {10}{20}Hello!
     """)
     
     illegal_fps = dedent("""\
-    {0}{0}-23.976
+    {1}{1}-23.976
+    {10}{20}Hello!
+    """)
+
+    bad_frame_fps = dedent("""\
+    {10}{20}1000.0
     {10}{20}Hello!
     """)
     
@@ -40,7 +45,7 @@ def test_framerate_inference():
     subs3 = SSAFile.from_string(ignored_fps, fps=fps)
     assert subs3.fps == fps
     assert len(subs3) == 2
-    assert subs3[0] == SSAEvent(start=0, end=0, text="23.976")
+    assert subs3[0] == SSAEvent(start=1, end=1, text="23.976")
     assert subs3[1] == SSAEvent(start=10, end=20, text="Hello!")
     
     with pytest.raises(UnknownFPSError):
@@ -49,10 +54,20 @@ def test_framerate_inference():
     with pytest.raises(ValueError):
         SSAFile.from_string(illegal_fps)
 
-def test_extra_whitespace_parsing():
+    with pytest.raises(UnknownFPSError):
+        # see issue #71
+        SSAFile.from_string(bad_frame_fps)
+
+    subs4 = SSAFile.from_string(bad_frame_fps, strict_fps_inference=False)
+    assert subs4.fps == fps
+    assert len(subs4) == 1
+    assert subs4[0] == SSAEvent(start=10, end=20, text="Hello!")
+
+
+def test_extra_whitespace_parsing() -> None:
     f = dedent("""\
     
-       { 0 } { 0 }  1000.0   
+       { 1 } { 1 }  1000.0   
     
      {    10 }{    20}   Hello!      
     
@@ -61,12 +76,14 @@ def test_extra_whitespace_parsing():
     subs = SSAFile.from_string(f)
     assert subs[0] == SSAEvent(start=10, end=20, text="Hello!")
 
-def test_newlines_parsing():
+
+def test_newlines_parsing() -> None:
     f = "{10}{20}   So|Many||Newlines |||  "
     subs = SSAFile.from_string(f, fps=1000)
     assert subs[0].text == r"So\NMany\N\NNewlines \N\N\N"
 
-def test_tags_parsing():
+
+def test_tags_parsing() -> None:
     f1 = "{10}{20}{Y:i,u}Hello!"
     subs1 = SSAFile.from_string(f1, fps=1000)
     assert subs1[0].text == "{\\i1\\u1}Hello!"
@@ -88,11 +105,12 @@ def test_tags_parsing():
     subs5 = SSAFile.from_string(f5, fps=1000)
     assert subs5[0].text == r"Hello, {\fs72}world!"
 
-def test_parser_skipping_lines():
+
+def test_parser_skipping_lines() -> None:
     f = dedent("""\
     Ook!
     
-    {0}{0}23.976
+    {1}{1}23.976
     > Hi!
     {10}{20}Hello!
     1
@@ -106,7 +124,8 @@ def test_parser_skipping_lines():
     assert len(subs) == 1
     assert subs[0].text == "Hello!"
 
-def test_writer_tags():
+
+def test_writer_tags() -> None:
     subs = SSAFile()
     subs.styles["italic_style"] = SSAStyle(italic=True)
     subs.events = [SSAEvent(start=0, end=10, text=r"Plain."),
@@ -116,7 +135,7 @@ def test_writer_tags():
                    SSAEvent(start=0, end=10, text=r"Not {\i1}italic.")]
     
     f = dedent("""\
-    {0}{0}1000
+    {1}{1}1000
     {0}{10}Plain.
     {0}{10}{Y:i}Inline.
     {0}{10}{Y:i}Styled.
@@ -126,61 +145,66 @@ def test_writer_tags():
     
     assert subs.to_string("microdvd", 1000) == f
 
-def test_writer_uses_original_fps():
+
+def test_writer_uses_original_fps() -> None:
     subs = SSAFile()
     subs.append(SSAEvent(start=0, end=10, text="Hello!"))
     subs.fps = 1000
     
     f = dedent("""\
-    {0}{0}1000
+    {1}{1}1000
     {0}{10}Hello!
     """)
     
     assert subs.to_string("microdvd") == f
 
-def test_writer_skips_comment_lines():
+
+def test_writer_skips_comment_lines() -> None:
     subs = SSAFile()
     subs.append(SSAEvent(start=0, end=10, text="Hello!"))
     subs.append(SSAEvent(start=0, end=10, text="World!"))
     subs[0].is_comment = True
     
     f = dedent("""\
-    {0}{0}1000
+    {1}{1}1000
     {0}{10}World!
     """)
     
     assert subs.to_string("microdvd", fps=1000) == f
 
-def test_writer_handles_whitespace():
+
+def test_writer_handles_whitespace() -> None:
     subs = SSAFile()
     subs.append(SSAEvent(start=0, end=10,
                          text=r"Hello,\hworld!\NSo many\N\nNewlines."))
     
     f = dedent("""\
-    {0}{0}1000
+    {1}{1}1000
     {0}{10}Hello, world!|So many||Newlines.
     """)
     
     assert subs.to_string("microdvd", fps=1000) == f
 
-def test_writer_strips_tags():
+
+def test_writer_strips_tags() -> None:
     subs = SSAFile()
     subs.append(SSAEvent(start=0, end=10, text="Let me tell you{a secret}."))
     
     f = dedent("""\
-    {0}{0}1000
+    {1}{1}1000
     {0}{10}Let me tell you.
     """)
     
     assert subs.to_string("microdvd", fps=1000) == f
 
-def test_write_drawing():
+
+def test_write_drawing() -> None:
     subs = SSAFile()
     subs.append(SSAEvent(start=0, end=10, text=r"{\p1}m 0 0 l 100 0 100 100 0 100{\p0}test"))
     subs.append(SSAEvent(start=10, end=20, text="Let me tell you."))
 
     f = dedent("""\
-    {0}{0}1000
+    {1}{1}1000
     {10}{20}Let me tell you.
     """)
 

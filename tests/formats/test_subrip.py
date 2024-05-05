@@ -7,9 +7,10 @@ from textwrap import dedent
 import pytest
 
 from pysubs2 import SSAFile, SSAEvent, make_time
-from pysubs2.subrip import MAX_REPRESENTABLE_TIME
+from pysubs2.formats.subrip import MAX_REPRESENTABLE_TIME
 
-def test_simple_write():
+
+def test_simple_write() -> None:
     subs = SSAFile()
 
     e1 = SSAEvent()
@@ -47,7 +48,7 @@ def test_simple_write():
     assert text.strip() == ref.strip()
 
 
-def test_writes_in_given_order():
+def test_writes_in_given_order() -> None:
     subs = SSAFile()
 
     e1 = SSAEvent()
@@ -78,7 +79,7 @@ def test_writes_in_given_order():
     assert text.strip() == ref.strip()
 
 
-def test_simple_read():
+def test_simple_read() -> None:
     text = dedent("""\
     1
     00:00:00,000 --> 00:01:00,000
@@ -97,7 +98,8 @@ def test_simple_read():
     subs = SSAFile.from_string(text)
     assert subs.equals(ref)
 
-def test_read_malformed():
+
+def test_read_malformed() -> None:
     """no line number, no empty line, leading whitespace, bad timestamp format"""
 
     text = dedent("""\
@@ -115,7 +117,8 @@ def test_read_malformed():
     subs = SSAFile.from_string(text)
     assert subs.equals(ref)
 
-def test_read_position_styling():
+
+def test_read_position_styling() -> None:
     """position is ignored, italic is converted, color is ignored"""
 
     text = dedent("""\
@@ -135,7 +138,8 @@ def test_read_position_styling():
     subs = SSAFile.from_string(text)
     assert subs.equals(ref)
 
-def test_read_bad_tags():
+
+def test_read_bad_tags() -> None:
     """missing opening/closing tag, bad nesting, extra whitespace"""
 
     text = dedent("""\
@@ -151,7 +155,8 @@ def test_read_bad_tags():
     subs = SSAFile.from_string(text)
     assert subs.equals(ref)
 
-def test_read_tags():
+
+def test_read_tags() -> None:
     text = dedent("""\
     1
     00:00:10,500 --> 00:00:13,000
@@ -165,7 +170,8 @@ def test_read_tags():
     subs = SSAFile.from_string(text)
     assert subs.equals(ref)
 
-def test_empty_subtitles():
+
+def test_empty_subtitles() -> None:
     # regression test for issue #11
 
     text = dedent("""
@@ -188,7 +194,8 @@ def test_empty_subtitles():
     subs = SSAFile.from_string(text)
     assert subs.equals(ref)
 
-def test_keep_unknown_html_tags():
+
+def test_keep_unknown_html_tags() -> None:
     # see issue #26
     text = dedent("""\
         1
@@ -215,7 +222,8 @@ def test_keep_unknown_html_tags():
     assert subs_keep.equals(ref_keep)
     assert subs_keep.to_string("srt") == ref_keep.to_string("srt")
 
-def test_write_drawing():
+
+def test_write_drawing() -> None:
     # test for 7bde9a6c3a250cf0880a8a9fe31d1b6a69ff21a0
     subs = SSAFile()
 
@@ -242,7 +250,8 @@ def test_write_drawing():
     text = subs.to_string("srt")
     assert text.strip() == ref.strip()
 
-def test_keep_ssa_tags():
+
+def test_keep_ssa_tags() -> None:
     # test for issue #48
     input_text = dedent("""\
     1
@@ -263,7 +272,8 @@ def test_keep_ssa_tags():
     assert input_text.strip() != output_text_do_not_keep_tags.strip()
     assert input_text.strip() == output_text_keep_tags.strip()
 
-def test_keep_ssa_tags_and_html_tags():
+
+def test_keep_ssa_tags_and_html_tags() -> None:
     # test for issue #48
     input_text = dedent("""\
     1
@@ -284,7 +294,8 @@ def test_keep_ssa_tags_and_html_tags():
     assert input_text.strip() != output_text_do_not_keep_tags.strip()
     assert input_text.strip() == output_text_keep_tags.strip()
 
-def test_overflow_timestamp_write():
+
+def test_overflow_timestamp_write() -> None:
     ref = SSAFile()
     ref.append(SSAEvent(start=make_time(h=1000), end=make_time(h=1001), text="test"))
     with pytest.warns(RuntimeWarning):

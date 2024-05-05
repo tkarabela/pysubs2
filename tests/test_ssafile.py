@@ -2,12 +2,14 @@ import pytest
 
 from pysubs2 import SSAFile, SSAStyle, SSAEvent, make_time
 
-def test_repr_default():
+
+def test_repr_default() -> None:
     subs = SSAFile()
     ref = "<SSAFile with 0 events and 1 styles>"
     assert repr(subs) == ref
 
-def test_repr_simple():
+
+def test_repr_simple() -> None:
     subs = SSAFile()
     subs.append(SSAEvent(start=make_time(m=5), end=make_time(m=6)))
     subs.append(SSAEvent(start=make_time(m=125), end=make_time(m=126)))
@@ -17,7 +19,8 @@ def test_repr_simple():
     ref = "<SSAFile with 3 events and 3 styles, last timestamp 2:06:00>"
     assert repr(subs) == ref
 
-def test_shift():
+
+def test_shift() -> None:
     #TODO: write more tests
     subs = SSAFile()
 
@@ -30,14 +33,15 @@ def test_shift():
     with pytest.raises(ValueError):
         subs.shift(frames=5, fps=-1)
 
-def test_import_styles():
+
+def test_import_styles() -> None:
     red1 = SSAStyle()
     red2 = SSAStyle()
     green = SSAStyle()
     subs1 = SSAFile()
     subs2 = SSAFile()
 
-    def prepare():
+    def prepare() -> None:
         subs1.styles = {}
         subs2.styles = {}
         subs1.styles["green"] = green
@@ -55,14 +59,15 @@ def test_import_styles():
     assert subs2.styles["red"] is red2
 
     with pytest.raises(TypeError):
-        subs2.import_styles({})
+        subs2.import_styles({})  # type: ignore[arg-type]
 
-def test_rename_style():
+
+def test_rename_style() -> None:
     subs = SSAFile()
     red = SSAStyle()
     green = SSAStyle()
 
-    def prepare():
+    def prepare() -> None:
         subs.events = [SSAEvent(style="red"), SSAEvent(style="unrelated")]
         subs.styles = dict(red=red, green=green)
 
@@ -86,7 +91,8 @@ def test_rename_style():
     with pytest.raises(KeyError):
         subs.rename_style("nonexistent-style", "blue")
 
-def test_transform_framerate():
+
+def test_transform_framerate() -> None:
     subs = SSAFile()
     subs.append(SSAEvent(start=0, end=10))
     subs.append(SSAEvent(start=1000, end=1010))
@@ -104,18 +110,20 @@ def test_transform_framerate():
     assert subs[0] == SSAEvent(start=0, end=5)
     assert subs[1] == SSAEvent(start=500, end=505)
 
-def test_insertion_of_wrong_type():
+
+def test_insertion_of_wrong_type() -> None:
     subs = SSAFile()
     subs.append(SSAEvent())
 
     with pytest.raises(TypeError):
-        subs.append(42)
+        subs.append(42)  # type: ignore[arg-type]
     with pytest.raises(TypeError):
-        subs.insert(42)
+        subs.insert(42)  # type: ignore[call-arg]
     with pytest.raises(TypeError):
-        subs[0] = 42
+        subs[0] = 42  # type: ignore[call-overload]
 
-def test_slice_api():
+
+def test_slice_api() -> None:
     subs = SSAFile()
     subs[:] = [
         SSAEvent(text="A"),

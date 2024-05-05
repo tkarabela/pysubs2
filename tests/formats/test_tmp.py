@@ -7,9 +7,10 @@ from textwrap import dedent
 import pytest
 
 from pysubs2 import SSAFile, SSAEvent, make_time
-from pysubs2.tmp import MAX_REPRESENTABLE_TIME
+from pysubs2.formats.tmp import MAX_REPRESENTABLE_TIME
 
-def test_simple_write():
+
+def test_simple_write() -> None:
     subs = SSAFile()
 
     e1 = SSAEvent()
@@ -41,7 +42,7 @@ def test_simple_write():
     assert text.strip() == ref.strip()
 
 
-def test_simple_read():
+def test_simple_read() -> None:
     text = dedent("""\
     00:00:00:ten--chars
     00:01:00:ten--chars-ten-chars
@@ -54,7 +55,8 @@ def test_simple_read():
     subs = SSAFile.from_string(text)
     assert subs.equals(ref)
 
-def test_overlapping_read():
+
+def test_overlapping_read() -> None:
     # see issue #35
     text = dedent("""\
     00:00:12:I ... this is some long text ... ... this is some long text ...
@@ -68,7 +70,19 @@ def test_overlapping_read():
     assert subs[1].end == subs[2].start == make_time(s=18)
     assert subs[2].end == subs[3].start == make_time(s=22)
 
-def test_write_drawing():
+
+def test_styled_read() -> None:
+    text = dedent("""\
+    00:00:00:ten--chars--<u>underline</u>
+    00:01:00:ten--chars--<b><xxx>some--tags</xxx></b>
+    """)
+
+    subs = SSAFile.from_string(text)
+    assert subs[0].text == r"ten--chars--{\u1}underline"
+    assert subs[1].text == "ten--chars--some--tags"
+
+
+def test_write_drawing() -> None:
     subs = SSAFile()
 
     e1 = SSAEvent()
@@ -92,14 +106,14 @@ def test_write_drawing():
     subs.append(e3)
 
     ref = dedent("""\
-    00:00:00:
     00:01:00:ten--chars-ten-chars
     """)
 
     text = subs.to_string("tmp")
     assert text.strip() == ref.strip()
 
-def test_overflow_timestamp_write():
+
+def test_overflow_timestamp_write() -> None:
     ref = SSAFile()
     ref.append(SSAEvent(start=make_time(h=1000), end=make_time(h=1001), text="test"))
     with pytest.warns(RuntimeWarning):

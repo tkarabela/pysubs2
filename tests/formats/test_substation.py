@@ -2,12 +2,12 @@
 pysubs2.formats.substation tests
 
 """
-
+import typing
 from textwrap import dedent
 from pysubs2 import SSAFile, SSAEvent, SSAStyle, make_time, Color, Alignment
-from pysubs2.substation import color_to_ass_rgba, color_to_ssa_rgb, rgba_to_color, MAX_REPRESENTABLE_TIME
+from pysubs2.formats.substation import color_to_ass_rgba, color_to_ssa_rgb, rgba_to_color, MAX_REPRESENTABLE_TIME, SubstationFormat
 import pytest
-import sys
+
 
 SIMPLE_ASS_REF = """
 [Script Info]
@@ -248,8 +248,41 @@ Dialogue: 1,0:0:0.04,0:0:4.00,Default,,0000,0000,0000,,{\k100}{\k33}SUN{\k4}{\k4
 Dialogue: 1,0:0:3.42,0:0:7.88,Default,,0000,0000,0000,,{\k100}{\k4}me{\k4}{\k8}ku{\k4}{\k38}t{\k4}{\k17}te {\k4}{\k17}CA{\k4}{\k33}LEN{\k4}{\k29}DAR {\k4}{\k38}GIRL {\k4}{\k8}wa{\k4}{\k8}ta{\k4}{\k13}shi {\k4}{\k17}no {\k4}{\k13}mai{\k4}{\k8}ni{\k8}{\k33}chi
 """
 
+ASS_STYLES_FORMAT_ISSUE_89 = """
+[Script Info]
+WrapStyle: 0
+ScaledBorderAndShadow: yes
+Collisions: Normal
+ScriptType: v4.00+
 
-def build_ref():
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Default,Alegreya Sans,140.0,&H00FFFFFF,&H000000FF,&H00000000,&H00000000,1,1,0,0,100.0,100.0,0.0,0.0,1,2.0,2.0,2,192,192,108,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.00,0:01:00.00,Default,,0,0,0,,An, example, subtitle.
+"""
+
+
+ASS_EMPTY_LAYERS_ISSUE_87 = r"""
+[Script Info]
+WrapStyle: 0
+ScaledBorderAndShadow: yes
+Collisions: Normal
+ScriptType: v4.00+
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Default,Arial,20.0,&H00FFFFFF,&H000000FF,&H00000000,&H00000000,0,0,0,0,100.0,100.0,0.0,0.0,1,2.0,2.0,2,10,10,10,1
+
+[Events]
+Format: Layer, Start, End, Style, Actor, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: ,0:00:22.98,0:00:24.85,Default,,0,0,0,,An, example, subtitle.
+"""
+
+
+def build_ref() -> SSAFile:
     subs = SSAFile()
     subs.info["My Custom Info"] = "Some: Test, String."
     subs.styles["topleft"] = SSAStyle(alignment=Alignment.TOP_LEFT, bold=True)
@@ -259,12 +292,14 @@ def build_ref():
     subs.append(SSAEvent(start=make_time(m=1), end=make_time(m=2), text="Subtitle number\\Ntwo."))
     return subs
 
-def test_simple_write():
+
+def test_simple_write() -> None:
     subs = build_ref()
     assert subs.to_string("ass").strip() == SIMPLE_ASS_REF.strip()
     assert subs.to_string("ssa").strip() == SIMPLE_SSA_REF.strip()
 
-def test_simple_read():
+
+def test_simple_read() -> None:
     ref = build_ref()
     subs1 = SSAFile.from_string(SIMPLE_ASS_REF)
     subs2 = SSAFile.from_string(SIMPLE_SSA_REF)
@@ -272,7 +307,8 @@ def test_simple_read():
     assert ref.equals(subs1)
     assert ref.equals(subs2)
 
-def test_color_parsing():
+
+def test_color_parsing() -> None:
     solid_color = Color(r=1, g=2, b=3)
     transparent_color = Color(r=1, g=2, b=3, a=4)
 
@@ -283,7 +319,8 @@ def test_color_parsing():
     assert rgba_to_color("&HAABBCCDD") == Color(r=0xDD, g=0xCC, b=0xBB, a=0xAA)
     assert color_to_ass_rgba(Color(r=0xDD, g=0xCC, b=0xBB, a=0xAA)) == "&HAABBCCDD"
 
-def test_aegisub_project_garbage():
+
+def test_aegisub_project_garbage() -> None:
     subs = SSAFile.from_string(AEGISUB_PROJECT_GARBAGE_FILE)
     garbage_section = dedent("""
         [Aegisub Project Garbage]
@@ -295,7 +332,9 @@ def test_aegisub_project_garbage():
 
     assert garbage_section in subs.to_string("ass")
 
-def test_ascii_str_fields():
+
+@typing.no_type_check
+def test_ascii_str_fields() -> None:
     # see issue #12
     STYLE_NAME = b"top-style"
 
@@ -305,16 +344,12 @@ def test_ascii_str_fields():
     style = SSAStyle()
     subs.styles[STYLE_NAME] = style
 
-    # if sys.version_info.major == 2:
-    #     # in Python 2, saving subtitles with non-unicode fields is tolerated
-    #     # as long as they do not fall outside of ASCII range
-    #     subs.to_string("ass")
-    # else:
-    #     # in Python 3, we are strict and enforce Unicode
     with pytest.raises(TypeError):
         subs.to_string("ass")
 
-def test_non_ascii_str_fields():
+
+@typing.no_type_check
+def test_non_ascii_str_fields() -> None:
     # see issue #12
     STYLE_NAME = "my-style"
     FONT_NAME = b"NonAsciiString\xff"
@@ -325,12 +360,11 @@ def test_non_ascii_str_fields():
     style = SSAStyle(fontname=FONT_NAME)
     subs.styles[STYLE_NAME] = style
 
-    # in all Pythons, saving subtitles with non-unicode fields
-    # fails when they are not in ASCII range
     with pytest.raises(TypeError):
         subs.to_string("ass")
 
-def test_negative_timestamp_read():
+
+def test_negative_timestamp_read() -> None:
     ref = build_ref()
     subs = SSAFile.from_string(NEGATIVE_TIMESTAMP_ASS_REF)
 
@@ -340,7 +374,8 @@ def test_negative_timestamp_read():
     # negative times are flushed to zero on output
     assert ref.to_string("ass") == subs.to_string("ass")
 
-def test_overflow_timestamp_write():
+
+def test_overflow_timestamp_write() -> None:
     ref = build_ref()
     ref[0].end = make_time(h=1000)
     with pytest.warns(RuntimeWarning):
@@ -348,7 +383,8 @@ def test_overflow_timestamp_write():
     subs = SSAFile.from_string(text)
     assert subs[0].end == MAX_REPRESENTABLE_TIME
 
-def test_centisecond_rounding():
+
+def test_centisecond_rounding() -> None:
     ref = SSAFile()
     ref.append(SSAEvent(start=make_time(h=1, m=1, ms=4), end=make_time(h=1, m=1, ms=5)))
     text = ref.to_string("ass")
@@ -356,7 +392,8 @@ def test_centisecond_rounding():
     assert subs[0].start == make_time(h=1, m=1, ms=0)
     assert subs[0].end == make_time(h=1, m=1, ms=10)
 
-def test_no_space_after_colon_in_metadata_section():
+
+def test_no_space_after_colon_in_metadata_section() -> None:
     # see issue #14
     ref = SSAFile.from_string(AEGISUB_PROJECT_GARBAGE_FILE)
     subs = SSAFile.from_string(AEGISUB_PROJECT_GARBAGE_FILE_WITHOUT_SPACE_AFTER_COLON)
@@ -364,7 +401,8 @@ def test_no_space_after_colon_in_metadata_section():
     assert ref.equals(subs)
     assert ref.aegisub_project == subs.aegisub_project
 
-def test_hex_color_in_ssa():
+
+def test_hex_color_in_ssa() -> None:
     # see issue #32
     subs = SSAFile.from_string(HEX_COLOR_IN_SSA)
     style = subs.styles["Default"]
@@ -372,14 +410,14 @@ def test_hex_color_in_ssa():
     assert style.secondarycolor == Color(r=0xff, g=0xff, b=0x00)
 
 
-def test_ass_with_malformed_style():
+def test_ass_with_malformed_style() -> None:
     # see issue #45
     subs = SSAFile.from_string(ASS_WITH_MALFORMED_STYLE)
     assert subs[0].text == "Hello"
     assert subs.styles["Default"].fontname == "Arial"
 
 
-def test_ass_with_missing_fractions_in_timestamp():
+def test_ass_with_missing_fractions_in_timestamp() -> None:
     # see issue #50
     subs = SSAFile.from_string(ASS_WITHOUT_FRACTIONS_OF_SECOND_REF)
 
@@ -396,7 +434,7 @@ def test_ass_with_missing_fractions_in_timestamp():
     assert subs[2].end == make_time(0, 1, 23, 0)
 
 
-def test_ass_with_short_minutes_seconds_in_timestamp():
+def test_ass_with_short_minutes_seconds_in_timestamp() -> None:
     # see pull request #54
 
     subs = SSAFile.from_string(ASS_WITH_SHORT_MINUTES_SECONDS_REF)
@@ -408,8 +446,9 @@ def test_ass_with_short_minutes_seconds_in_timestamp():
     assert subs[1].end == make_time(0, 0, 7, 880)
 
 
+@typing.no_type_check
 @pytest.mark.filterwarnings("ignore:.*should be an Alignment instance.*:DeprecationWarning")
-def test_alignment_given_as_integer():
+def test_alignment_given_as_integer() -> None:
     subs = SSAFile()
     subs.info["My Custom Info"] = "Some: Test, String."
     subs.styles["topleft"] = SSAStyle(alignment=7, bold=True)
@@ -422,7 +461,36 @@ def test_alignment_given_as_integer():
     assert subs.to_string("ssa").strip() == SIMPLE_SSA_REF.strip()
 
 
-def test_reading_invalid_alignment_raises_warning():
+def test_reading_invalid_alignment_raises_warning() -> None:
     with pytest.warns(RuntimeWarning):
         subs = SSAFile.from_string(ASS_WITH_MALFORMED_STYLE_INVALID_ALIGNMENT)
     assert subs.styles["Default"].alignment == Alignment.BOTTOM_CENTER
+
+
+def test_ass_ms_to_timestamp() -> None:
+    # see issue #76
+
+    assert SubstationFormat.ms_to_timestamp(4659990) == "1:17:39.99"
+    assert SubstationFormat.ms_to_timestamp(4659991) == "1:17:39.99"
+    assert SubstationFormat.ms_to_timestamp(4659992) == "1:17:39.99"
+    assert SubstationFormat.ms_to_timestamp(4659993) == "1:17:39.99"
+    assert SubstationFormat.ms_to_timestamp(4659994) == "1:17:39.99"
+    assert SubstationFormat.ms_to_timestamp(4659995) == "1:17:40.00"
+    assert SubstationFormat.ms_to_timestamp(4659996) == "1:17:40.00"
+    assert SubstationFormat.ms_to_timestamp(4659997) == "1:17:40.00"
+    assert SubstationFormat.ms_to_timestamp(4659998) == "1:17:40.00"
+    assert SubstationFormat.ms_to_timestamp(4659999) == "1:17:40.00"
+
+
+def test_bad_style_format_line_issue_89() -> None:
+    subs = SSAFile.from_string(ASS_STYLES_FORMAT_ISSUE_89)
+    assert subs.styles["Default"].bold
+    assert subs.styles["Default"].italic
+    assert not subs.styles["Default"].underline
+    assert not subs.styles["Default"].strikeout
+
+
+def test_empty_layer_issue_87() -> None:
+    with pytest.warns(RuntimeWarning, match="Failed to parse layer"):
+        subs = SSAFile.from_string(ASS_EMPTY_LAYERS_ISSUE_87)
+    assert subs[0].layer == 0
