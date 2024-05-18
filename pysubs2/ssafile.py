@@ -50,7 +50,7 @@ class SSAFile(MutableSequence[SSAEvent]):
 
     @classmethod
     def load(cls, path: str, encoding: str = "utf-8", format_: Optional[str] = None, fps: Optional[float] = None,
-             errors: Optional[str] = "surrogateescape", **kwargs: Any) -> "SSAFile":
+             errors: Optional[str] = None, **kwargs: Any) -> "SSAFile":
         """
         Load subtitle file from given path.
 
@@ -66,10 +66,12 @@ class SSAFile(MutableSequence[SSAEvent]):
             encoding (str): Character encoding of input file.
                 Defaults to UTF-8, you may need to change this.
             errors (Optional[str]): Error handling for character encoding
-                of input file. Defaults to ``"surrogateescape"``. See documentation
-                of builtin ``open()`` function for more.
+                of input file. Defaults to ``None``; use the value ``"surrogateescape"``
+                for pass-through of bytes not supported by selected encoding via
+                `Unicode surrogate pairs <https://en.wikipedia.org/wiki/Universal_Character_Set_characters#Surrogates>`_.
+                See documentation of builtin ``open()`` function for more.
 
-                .. versionchanged:: 2.0.0
+                .. versionchanged:: 1.7.0
                     The ``errors`` parameter was introduced to facilitate
                     pass-through of subtitle files with unknown text encoding.
                     Previous versions of the library behaved as if ``errors=None``.
@@ -190,7 +192,7 @@ class SSAFile(MutableSequence[SSAEvent]):
         return subs
 
     def save(self, path: str, encoding: str = "utf-8", format_: Optional[str] = None, fps: Optional[float] = None,
-             errors: Optional[str] = "surrogateescape", **kwargs: Any) -> None:
+             errors: Optional[str] = None, **kwargs: Any) -> None:
         """
         Save subtitle file to given path.
 
@@ -217,11 +219,13 @@ class SSAFile(MutableSequence[SSAEvent]):
                 different framerate, use this argument. See also
                 :meth:`SSAFile.transform_framerate()` for fixing bad
                 frame-based to time-based conversions.
-            errors (Optional[str]): Error handling for character encoding,
-                defaults to ``"surrogateescape"``. See documentation
-                of builtin ``open()`` function for more.
+            errors (Optional[str]): Error handling for character encoding
+                of input file. Defaults to ``None``; use the value ``"surrogateescape"``
+                for pass-through of bytes not supported by selected encoding via
+                `Unicode surrogate pairs <https://en.wikipedia.org/wiki/Universal_Character_Set_characters#Surrogates>`_.
+                See documentation of builtin ``open()`` function for more.
 
-                .. versionchanged:: 2.0.0
+                .. versionchanged:: 1.7.0
                     The ``errors`` parameter was introduced to facilitate
                     pass-through of subtitle files with unknown text encoding.
                     Previous versions of the library behaved as if ``errors=None``.

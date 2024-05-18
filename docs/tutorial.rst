@@ -30,20 +30,6 @@ Now that we have a real file on the harddrive, let's import pysubs2 and load it.
     >>> subs
     <SSAFile with 2 events and 1 styles, last timestamp 0:02:00>
 
-.. note::
-   By default, pysubs2 uses UTF-8 encoding when reading and writing files, with surrogate pair escape error handling.
-   This works best if your file is either:
-
-      * in UTF-8 encoding or
-      * in a similar ASCII-like encoding (line ``latin-1``) and you don't need to work with the text (only convert subtitle format, shift time, etc.).
-
-   Use the ``encoding`` and ``errors`` keyword arguments in the :meth:`pysubs2.SSAFile.load()` and :meth:`pysubs2.SSAFile.save()` methods in case you need something else,
-   or you can do the processing yourself and work only with ``str`` using :meth:`pysubs2.SSAFile.from_string()` and :meth:`pysubs2.SSAFile.to_string()`.
-
-   If you use the default settings, you can get the input ``bytes`` for a particular subtitle using:
-
-   >>> subs[0].text.encode("utf-8", "surrogateescape")
-
 Now we have a subtitle file, the :class:`pysubs2.SSAFile` object. It has two "events", ie. subtitles. You can treat ``subs`` as a list:
 
     >>> subs[0].text
@@ -64,6 +50,43 @@ Individual subtitles are :class:`pysubs2.SSAEvent` objects and have the attribut
     Once upon a time,
     there was a SubRip file
     with two subtitles.
+
+A point about character encoding
+################################
+
+By default, pysubs2 uses `UTF-8 <https://en.wikipedia.org/wiki/UTF-8>`_ character encoding when reading and writing files,
+which enjoys wide software support, can represent any character from `Unicode <https://en.wikipedia.org/wiki/Unicode>`_,
+and is efficient in terms of disk space. It's arguably "the" character encoding to use for text storage today, but it
+hasn't always been like this, and it's possible that the subtitle files you will be dealing with use some other
+encoding.
+
+UTF-8 is a superset of `ASCII <https://en.wikipedia.org/wiki/ASCII>`_ and it's defined in such a way that files using
+other encodings are very unlikely to form valid UTF-8 file. In other words, if your non-UTF-8 file contains characters
+such as accented Latin letters, East Asian scripts, etc., instead of question marks or wrong characters in the output,
+you will get an error like this:
+
+    >>> import pysubs2
+    >>> subs = pysubs2.load("subtitles.srt")
+    UnicodeDecodeError: 'utf-8' codec can't decode byte 0xf8 in position 110: invalid start byte
+
+When this happens, you have two options:
+
+    1. **If you need to work with subtitle text (eg. for translation)**, you must specify the correct encoding using the ``encoding``
+       parameter for :meth:`pysubs2.load()`,
+       eg. ``pysubs2.load("subtitles.srt", encoding="latin-1")``. If you don't know which encoding
+       to use, you can try autodetecting it using a library like `charset-normalizer <https://pypi.org/project/charset-normalizer/>`_
+       or `chardet <https://pypi.org/project/chardet/>`_.
+    2. **If you don't need to read/modify subtitle text (eg. for retiming or format conversion)**, you can try using
+       ``errors="surrogateescape"`` to wrap non-UTF-8 characters as `Unicode surrogate pairs <https://en.wikipedia.org/wiki/Universal_Character_Set_characters#Surrogates>`_
+       and effectively pass them through to output, eg. ``pysubs2.load("subtitles.srt", errors="surrogateescape")``.
+       This will only work if the actual character encoding is sufficiently "ASCII-like"
+       that pysubs2 recognizes the file structure, which may fail with multi-byte encodings. The CLI tool uses this
+       by default for better user experience.
+
+Lastly, there have been reports about rare subtitle files with mixed character encodings. If you have the misfortune
+to stumble upon such a file, use ``errors="surrogateescape"`` which will allow you to get the input ``bytes`` of a particular
+subtitle by using: ``subs[0].text.encode("utf-8", "surrogateescape")``. You can then set the :attr:`pysubs2.SSAEvent.text`
+to whatever is the correct decoded text.
 
 Working with timing
 -------------------

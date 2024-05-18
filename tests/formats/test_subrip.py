@@ -326,15 +326,14 @@ def test_win1250_passthrough_with_surrogateescape() -> None:
             fp.write(input_bytes_win1250)
 
         with pytest.raises(UnicodeDecodeError):
-            # legacy behaviour
-            SSAFile.load(input_path, errors=None)
+            SSAFile.load(input_path)
 
-        subs = SSAFile.load(input_path)
+        subs = SSAFile.load(input_path, errors="surrogateescape")
 
         assert subs[0].text == "The quick brown fox jumps over the lazy dog"
         assert subs[1].text.startswith("P") and subs[1].text.endswith("dy")
 
-        subs.save(output_path)
+        subs.save(output_path, errors="surrogateescape")
 
         with open(output_path, "rb") as fp:
             output_bytes = fp.read()
@@ -362,15 +361,14 @@ def test_multiencoding_passthrough_with_surrogateescape() -> None:
             fp.write(input_bytes)
 
         with pytest.raises(UnicodeDecodeError):
-            # legacy behaviour
-            SSAFile.load(input_path, errors=None)
+            SSAFile.load(input_path)
 
-        subs = SSAFile.load(input_path)
+        subs = SSAFile.load(input_path, errors="surrogateescape")
 
         assert subs[0].text.startswith("The quick brown fox jumps over the lazy dog")
         assert "Felix bzw. Jody" in subs[0].text
 
-        subs.save(output_path)
+        subs.save(output_path, errors="surrogateescape")
 
         with open(output_path, "rb") as fp:
             output_bytes = fp.read()
