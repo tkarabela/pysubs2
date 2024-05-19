@@ -1,6 +1,29 @@
 Release Notes
 =============
 
+**1.7.0** --- released on 2024-05-19
+
+- Added ``errors`` option for :meth:`pysubs2.load()`, :meth:`pysubs2.SSAFile.save()` and related methods, exposing
+  the encoding handling option of builtin function ``open()``. By default, this option uses value ``None`` which
+  is consistent with behaviour of previous versions of the library. However, it's possible to use ``"surrogateescape"``
+  to bypass the need to specify correct character encoding in some cases (see the tutorial). In the CLI, surrogateescape
+  is now the default behaviour.
+- SubStation writer now correctly handles timestamps which are not rounded to centiseconds, for example
+  ``00:36:48,998`` from a SRT file no longer produces the invalid ASS timestamp ``0:36:48.100`` (Issue #83),
+  patch by moi15moi (https://github.com/moi15moi)
+- MicroDVD parser now only uses FPS declaration from the first subtitle if the line starts with ``{1}{1}``,
+  matching VLC Player behaviour; the old behaviour is available under the ``strict_fps_inference`` reader option
+  (Issue #71)
+- SubStation writer now omits fractional part for numeric values if it is zero, patch by Andrey Efremov (https://github.com/PalmtopTiger)
+- CLI now shows help message when called without arguments (Issue #81), patches by Northurland (https://github.com/Northurland) and Andrey Efremov (https://github.com/PalmtopTiger)
+- pysubs2 now raises correct exception (:class:`pysubs2.exceptions.FormatAutodetectionError`) when attempting to read
+  a JSON file that was not saved by pysubs2 (Issue #85)
+- More robust SubStation parser (Issues #87, #89)
+- Added test data to source distribution (Issue #75)
+- Code now passes MyPy check in strict mode, as well as Ruff check
+- Added support for Python 3.12, removed support for Python 3.7
+
+
 **1.6.1** --- released on 2023-04-02
 
 - WebVTT now correctly writes events in cue start order, patch by Anton Melser (https://github.com/AntonOfTheWoods)

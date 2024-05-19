@@ -34,11 +34,16 @@ class MicroDVDFormat(FormatBase):
         Keyword args:
             strict_fps_inference: If True (default), in the case when ``fps`` is not given, it will be read
                 from the first subtitle text only if the start and end frame of this subtitle is ``{1}{1}``
-                (matches VLC Player behaviour), otherwise `UnknownFPSError` is raised. When ``strict_fps_inference``
+                (matches VLC Player behaviour), otherwise :class:`pysubs2.exceptions.UnknownFPSError` is raised.
+
+                When ``strict_fps_inference``
                 is False, framerate will be read from the first subtitle text in this case regardless of
                 start and end frame (which may result in bogus result, if the first subtitle is not supposed
                 to contain framerate). Before introduction of this option, the library behaved as if this
                 option was False.
+
+                .. versionchanged:: 1.7.0
+                   Added the ``strict_fps_inference`` option.
         """
         for line in fp:
             match = MICRODVD_LINE.match(line)
