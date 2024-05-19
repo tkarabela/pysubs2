@@ -18,5 +18,5 @@ upload:
 	python3 -m twine upload dist/*
 
 installdeps:
-	python3 -m pip install --upgrade pip build twine
+	python3 -m pip install --upgrade -r requirements-build.txt
 	python3 -m pip install -r requirements-dev.txt
