@@ -1,7 +1,12 @@
 Release Notes
 =============
 
-**1.7.0** --- released on 2024-05-19
+**1.7.1** --- released on 2024-05-19
+
+- Fixed missing ``pysubs2.formats`` subpackage in PyPI distributions (Issue #92)
+- Test sdist and wheel distributions in CI
+
+**1.7.0** --- released on 2024-05-19 (yanked)
 
 - Added ``errors`` option for :meth:`pysubs2.load()`, :meth:`pysubs2.SSAFile.save()` and related methods, exposing
   the encoding handling option of builtin function ``open()``. By default, this option uses value ``None`` which
