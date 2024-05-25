@@ -17,8 +17,10 @@ def test_write_read() -> None:
     json_text = subs.to_string("json")
 
     subs2 = SSAFile.from_string(json_text, "json")
+    subs3 = SSAFile.from_string(json_text)
 
     assert subs2.equals(subs)
+    assert subs3.equals(subs)
 
 
 def test_read_unsupported_json_issue_85() -> None:
