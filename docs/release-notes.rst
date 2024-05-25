@@ -1,6 +1,10 @@
 Release Notes
 =============
 
+**1.7.2** --- released on 2024-05-25
+
+- Fixed problem with JSON format autodetection (Issue #94)
+
 **1.7.1** --- released on 2024-05-19
 
 - Fixed missing ``pysubs2.formats`` subpackage in PyPI distributions (Issue #92)
