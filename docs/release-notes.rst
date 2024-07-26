@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+**1.7.3** --- released on 2024-07-27
+
+- Fixed problem with ``multiprocessing.Pool`` crashing due to ``FormatAutodetectionError`` (Issue #97)
+
+
 **1.7.2** --- released on 2024-05-25
 
 - Fixed problem with JSON format autodetection (Issue #94)
