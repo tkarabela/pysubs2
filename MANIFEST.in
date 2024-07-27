@@ -2,3 +2,4 @@ graft tests/data
 graft pysubs2
 global-exclude __pycache__
 global-exclude *.py[co]
+include py.typed
