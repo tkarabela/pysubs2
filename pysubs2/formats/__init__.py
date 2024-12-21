@@ -2,6 +2,7 @@ from typing import Dict, Type
 
 from .base import FormatBase
 from .microdvd import MicroDVDFormat
+from .sami import SAMIFormat
 from .subrip import SubripFormat
 from .jsonformat import JSONFormat
 from .substation import SubstationFormat
@@ -19,6 +20,8 @@ FILE_EXTENSION_TO_FORMAT_IDENTIFIER: Dict[str, str] = {
     ".json": "json",
     ".txt": "tmp",
     ".vtt": "vtt",
+    ".sami": "sami",
+    ".smi": "sami",
 }
 
 #: Dict mapping format identifiers to implementations (FormatBase subclasses).
@@ -31,6 +34,7 @@ FORMAT_IDENTIFIER_TO_FORMAT_CLASS: Dict[str, Type[FormatBase]] = {
     "mpl2": MPL2Format,
     "tmp": TmpFormat,
     "vtt": WebVTTFormat,
+    "sami": SAMIFormat,
 }
 
 FORMAT_IDENTIFIERS = list(FORMAT_IDENTIFIER_TO_FORMAT_CLASS.keys())

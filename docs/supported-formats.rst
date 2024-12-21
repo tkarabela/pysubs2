@@ -86,6 +86,17 @@ Implemented in :class:`pysubs2.webvtt.WebVTTFormat`.
 .. versionchanged:: 1.0.0
    Added basic support for WebVTT subtitle format.
 
+SAMI
+~~~~
+
+Legacy time-based format based on HTML and CSS, format identifier is ``"sami"``. Only a rudimentary parser is implemented
+for this format.
+
+`Link to SAMI 1.0 specification <https://learn.microsoft.com/en-us/previous-versions/windows/desktop/dnacc/understanding-sami-1.0>`_,
+official name is "Synchronized Accessible Media Interchange".
+
+Implemented in :class:`pysubs2.sami.SAMIFormat`.
+
 Frame-based Formats
 -------------------
 
