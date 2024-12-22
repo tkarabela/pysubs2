@@ -9,6 +9,7 @@ from .substation import SubstationFormat
 from .mpl2 import MPL2Format
 from .tmp import TmpFormat
 from .webvtt import WebVTTFormat
+from .whisper import WhisperJAXFormat
 from ..exceptions import UnknownFormatIdentifierError, UnknownFileExtensionError, FormatAutodetectionError
 
 #: Dict mapping file extensions to format identifiers.
@@ -35,6 +36,7 @@ FORMAT_IDENTIFIER_TO_FORMAT_CLASS: Dict[str, Type[FormatBase]] = {
     "tmp": TmpFormat,
     "vtt": WebVTTFormat,
     "sami": SAMIFormat,
+    "whisper_jax": WhisperJAXFormat,
 }
 
 FORMAT_IDENTIFIERS = list(FORMAT_IDENTIFIER_TO_FORMAT_CLASS.keys())

@@ -97,6 +97,14 @@ official name is "Synchronized Accessible Media Interchange".
 
 Implemented in :class:`pysubs2.sami.SAMIFormat`.
 
+OpenAI Whisper
+~~~~~~~~~~~~~~
+
+Time-based format for transcriptions generated from `Whisper JAX <https://huggingface.co/spaces/sanchit-gandhi/whisper-jax>`_,
+format identifier is ``"whisper_jax"``. Only parser is implemented.
+
+Implemented in :class:`pysubs2.whisper.WhisperJAXFormat`.
+
 Frame-based Formats
 -------------------
 
@@ -117,10 +125,8 @@ JSON
 This is JSON-serialized internal representation, which amounts to ASS. Format identifier is ``"json"``.
 Implemented in :class:`pysubs2.jsonformat.JSONFormat`.
 
-OpenAI Whisper
-~~~~~~~~~~~~~~
+OpenAI Whisper (API)
+~~~~~~~~~~~~~~~~~~~~
 
 Transcripts from the `OpenAI Whisper library <https://github.com/openai/whisper>`_
-can be directly imported using :func:`pysubs2.load_from_whisper`. This is only available
-from the Python API. There is no format identifier or class, only this one function
-(since it's not a subtitle format per se, and has no file representation).
+can be directly imported using :func:`pysubs2.load_from_whisper`.

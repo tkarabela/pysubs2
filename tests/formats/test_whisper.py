@@ -15,6 +15,82 @@ TRANSCRIBE_RESULT = {
                   'no_speech_prob': 0.0026147987227886915}], 'language': 'en'}
 
 
+WHISPER_JAX_INPUT = r"""
+[01:14.500 -> 01:15.500]  Okay.
+[01:15.500 -> 01:17.500]  You know you can't smoke weed and drive, right?
+[01:17.500 -> 01:19.500]  That's a DWI, man.
+[01:19.500 -> 01:20.500]  Really?
+[01:20.500 -> 01:21.500]  Yeah.
+[01:22.500 -> 01:25.000]  And the reason I'm saying that is I can smell it, right?
+[01:25.000 -> 01:29.000]  And I don't know if it's literally all over you.
+[01:29.000 -> 01:32.000]  Or what's all that all over your shirt and your pants?
+[01:32.000 -> 01:34.000]  Yeah, I know what I should say.
+[01:34.000 -> 01:36.000]  It's like it's all over you, man.
+[01:36.000 -> 01:38.000]  Hey, come on, dude.
+[01:38.000 -> 01:40.000]  Yeah.
+[01:40.000 -> 01:44.000]  So, if you drink and drive, it's a DWI, right?
+[01:44.000 -> 01:47.880]  If you smoke weed and drive drive it's the DWI. They're both legal
+"""
+
+WHISPER_JAX_OUTPUT_SRT = r"""
+1
+00:01:14,500 --> 00:01:15,500
+Okay.
+
+2
+00:01:15,500 --> 00:01:17,500
+You know you can't smoke weed and drive, right?
+
+3
+00:01:17,500 --> 00:01:19,500
+That's a DWI, man.
+
+4
+00:01:19,500 --> 00:01:20,500
+Really?
+
+5
+00:01:20,500 --> 00:01:21,500
+Yeah.
+
+6
+00:01:22,500 --> 00:01:25,000
+And the reason I'm saying that is I can smell it, right?
+
+7
+00:01:25,000 --> 00:01:29,000
+And I don't know if it's literally all over you.
+
+8
+00:01:29,000 --> 00:01:32,000
+Or what's all that all over your shirt and your pants?
+
+9
+00:01:32,000 --> 00:01:34,000
+Yeah, I know what I should say.
+
+10
+00:01:34,000 --> 00:01:36,000
+It's like it's all over you, man.
+
+11
+00:01:36,000 --> 00:01:38,000
+Hey, come on, dude.
+
+12
+00:01:38,000 --> 00:01:40,000
+Yeah.
+
+13
+00:01:40,000 --> 00:01:44,000
+So, if you drink and drive, it's a DWI, right?
+
+14
+00:01:44,000 --> 00:01:47,880
+If you smoke weed and drive drive it's the DWI. They're both legal
+"""
+
+
 def test_read_whisper_transcript_dict() -> None:
     subs = pysubs2.load_from_whisper(TRANSCRIBE_RESULT)
 
@@ -37,3 +113,8 @@ def test_read_whisper_segments_list() -> None:
     assert e2.start == 7600
     assert e2.end == 36600
     assert e2.text == "ask what you can do for your country."
+
+
+def test_parse_whisper_jax() -> None:
+    subs = pysubs2.SSAFile.from_string(WHISPER_JAX_INPUT)
+    assert subs.to_string("srt").strip() == WHISPER_JAX_OUTPUT_SRT.strip()
