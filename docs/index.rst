@@ -3,7 +3,7 @@ pysubs2
 
 pysubs2 is a Python library for editing subtitle files. It’s based on *SubStation Alpha*,
 the native format of `Aegisub <http://www.aegisub.org/>`_; it also supports  *SubRip (SRT)*,
-*MicroDVD*, *MPL2*, *TMP*, *WebVTT* and *SAMI* formats. There is a small CLI tool for batch conversion and retiming.
+*MicroDVD*, *MPL2*, *TMP*, *WebVTT*, *TTML* and *SAMI* formats. There is a small CLI tool for batch conversion and retiming.
 
 .. code-block:: bash
 

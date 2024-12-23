@@ -86,6 +86,19 @@ Implemented in :class:`pysubs2.webvtt.WebVTTFormat`.
 .. versionchanged:: 1.0.0
    Added basic support for WebVTT subtitle format.
 
+TTML
+~~~~
+
+A complex XML-based format from W3C, format identifier is ``"ttml"``. This format is capable of advanced styling,
+which is currently not supported at all by the parser, but there is some support in the writer.
+
+`Link to TTML specification <https://www.w3.org/TR/ttml1>`_, official name is
+"Timed Text Markup Language 1".
+Implemented in :class:`pysubs2.ttml.TTMLFormat`.
+
+.. versionchanged:: 1.8.0
+   Added basic support for TTML subtitle format.
+
 SAMI
 ~~~~
 
@@ -97,6 +110,9 @@ official name is "Synchronized Accessible Media Interchange".
 
 Implemented in :class:`pysubs2.sami.SAMIFormat`.
 
+.. versionchanged:: 1.8.0
+   Added basic support for SAMI subtitle format.
+
 OpenAI Whisper
 ~~~~~~~~~~~~~~
 
@@ -104,6 +120,11 @@ Time-based format for transcriptions generated from `Whisper JAX <https://huggin
 format identifier is ``"whisper_jax"``. Only parser is implemented.
 
 Implemented in :class:`pysubs2.whisper.WhisperJAXFormat`.
+
+.. versionchanged:: 1.8.0
+   Added support for parsing text representation of Whisper JAX output (previously,
+   only loading Whisper output directly from its Python API was supported).
+
 
 Frame-based Formats
 -------------------

@@ -8,6 +8,7 @@ from .jsonformat import JSONFormat
 from .substation import SubstationFormat
 from .mpl2 import MPL2Format
 from .tmp import TmpFormat
+from .ttml import TTMLFormat
 from .webvtt import WebVTTFormat
 from .whisper import WhisperJAXFormat
 from ..exceptions import UnknownFormatIdentifierError, UnknownFileExtensionError, FormatAutodetectionError
@@ -23,6 +24,7 @@ FILE_EXTENSION_TO_FORMAT_IDENTIFIER: Dict[str, str] = {
     ".vtt": "vtt",
     ".sami": "sami",
     ".smi": "sami",
+    ".ttml": "ttml",
 }
 
 #: Dict mapping format identifiers to implementations (FormatBase subclasses).
@@ -37,6 +39,7 @@ FORMAT_IDENTIFIER_TO_FORMAT_CLASS: Dict[str, Type[FormatBase]] = {
     "vtt": WebVTTFormat,
     "sami": SAMIFormat,
     "whisper_jax": WhisperJAXFormat,
+    "ttml": TTMLFormat,
 }
 
 FORMAT_IDENTIFIERS = list(FORMAT_IDENTIFIER_TO_FORMAT_CLASS.keys())

@@ -131,6 +131,10 @@ Here you can find specific details regarding support of the individual subtitle 
    :members:
    :show-inheritance:
 
+.. autoclass:: pysubs2.formats.ttml.TTMLFormat
+   :members:
+   :show-inheritance:
+
 .. autoclass:: pysubs2.formats.sami.SAMIFormat
    :members:
    :show-inheritance:
