@@ -19,6 +19,10 @@ def test_r_tag() -> None:
     assert parse_tags(text) == [("", SSAStyle()),
                                 ("Hello, ", SSAStyle(italic=True)),
                                 ("world!", SSAStyle())]
+    assert parse_tags(text, skip_empty_fragments=True) == [
+        ("Hello, ", SSAStyle(italic=True)),
+        ("world!", SSAStyle())
+    ]
 
 
 def test_r_named_tag() -> None:
