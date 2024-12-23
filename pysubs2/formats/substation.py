@@ -101,6 +101,7 @@ def parse_tags(text: str, style: SSAStyle = SSAStyle.DEFAULT_STYLE,
     Supported override tags:
     
     - i, b, u, s
+    - fn
     - r (with or without style name)
     
     """
@@ -116,7 +117,7 @@ def parse_tags(text: str, style: SSAStyle = SSAStyle.DEFAULT_STYLE,
     
     def apply_overrides(all_overrides: str) -> SSAStyle:
         s = style.copy()
-        for tag in re.findall(r"\\[ibusp][0-9]|\\r[a-zA-Z_0-9 ]*", all_overrides):
+        for tag in re.findall(r"\\[ibusp][0-9]|\\r[a-zA-Z_0-9 ]*|\\fn[a-zA-Z_0-9 ]+", all_overrides):
             if tag == r"\r":
                 s = style.copy() # reset to original line style
             elif tag.startswith(r"\r"):
@@ -124,6 +125,9 @@ def parse_tags(text: str, style: SSAStyle = SSAStyle.DEFAULT_STYLE,
                 if name in styles:
                     # reset to named style
                     s = styles[name].copy()
+            elif tag.startswith(r"\fn"):
+                fontname = tag[3:]
+                s.fontname = fontname
             else:
                 if "i" in tag:
                     s.italic = "1" in tag
