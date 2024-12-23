@@ -25,7 +25,7 @@ and vector graphics.
 - .ass files (Advanced SubStation Alpha v4.0+), format identifier is ``"ass"``.
 - .ssa files (SubStation Alpha v4.0), format identifier is ``"ssa"``.
 
-Implemented in :class:`pysubs2.substation.SubstationFormat`.
+Implemented in :class:`pysubs2.formats.substation.SubstationFormat`.
 
 .. versionchanged:: 1.2.0
    Added support for embedded fonts. Fonts in loaded files will be preserved on save.
@@ -43,7 +43,7 @@ SubRip (SRT)
 
 This format uses .srt files, format identifier is ``"srt"``. Widely used subtitle format, it uses HTML
 tags for formatting, though it is usually not heavily formatted (as opposed to *SubStation*).
-Implemented in :class:`pysubs2.subrip.SubripFormat`.
+Implemented in :class:`pysubs2.formats.subrip.SubripFormat`.
 
 .. versionchanged:: 1.4.0
    Added option to keep SubStation override tags in SRT output. This is useful if your SRT file uses
@@ -58,7 +58,7 @@ MPL2
 
 Time-based format similar to MicroDVD, format identifier is ``"mpl2"``. To save subtitles in MPL2 format,
 use ``subs.save("subtitles.txt", format_="mpl2")``.
-Implemented in :class:`pysubs2.mpl2.MPL2Format`.
+Implemented in :class:`pysubs2.formats.mpl2.MPL2Format`.
 
 .. versionchanged:: 0.2.2
    Added support for MPL2 subtitle format.
@@ -69,7 +69,7 @@ TMP
 Time-based format, format identifier is ``"tmp"``. A very simple format which only specifies starting time
 for each subtitle, eg. ``0:00:13:This is a subtitle``. Subtitle length is calculated automatically based on character
 count. This older subtitle format is also referred to as "TMP Player" format.
-Implemented in :class:`pysubs2.tmp.TmpFormat`.
+Implemented in :class:`pysubs2.formats.tmp.TmpFormat`.
 
 .. versionchanged:: 0.2.4
    Added support for TMP subtitle format.
@@ -81,7 +81,7 @@ Time-based format similar to SubRip, format identifier is ``"vtt"``. Currently i
 as a flavour of SubRip, with no extra support for WebVTT-specific features like styles or subtitle alignment.
 `Link to WebVTT specification <https://developer.mozilla.org/en-US/docs/Web/API/WebVTT_API>`_, official name is
 "Web Video Text Tracks Format".
-Implemented in :class:`pysubs2.webvtt.WebVTTFormat`.
+Implemented in :class:`pysubs2.formats.webvtt.WebVTTFormat`.
 
 .. versionchanged:: 1.0.0
    Added basic support for WebVTT subtitle format.
@@ -94,7 +94,7 @@ which is currently not supported at all by the parser, but there is some support
 
 `Link to TTML specification <https://www.w3.org/TR/ttml1>`_, official name is
 "Timed Text Markup Language 1".
-Implemented in :class:`pysubs2.ttml.TTMLFormat`.
+Implemented in :class:`pysubs2.formats.ttml.TTMLFormat`.
 
 .. versionchanged:: 1.8.0
    Added basic support for TTML subtitle format.
@@ -108,7 +108,7 @@ for this format.
 `Link to SAMI 1.0 specification <https://learn.microsoft.com/en-us/previous-versions/windows/desktop/dnacc/understanding-sami-1.0>`_,
 official name is "Synchronized Accessible Media Interchange".
 
-Implemented in :class:`pysubs2.sami.SAMIFormat`.
+Implemented in :class:`pysubs2.formats.sami.SAMIFormat`.
 
 .. versionchanged:: 1.8.0
    Added basic support for SAMI subtitle format.
@@ -119,7 +119,7 @@ OpenAI Whisper
 Time-based format for transcriptions generated from `Whisper JAX <https://huggingface.co/spaces/sanchit-gandhi/whisper-jax>`_,
 format identifier is ``"whisper_jax"``. Only parser is implemented.
 
-Implemented in :class:`pysubs2.whisper.WhisperJAXFormat`.
+Implemented in :class:`pysubs2.formats.whisper.WhisperJAXFormat`.
 
 .. versionchanged:: 1.8.0
    Added support for parsing text representation of Whisper JAX output (previously,
@@ -135,7 +135,7 @@ MicroDVD
 This format uses .sub files, format identifier is ``"microdvd"``. This format uses frames to describe start/end times,
 instead of hour/minute/second, which means it is dependent on framerate of the video. For proper retiming and conversion,
 you need to know the framerate (sometimes it is given in the first subtitle, which ``pysubs2`` will autodetect and use).
-Implemented in :class:`pysubs2.microdvd.MicroDVDFormat`.
+Implemented in :class:`pysubs2.formats.microdvd.MicroDVDFormat`.
 
 Other
 -----
@@ -144,7 +144,7 @@ JSON
 ~~~~
 
 This is JSON-serialized internal representation, which amounts to ASS. Format identifier is ``"json"``.
-Implemented in :class:`pysubs2.jsonformat.JSONFormat`.
+Implemented in :class:`pysubs2.formats.jsonformat.JSONFormat`.
 
 OpenAI Whisper (API)
 ~~~~~~~~~~~~~~~~~~~~
