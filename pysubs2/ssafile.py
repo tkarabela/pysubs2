@@ -408,7 +408,7 @@ class SSAFile(MutableSequence[SSAEvent]):
         """
         new_events = []
 
-        duplicate_text_ids = tet()
+        duplicate_text_ids = set()
         times_to_texts: dict[tuple[int, int], list[str]] = {}
         for i, e in enumerate(self):
             tmp = times_to_texts.setdefault((e.start, e.end), [])
