@@ -2,7 +2,7 @@ import io
 from itertools import chain
 import os.path
 import logging
-from typing import Optional, Iterable, Any, overload, Iterator, TextIO, MutableSequence
+from typing import Iterable, Any, overload, Iterator, TextIO, MutableSequence
 
 from .common import IntOrFloat
 from .ssaevent import SSAEvent
