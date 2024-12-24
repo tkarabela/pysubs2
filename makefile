@@ -20,3 +20,4 @@ upload:
 installdeps:
 	python3 -m pip install --upgrade -r requirements-build.txt
 	python3 -m pip install -r requirements-dev.txt
+	python3 -m pip install -r docs/requirements.txt
