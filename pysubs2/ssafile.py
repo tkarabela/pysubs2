@@ -33,16 +33,24 @@ class SSAFile(MutableSequence[SSAEvent]):
         "ScaledBorderAndShadow": "yes",
         "Collisions": "Normal"
     }
+    events: List[SSAEvent]  #: List of :class:`SSAEvent` instances, ie. individual subtitles.
+    styles: Dict[str, SSAStyle]  #: Dict of :class:`SSAStyle` instances.
+    info: Dict[str, str]  #: Dict with script metadata, ie. ``[Script Info]``.
+    aegisub_project: Dict[str, str]  #: Dict with Aegisub project, ie. ``[Aegisub Project Garbage]``.
+    fonts_opaque: Dict[str, Any]  #: Dict with embedded fonts, ie. ``[Fonts]``.
+    graphics_opaque: Dict[str, Any]  #: Dict with embedded images, ie. ``[Graphics]``.
+    fps: Optional[float]  #: Framerate used when reading the file, if applicable.
+    format: Optional[str]  #: Format of source subtitle file, if applicable, eg. ``"srt"``.
 
     def __init__(self) -> None:
-        self.events: List[SSAEvent] = []  #: List of :class:`SSAEvent` instances, ie. individual subtitles.
-        self.styles: Dict[str, SSAStyle] = {"Default": SSAStyle.DEFAULT_STYLE.copy()}  #: Dict of :class:`SSAStyle` instances.
-        self.info: Dict[str, str] = self.DEFAULT_INFO.copy()  #: Dict with script metadata, ie. ``[Script Info]``.
-        self.aegisub_project: Dict[str, str] = {}  #: Dict with Aegisub project, ie. ``[Aegisub Project Garbage]``.
-        self.fonts_opaque: Dict[str, Any] = {}  #: Dict with embedded fonts, ie. ``[Fonts]``.
-        self.graphics_opaque: Dict[str, Any] = {}  #: Dict with embedded images, ie. ``[Graphics]``.
-        self.fps: Optional[float] = None  #: Framerate used when reading the file, if applicable.
-        self.format: Optional[str] = None  #: Format of source subtitle file, if applicable, eg. ``"srt"``.
+        self.events = []
+        self.styles = {"Default": SSAStyle.DEFAULT_STYLE.copy()}
+        self.info = self.DEFAULT_INFO.copy()
+        self.aegisub_project = {}
+        self.fonts_opaque = {}
+        self.graphics_opaque = {}
+        self.fps = None
+        self.format = None
 
     # ------------------------------------------------------------------------
     # I/O methods
