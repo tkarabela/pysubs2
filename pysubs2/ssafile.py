@@ -39,8 +39,8 @@ class SSAFile(MutableSequence[SSAEvent]):
     aegisub_project: dict[str, str]  #: Dict with Aegisub project, ie. ``[Aegisub Project Garbage]``.
     fonts_opaque: dict[str, Any]  #: Dict with embedded fonts, ie. ``[Fonts]``.
     graphics_opaque: dict[str, Any]  #: Dict with embedded images, ie. ``[Graphics]``.
-    fps: Optional[float]  #: Framerate used when reading the file, if applicable.
-    format: Optional[str]  #: Format of source subtitle file, if applicable, eg. ``"srt"``.
+    fps: float | None  #: Framerate used when reading the file, if applicable.
+    format: str | None  #: Format of source subtitle file, if applicable, eg. ``"srt"``.
 
     def __init__(self) -> None:
         self.events = []
@@ -57,8 +57,8 @@ class SSAFile(MutableSequence[SSAEvent]):
     # ------------------------------------------------------------------------
 
     @classmethod
-    def load(cls, path: str, encoding: str = "utf-8", format_: Optional[str] = None, fps: Optional[float] = None,
-             errors: Optional[str] = None, **kwargs: Any) -> "SSAFile":
+    def load(cls, path: str, encoding: str = "utf-8", format_: str | None = None, fps: float | None = None,
+             errors: str | None = None, **kwargs: Any) -> "SSAFile":
         """
         Load subtitle file from given path.
 
@@ -73,7 +73,7 @@ class SSAFile(MutableSequence[SSAEvent]):
             path (str): Path to subtitle file.
             encoding (str): Character encoding of input file.
                 Defaults to UTF-8, you may need to change this.
-            errors (Optional[str]): Error handling for character encoding
+            errors (str | None): Error handling for character encoding
                 of input file. Defaults to ``None``; use the value ``"surrogateescape"``
                 for pass-through of bytes not supported by selected encoding via
                 `Unicode surrogate pairs <https://en.wikipedia.org/wiki/Universal_Character_Set_characters#Surrogates>`_.
@@ -120,7 +120,7 @@ class SSAFile(MutableSequence[SSAEvent]):
             return cls.from_file(fp, format_, fps=fps, **kwargs)
 
     @classmethod
-    def from_string(cls, string: str, format_: Optional[str] = None, fps: Optional[float] = None,
+    def from_string(cls, string: str, format_: str | None = None, fps: float | None = None,
                     **kwargs: Any) -> "SSAFile":
         """
         Load subtitle file from string.
@@ -155,7 +155,7 @@ class SSAFile(MutableSequence[SSAEvent]):
         return cls.from_file(fp, format_, fps=fps, **kwargs)
 
     @classmethod
-    def from_file(cls, fp: TextIO, format_: Optional[str] = None, fps: Optional[float] = None,
+    def from_file(cls, fp: TextIO, format_: str | None = None, fps: float | None = None,
                   **kwargs: Any) -> "SSAFile":
         """
         Read subtitle file from file object.
@@ -199,8 +199,8 @@ class SSAFile(MutableSequence[SSAEvent]):
         impl.from_file(subs, fp, format_, fps=fps, **kwargs)
         return subs
 
-    def save(self, path: str, encoding: str = "utf-8", format_: Optional[str] = None, fps: Optional[float] = None,
-             errors: Optional[str] = None, **kwargs: Any) -> None:
+    def save(self, path: str, encoding: str = "utf-8", format_: str | None = None, fps: float | None = None,
+             errors: str | None = None, **kwargs: Any) -> None:
         """
         Save subtitle file to given path.
 
@@ -255,7 +255,7 @@ class SSAFile(MutableSequence[SSAEvent]):
         with open(path, "w", encoding=encoding, errors=errors) as fp:
             self.to_file(fp, format_, fps=fps, **kwargs)
 
-    def to_string(self, format_: str, fps: Optional[float] = None, **kwargs: Any) -> str:
+    def to_string(self, format_: str, fps: float | None = None, **kwargs: Any) -> str:
         """
         Get subtitle file as a string.
 
@@ -269,7 +269,7 @@ class SSAFile(MutableSequence[SSAEvent]):
         self.to_file(fp, format_, fps=fps, **kwargs)
         return fp.getvalue()
 
-    def to_file(self, fp: TextIO, format_: str, fps: Optional[float] = None, **kwargs: Any) -> None:
+    def to_file(self, fp: TextIO, format_: str, fps: float | None = None, **kwargs: Any) -> None:
         """
         Write subtitle file to file object.
 
@@ -292,7 +292,7 @@ class SSAFile(MutableSequence[SSAEvent]):
     # ------------------------------------------------------------------------
 
     def shift(self, h: IntOrFloat = 0, m: IntOrFloat = 0, s: IntOrFloat = 0, ms: IntOrFloat = 0,
-              frames: Optional[int] = None, fps: Optional[float] = None) -> None:
+              frames: int | None = None, fps: float | None = None) -> None:
         """
         Shift all subtitles by constant time amount.
 
