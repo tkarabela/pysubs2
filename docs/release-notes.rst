@@ -1,6 +1,16 @@
 Release Notes
 =============
 
+**1.8.0** --- released on 2024-12-24
+
+- Added reader and writer for TTML subtitle format
+- Added reader for SAMI subtitle format (Issue #80)
+- Added reader for transcriptions from OpenAI Whisper JAX (Issue #73)
+- Added ``py.typed`` file to allow MyPy to check types for code using this library, patch by eggplants (https://github.com/eggplants)
+- Minor improvements to `pysubs2.formats.substation.parse_tags()` - now supports the ``\fn<fontname>`` tag, can optionally skip empty fragments
+- Added support for Python 3.13, removed support for Python 3.8
+
+
 **1.7.3** --- released on 2024-07-27
 
 - Fixed problem with ``multiprocessing.Pool`` crashing due to ``FormatAutodetectionError`` (Issue #97)
