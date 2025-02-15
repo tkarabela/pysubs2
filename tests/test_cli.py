@@ -1,3 +1,4 @@
+import sys
 from typing import Any
 
 import pysubs2
@@ -49,7 +50,7 @@ def test_srt_to_microdvd() -> None:
 
 
 def test_srt_to_microdvd_subprocess_pipe() -> None:
-    cmd = ["python", "-m", "pysubs2", "--to", "microdvd", "--fps", "1000"]
+    cmd = [sys.executable, "-m", "pysubs2", "--to", "microdvd", "--fps", "1000"]
     output = subprocess.check_output(cmd, input=TEST_SRT_FILE, text=True)
     assert output.strip() == TEST_MICRODVD_FILE.strip()
 
@@ -410,7 +411,7 @@ def test_empty_notty_input_doesnt_print_help(capsys: Any, monkeypatch: Any) -> N
     with tempfile.TemporaryDirectory() as temp_dir:
         path = op.join(temp_dir, "test.srt")
         with open(path, "w+") as in_fp:
-            cmd = ["python", "-m", "pysubs2"]
+            cmd = [sys.executable, "-m", "pysubs2"]
             p = subprocess.run(cmd, stdin=in_fp, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
             assert p.returncode == 1
             assert not p.stdout.startswith("usage: pysubs2")
@@ -427,7 +428,7 @@ def test_win1250_passthrough_with_surrogateescape() -> None:
         with open(input_path, "wb") as fp:
             fp.write(input_bytes_win1250)
 
-        cmd = ["python", "-m", "pysubs2", "-o", output_dir, input_path]
+        cmd = [sys.executable, "-m", "pysubs2", "-o", output_dir, input_path]
         subprocess.check_call(cmd)
 
         with open(output_path, "rb") as fp:
