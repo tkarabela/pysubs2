@@ -1,0 +1,8 @@
+The files EBGaramond08-Italic.ttf and EBGaramond08-Regular.ttf are part of the EB Garamont
+typeface, © Georg Duffner, licensed under the SIL Open Font License (OFL), whicn is available at:
+
+    https://scripts.sil.org/cms/scripts/page.php?site_id=nrsi&id=OFL
+
+For EB Garamond homepage, please see:
+
+    http://www.georgduffner.at/ebgaramond/

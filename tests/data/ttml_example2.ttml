@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tt xmlns="http://www.w3.org/ns/ttml" xmlns:ttp="http://www.w3.org/ns/ttml#parameter" xmlns:tts="http://www.w3.org/ns/ttml#styling" xmlns:ttm="http://www.w3.org/ns/ttml#metadata" xmlns:xml="http://www.w3.org/XML/1998/namespace" ttp:timeBase="media" ttp:frameRate="24" xml:lang="en">
+<head>
+<metadata>
+<ttm:title>Sample TTML</ttm:title>
+</metadata>
+<styling>
+<style xml:id="s1" tts:textAlign="center" tts:fontFamily="Arial" tts:fontSize="100%"/>
+</styling>
+<layout>
+<region xml:id="bottom" tts:displayAlign="after" tts:extent="80% 40%" tts:origin="10% 50%"/>
+<region xml:id="top" tts:displayAlign="before" tts:extent="80% 40%" tts:origin="10% 10%"/>
+</layout>
+</head>
+<body>
+<div>
+<p xml:id="subtitle1" begin="00:00:01.375" end="00:00:05.750" style="s1" region="top" >TOP SAMPLE TEXT</p>
+<p xml:id="subtitle2" begin="00:00:05.916" end="00:00:10.216" style="s1" region="bottom" >BOTTOM SAMPLE TEXT</p>
+<p xml:id="subtitle3" begin="00:00:10.418" end="00:00:15.083" style="s1" region="top" >Top Hello</p>
+<p xml:id="subtitle4" begin="00:00:15.391" end="00:00:20.558" style="s1" region="bottom" >Bottom Hello</p>
+<p xml:id="subtitle5" begin="00:00:20.750" end="00:00:25.041" style="s1" region="bottom" >He had a great story.</p>
+<p xml:id="subtitle6" begin="00:00:25.875" end="00:00:30.166" style="s1" region="bottom" >- Did he tell you what it was about?<br/>- He did </p>
+<p xml:id="subtitle7" begin="00:00:30.416" end="00:00:35.558" style="s1" region="bottom" >In 1992, a shipping container<br/>fell overboard</p>
+<p xml:id="subtitle8" begin="00:00:35.858" end="00:00:40.091" style="s1" region="bottom" >on its way from China</p>
+<p xml:id="subtitle9" begin="00:00:40.341" end="00:00:45.133" style="s1" region="bottom" >to the United States,<br/>releasing 29,000 rubber ducks</p>
+<p xml:id="subtitle10" begin="00:00:45.325" end="00:00:50.041" style="s1" region="bottom" >into the Pacific Ocean.</p>
+</div>
+</body>
+</tt>

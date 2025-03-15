@@ -1,0 +1,127 @@
+WEBVTT A header with text.
+X-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:0
+
+
+NOTE @1This is a single line comment
+
+
+STYLE
+::cue {
+  background-image: linear-gradient(to bottom, dimgray, lightgray);
+  color: papayawhip;
+}
+
+
+NOTE @2comment blocks can be used between style blocks.
+
+
+STYLE
+::cue(.myclass) {
+  color: yellow;
+}
+
+
+STYLE
+::cue([lang="en-US"]) {
+color: yellow;
+}
+::cue(lang[lang="en-GB"]) {
+color: cyan;
+}
+::cue(v[voice="Salame"]) {
+color: lime;
+}
+
+
+STYLE ::cue(#id\ a) {
+  color: green;
+}
+
+
+STYLE
+::cue(b) {
+  color: peachpuff;
+}
+
+
+REGION
+id:fred
+width:40%
+lines:3
+regionanchor:0%,100%
+viewportanchor:10%,90%
+scroll:up
+
+
+REGION
+id:bill
+width:40%
+lines:3
+regionanchor:100%,100%
+viewportanchor:90%,90%
+scroll:up
+
+
+id a
+00:00:08.013 --> 00:00:16.000
+<lang en-GB>Cyan!</lang>
+
+
+id b
+00:00:16.000 --> 00:00:24.000
+I like <v Salame>lime.</v>
+
+
+1
+00:00:17.400 --> 00:00:18.000
+- Hello <b>world</b>.
+
+
+2 Title Crawl
+00:00:22.230 --> 00:00:24.606
+This is the first subtitle.
+<u.myclass>Yellow!</u>
+<ruby.myclass>Yellow! <rt.myclass>Yellow!</rt></ruby>
+
+
+3 Some Text
+00:00:30.739 --> 00:00:34.074 vertical:rt line:-1 align:end
+This is <b>the second.</b>
+
+
+NOTE
+@3 One comment that is spanning
+more than one line.
+
+
+NOTE @4You can also make a comment
+across more than one line this way.
+
+
+00:00:36.159 --> 00:00:37.743
+
+00:00:37.159 --> 00:00:38.743 position:45%,line-right align:center size:90%
+This is the third
+
+
+00:00:50.159 --> 00:00:51.743
+This cue has no identifier.
+
+
+00:01:05.000 --> 00:01:25.000 region:fred align:left
+<v Fred>Would you like to get a coffee?
+
+
+00:01:07.500 --> 00:01:27.500 region:bill align:right
+<v Bill>Sure! I’ve only had one today.
+
+
+00:02:00.100 --> 00:02:07.342
+{
+ "type": "WikipediaPage",
+ "url": "https://en.wikipedia.org/wiki/Samurai_Pizza_Cats"
+}
+
+
+NOTE @5TODO I might add a line to indicate work that still has to be done.
+

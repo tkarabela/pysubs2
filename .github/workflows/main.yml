@@ -1,0 +1,67 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "master" branch
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  run-tests:
+
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13", "3.14-dev"]
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements-dev.txt -r requirements-build.txt
+    - name: Typecheck with mypy
+      run: |
+        mypy --strict
+    - name: Check with ruff
+      run: |
+        ruff check
+    - name: Test with pytest
+      run: |
+        pytest
+    - name: Generate coverage report
+      run: |
+        pytest --cov=./ --cov-report=xml
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v4
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        env_vars: OS,PYTHON
+    - name: Build sdist and wheel
+      run: |
+        python -m build --outdir build-test
+        cd build-test
+        tar xf pysubs2-*.tar.gz
+    - name: Test with pytest (sdist)
+      run: |
+        cd build-test
+        cd $(find -maxdepth 1 -type d -name 'pysubs2-*')
+        PYTHONPATH=. pytest
+    - name: Test with pytest (wheel)
+      run: |
+        cd build-test
+        python -m pip install pysubs2-*.whl
+        cd $(find -maxdepth 1 -type d -name 'pysubs2-*')
+        pytest
