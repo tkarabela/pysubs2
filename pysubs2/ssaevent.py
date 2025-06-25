@@ -25,7 +25,7 @@ class SSAEvent:
         >>> ev = SSAEvent(start=make_time(s=1), end=make_time(s=2.5), text="Hello World!")
 
     """
-    OVERRIDE_SEQUENCE: ClassVar = re.compile(r"{[^}]*}")
+    OVERRIDE_SEQUENCE: ClassVar[re.Pattern[str]] = re.compile(r"{[^}]*}")
 
     start: int = 0  #: Subtitle start time (in milliseconds)
     end: int = 10000  #: Subtitle end time (in milliseconds)
