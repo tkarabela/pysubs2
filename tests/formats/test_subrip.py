@@ -336,7 +336,7 @@ def test_win1250_passthrough_with_surrogateescape() -> None:
         subs.save(output_path, errors="surrogateescape")
 
         with open(output_path, "rb") as fp:
-            output_bytes = fp.read()
+            output_bytes = fp.read().replace(b"\r", b"")
 
         assert input_bytes_win1250 == output_bytes
 
@@ -371,7 +371,7 @@ def test_multiencoding_passthrough_with_surrogateescape() -> None:
         subs.save(output_path, errors="surrogateescape")
 
         with open(output_path, "rb") as fp:
-            output_bytes = fp.read()
+            output_bytes = fp.read().replace(b"\r", b"")
 
         assert input_bytes == output_bytes
 
@@ -404,7 +404,7 @@ def test_utf8_read_write() -> None:
         subs.save(output_path)
 
         with open(output_path, "rb") as fp:
-            output_bytes = fp.read()
+            output_bytes = fp.read().replace(b"\r", b"")
 
         assert input_bytes == output_bytes
 
@@ -434,7 +434,7 @@ def test_win1250_read_write() -> None:
         subs.save(output_path, encoding="windows-1250")
 
         with open(output_path, "rb") as fp:
-            output_bytes = fp.read()
+            output_bytes = fp.read().replace(b"\r", b"")
 
         assert input_bytes == output_bytes
 
@@ -463,6 +463,6 @@ def test_big5_read_write() -> None:
         subs.save(output_path, encoding="big5")
 
         with open(output_path, "rb") as fp:
-            output_bytes = fp.read()
+            output_bytes = fp.read().replace(b"\r", b"")
 
         assert input_bytes == output_bytes

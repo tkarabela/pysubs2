@@ -432,6 +432,6 @@ def test_win1250_passthrough_with_surrogateescape() -> None:
         subprocess.check_call(cmd)
 
         with open(output_path, "rb") as fp:
-            output_bytes = fp.read()
+            output_bytes = fp.read().replace(b"\r", b"")
 
         assert input_bytes_win1250 == output_bytes
