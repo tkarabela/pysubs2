@@ -2,7 +2,7 @@ import io
 from itertools import chain
 import os.path
 import logging
-from typing import Optional, List, Dict, Iterable, Any, overload, Iterator, TextIO, Tuple, MutableSequence
+from typing import Optional, Iterable, Any, overload, Iterator, TextIO, MutableSequence
 
 from .common import IntOrFloat
 from .ssaevent import SSAEvent
@@ -28,21 +28,29 @@ class SSAFile(MutableSequence[SSAEvent]):
 
     """
 
-    DEFAULT_INFO: Dict[str, str] = {
+    DEFAULT_INFO: dict[str, str] = {
         "WrapStyle": "0",
         "ScaledBorderAndShadow": "yes",
         "Collisions": "Normal"
     }
+    events: list[SSAEvent]  #: List of :class:`SSAEvent` instances, ie. individual subtitles.
+    styles: dict[str, SSAStyle]  #: Dict of :class:`SSAStyle` instances.
+    info: dict[str, str]  #: Dict with script metadata, ie. ``[Script Info]``.
+    aegisub_project: dict[str, str]  #: Dict with Aegisub project, ie. ``[Aegisub Project Garbage]``.
+    fonts_opaque: dict[str, Any]  #: Dict with embedded fonts, ie. ``[Fonts]``.
+    graphics_opaque: dict[str, Any]  #: Dict with embedded images, ie. ``[Graphics]``.
+    fps: Optional[float]  #: Framerate used when reading the file, if applicable.
+    format: Optional[str]  #: Format of source subtitle file, if applicable, eg. ``"srt"``.
 
     def __init__(self) -> None:
-        self.events: List[SSAEvent] = []  #: List of :class:`SSAEvent` instances, ie. individual subtitles.
-        self.styles: Dict[str, SSAStyle] = {"Default": SSAStyle.DEFAULT_STYLE.copy()}  #: Dict of :class:`SSAStyle` instances.
-        self.info: Dict[str, str] = self.DEFAULT_INFO.copy()  #: Dict with script metadata, ie. ``[Script Info]``.
-        self.aegisub_project: Dict[str, str] = {}  #: Dict with Aegisub project, ie. ``[Aegisub Project Garbage]``.
-        self.fonts_opaque: Dict[str, Any] = {}  #: Dict with embedded fonts, ie. ``[Fonts]``.
-        self.graphics_opaque: Dict[str, Any] = {}  #: Dict with embedded images, ie. ``[Graphics]``.
-        self.fps: Optional[float] = None  #: Framerate used when reading the file, if applicable.
-        self.format: Optional[str] = None  #: Format of source subtitle file, if applicable, eg. ``"srt"``.
+        self.events = []
+        self.styles = {"Default": SSAStyle.DEFAULT_STYLE.copy()}
+        self.info = self.DEFAULT_INFO.copy()
+        self.aegisub_project = {}
+        self.fonts_opaque = {}
+        self.graphics_opaque = {}
+        self.fps = None
+        self.format = None
 
     # ------------------------------------------------------------------------
     # I/O methods
@@ -401,7 +409,7 @@ class SSAFile(MutableSequence[SSAEvent]):
         new_events = []
 
         duplicate_text_ids = set()
-        times_to_texts: Dict[Tuple[int, int], List[str]] = {}
+        times_to_texts: dict[tuple[int, int], list[str]] = {}
         for i, e in enumerate(self):
             tmp = times_to_texts.setdefault((e.start, e.end), [])
             if tmp.count(e.plaintext) > 0:
@@ -420,7 +428,7 @@ class SSAFile(MutableSequence[SSAEvent]):
 
         self.events = new_events
 
-    def get_text_events(self) -> List[SSAEvent]:
+    def get_text_events(self) -> list[SSAEvent]:
         """
         Return list of events excluding SSA comment lines and lines with SSA drawing tags
         """
@@ -531,7 +539,7 @@ class SSAFile(MutableSequence[SSAEvent]):
         pass
 
     @overload
-    def __getitem__(self, s: slice) -> List[SSAEvent]:
+    def __getitem__(self, s: slice) -> list[SSAEvent]:
         pass
 
     def __getitem__(self, item: Any) -> Any:
