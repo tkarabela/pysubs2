@@ -1,6 +1,6 @@
 import pytest
 from pathlib import Path
-from ...pysubs2 import SSAFile, SSAEvent, SSAStyle, Color, FormatAutodetectionError
+from pysubs2 import SSAFile, SSAEvent, SSAStyle, Color, FormatAutodetectionError
 import tempfile
 
 

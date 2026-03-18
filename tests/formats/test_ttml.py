@@ -4,8 +4,8 @@ pysubs2.formats.ttml tests
 """
 
 import pytest
-from ...pysubs2 import SSAFile, SSAEvent, SSAStyle
-from ...pysubs2 import load as LoadSubFile
+from pysubs2 import SSAFile, SSAEvent, SSAStyle
+from pysubs2 import load as LoadSubFile
 from pathlib import Path
 
 
