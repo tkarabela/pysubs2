@@ -4,13 +4,13 @@ pysubs2.formats.ttml tests
 """
 
 import pytest
-import pysubs2
-from pysubs2 import SSAFile, SSAEvent, SSAStyle
-import os.path as op
+from ...pysubs2 import SSAFile, SSAEvent, SSAStyle
+from ...pysubs2 import load as LoadSubFile
+from pathlib import Path
 
 
-def get_data_path(filename: str) -> str:
-    return op.join(op.dirname(__file__), "..", "data", filename)
+def get_data_path(filename: str) -> Path:
+    return Path(__file__).parent / "data" / filename
 
 
 @pytest.mark.parametrize(
@@ -21,10 +21,11 @@ def get_data_path(filename: str) -> str:
     ]
 )
 def test_example_parse(ttml_filename: str, ass_ref_filename: str) -> None:
-    subs = pysubs2.load(get_data_path(ttml_filename))
+    subs = LoadSubFile(get_data_path(ttml_filename))
     ass_text = subs.to_string("ass")
     print(ass_text)
-    with open(get_data_path(ass_ref_filename)) as fp:
+    ass_ref_path = get_data_path(ass_ref_filename)
+    with ass_ref_path.open("r") as fp:
         ref_text = fp.read()
     assert ass_text.strip() == ref_text.strip()
 

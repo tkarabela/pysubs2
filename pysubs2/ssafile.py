@@ -1,8 +1,8 @@
 import io
 from itertools import chain
-import os.path
+from pathlib import Path
 import logging
-from typing import Optional, List, Dict, Iterable, Any, overload, Iterator, TextIO, Tuple, MutableSequence
+from typing import Optional, List, Dict, Iterable, Any, overload, Iterator, TextIO, Tuple, MutableSequence, Set, Union
 
 from .common import IntOrFloat
 from .ssaevent import SSAEvent
@@ -49,7 +49,7 @@ class SSAFile(MutableSequence[SSAEvent]):
     # ------------------------------------------------------------------------
 
     @classmethod
-    def load(cls, path: str, encoding: str = "utf-8", format_: Optional[str] = None, fps: Optional[float] = None,
+    def load(cls, path: Union[Path, str], encoding: str = "utf-8", format_: Optional[str] = None, fps: Optional[float] = None,
              errors: Optional[str] = None, **kwargs: Any) -> "SSAFile":
         """
         Load subtitle file from given path.
@@ -62,7 +62,7 @@ class SSAFile(MutableSequence[SSAEvent]):
             (eg. :meth:`pysubs2.formats.subrip.SubripFormat.from_file()`)
 
         Arguments:
-            path (str): Path to subtitle file.
+            path (Union[Path, str]): Path to subtitle file.
             encoding (str): Character encoding of input file.
                 Defaults to UTF-8, you may need to change this.
             errors (Optional[str]): Error handling for character encoding
@@ -108,7 +108,8 @@ class SSAFile(MutableSequence[SSAEvent]):
             >>> subs3 = pysubs2.load("subrip-subtitles-with-fancy-tags.srt",keep_unknown_html_tags=True)
 
         """
-        with open(path, encoding=encoding, errors=errors) as fp:
+        file_path = Path(path)
+        with file_path.open(encoding=encoding, errors=errors) as fp:
             return cls.from_file(fp, format_, fps=fps, **kwargs)
 
     @classmethod
@@ -191,7 +192,7 @@ class SSAFile(MutableSequence[SSAEvent]):
         impl.from_file(subs, fp, format_, fps=fps, **kwargs)
         return subs
 
-    def save(self, path: str, encoding: str = "utf-8", format_: Optional[str] = None, fps: Optional[float] = None,
+    def save(self, path: Union[Path, str], encoding: str = "utf-8", format_: Optional[str] = None, fps: Optional[float] = None,
              errors: Optional[str] = None, **kwargs: Any) -> None:
         """
         Save subtitle file to given path.
@@ -204,7 +205,7 @@ class SSAFile(MutableSequence[SSAEvent]):
             (eg. :meth:`pysubs2.formats.subrip.SubripFormat.to_file()`)
 
         Arguments:
-            path (str): Path to subtitle file.
+            path (Path | str): Path to subtitle file.
             encoding (str): Character encoding of output file.
                 Defaults to UTF-8, which should be fine for most purposes.
             format_ (str): Optional, specifies desired subtitle format
@@ -240,11 +241,12 @@ class SSAFile(MutableSequence[SSAEvent]):
             pysubs2.exceptions.UnknownFileExtensionError
 
         """
+        outpath = Path(path)
         if format_ is None:
-            ext = os.path.splitext(path)[1].lower()
+            ext = outpath.suffix.lower()
             format_ = get_format_identifier(ext)
 
-        with open(path, "w", encoding=encoding, errors=errors) as fp:
+        with outpath.open("w", encoding=encoding, errors=errors) as fp:
             self.to_file(fp, format_, fps=fps, **kwargs)
 
     def to_string(self, format_: str, fps: Optional[float] = None, **kwargs: Any) -> str:
@@ -398,9 +400,9 @@ class SSAFile(MutableSequence[SSAEvent]):
         - Less than two characters of text
         - Duplicated text with identical time interval (only the first event is kept)
         """
-        new_events = []
+        new_events: List[SSAEvent] = []
 
-        duplicate_text_ids = set()
+        duplicate_text_ids: Set[int] = set()
         times_to_texts: Dict[Tuple[int, int], List[str]] = {}
         for i, e in enumerate(self):
             tmp = times_to_texts.setdefault((e.start, e.end), [])
