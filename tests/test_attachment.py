@@ -3,7 +3,7 @@ test of SubStation [Fonts] handling
 
 """
 
-from ..pysubs2 import SSAFile
+from pysubs2 import SSAFile
 from pathlib import Path
 
 current_dir = Path(__file__).parent

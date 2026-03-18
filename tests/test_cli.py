@@ -1,7 +1,7 @@
 import sys
 from typing import Any, List, Union
 
-from ..pysubs2.cli import Pysubs2CLI
+from pysubs2.cli import Pysubs2CLI
 import tempfile
 import subprocess
 from pathlib import Path
