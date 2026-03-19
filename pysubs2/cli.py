@@ -5,7 +5,7 @@ from pathlib import Path
 from io import TextIOWrapper
 import sys
 from textwrap import dedent
-from typing import List, Any, Union
+from typing import Any, Optional
 
 from .formats import get_file_extension, FORMAT_IDENTIFIERS
 from .time import make_time
@@ -36,10 +36,6 @@ def time(s: str) -> int:
     return make_time(**d)  # type: ignore  # Argument 1 has incomp. type "**Dict[Any, float]"; expected "Optional[int]"
 
 
-def change_ext(old_path: Path, ext: str) -> Path:
-    return old_path.with_suffix(ext)
-
-
 class Pysubs2CLI:
     def __init__(self) -> None:
         parser = self.parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -58,7 +54,7 @@ class Pysubs2CLI:
                                                          python -m pysubs2 --shift-back 0.3s --output-dir retimed *.srt
                                                          python -m pysubs2 --transform-framerate 25 23.976 *.srt"""))
 
-        parser.add_argument("files", nargs="*", metavar="FILE",
+        parser.add_argument("files", nargs="*", metavar="FILE", type=Path,
                             help="Input subtitle files. Can be in SubStation Alpha (*.ass, *.ssa), SubRip (*.srt), "
                                  "MicroDVD (*.sub) or other supported format. When no files are specified, "
                                  "pysubs2 will work as a pipe, reading from standard input and writing to standard output.")
@@ -89,7 +85,7 @@ class Pysubs2CLI:
                             help="This argument specifies framerate for MicroDVD files. By default, framerate "
                                  "is detected from the file. Use this when framerate specification is missing "
                                  "or to force different framerate.")
-        parser.add_argument("-o", "--output-dir", metavar="DIR",
+        parser.add_argument("-o", "--output-dir", metavar="DIR", type=Path,
                             help="Use this to save all files to given directory. By default, every file is saved to its parent directory, "
                                  "ie. unless it's being saved in different subtitle format (and thus with different file extension), "
                                  "it overwrites the original file.")
@@ -121,23 +117,21 @@ class Pysubs2CLI:
         extra_sub_options.add_argument("--sub-no-write-fps-declaration", action="store_true",
                                        help="(output) omit writing FPS as first zero-length subtitle")
 
-    def __call__(self, argv: List[str]) -> int:
+    def __call__(self, argv: list[str]) -> int:
         try:
             return self.main(argv)
         except KeyboardInterrupt:
             print("\nAborted by user.", file=sys.stderr)
             return 1
 
-    def main(self, argv: List[str]) -> int:
+    def main(self, argv: list[str]) -> int:
         args = self.parser.parse_args(argv)
         errors = 0
 
         if args.verbose:
             logging.basicConfig(level=logging.DEBUG)
         
-        output_dir: Union[Path, None] = None
-        if args.output_dir:
-            output_dir = Path(args.output_dir)
+        output_dir: Optional[Path] = args.output_dir
 
         if output_dir is not None and not output_dir.exists():
             output_dir.mkdir(parents=True)
@@ -158,9 +152,9 @@ class Pysubs2CLI:
         logging.debug("Extra arguments to SSAFile.from_file(): %r", extra_input_args)
         logging.debug("Extra arguments to SSAFile.to_file(): %r", extra_output_args)
 
-        if args.files:
-            for path in args.files:
-                inpath = Path(path)
+        input_paths: list[Path] = args.files
+        if input_paths:
+            for inpath in input_paths:
                 if not inpath.exists():
                     print(f"Skipping {inpath} (does not exist)")
                     errors += 1
@@ -173,14 +167,13 @@ class Pysubs2CLI:
 
                     self.process(subs, args)
 
-                    outpath: Path
                     if args.output_format is None:
                         outpath = inpath
                         output_format = subs.format
                         assert output_format is not None, "subs.format must not be None (it was read from file)"
                     else:
                         ext = get_file_extension(args.output_format)
-                        outpath = change_ext(inpath, ext)
+                        outpath = inpath.with_suffix(ext)
                         output_format = args.output_format
                         assert output_format is not None, "args.output_format must not be None (see if/else)"
 

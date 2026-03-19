@@ -1,6 +1,6 @@
 import re
 from enum import Enum
-from typing import Optional, TextIO, Any, Dict, List, Union
+from typing import Optional, TextIO, Any, Union
 import xml.etree.ElementTree as ET
 
 from .base import FormatBase
@@ -189,7 +189,7 @@ class TTMLFormat(FormatBase):
             print(output_xml, file=fp)
 
     @classmethod
-    def ssastyle_to_tts(cls, style: SSAStyle, base_style: Optional[SSAStyle] = None) -> Dict[str, str]:
+    def ssastyle_to_tts(cls, style: SSAStyle, base_style: Optional[SSAStyle] = None) -> dict[str, str]:
         """
         Convert `SSAStyle` (or its difference to base style) into dictionary of XML attributes
 
@@ -225,7 +225,7 @@ class TTMLFormat(FormatBase):
     def _append_text(cls, elem: ET.Element, text: str) -> None:
         text = text.replace("\\h", " ")
         chunks = re.split(r"\\[Nn]", text)
-        nodes: List[Union[ET.Element, str]] = []
+        nodes: list[Union[ET.Element, str]] = []
         for i, chunk in enumerate(chunks):
             if i > 0:
                 nodes.append(ET.Element(f"{TT_NS}br"))

@@ -1,5 +1,5 @@
 import sys
-from typing import Any, List, Union
+from typing import Any
 
 from pysubs2.cli import Pysubs2CLI
 import tempfile
@@ -442,7 +442,7 @@ def test_win1250_passthrough_with_surrogateescape() -> None:
         with input_path.open("wb") as fp:
             fp.write(input_bytes_win1250)
 
-        cmd: List[Union[str, Path]] = [sys.executable, "-m", "pysubs2", "-o", output_dir, input_path]
+        cmd: list[str] = [sys.executable, "-m", "pysubs2", "-o", str(output_dir), str(input_path)]
         subprocess.check_call(cmd)
 
         with outpath.open("rb") as fp:
