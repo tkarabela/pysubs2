@@ -19,15 +19,15 @@ If relevant, do not hesitate to add tests demonstrating your feature.
 Your branch should pass all tests with no errors or warnings:
 
 ```sh
-pip install -r requirements-dev.txt
-pytest
+uv sync --dev
+uv run pytest
 ```
 
 Your branch should also pass Ruff and strict MyPy checks with no errors:
 
 ```sh
-mypy --strict
-ruff check
+uv run mypy --strict
+uv run ruff check
 ```
 
-You can run all checks via `make test`.
+This will be checked by GitHub Actions once you make the pull request.
