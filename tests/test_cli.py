@@ -1,11 +1,10 @@
 import sys
 from typing import Any
+import subprocess
+from io import StringIO
 
 from pysubs2.cli import Pysubs2CLI
-import tempfile
-import subprocess
-from pathlib import Path
-from io import StringIO
+
 
 TEST_SRT_FILE = """\
 1
@@ -34,20 +33,18 @@ TEST_MICRODVD_FILE = """\
 """
 
 
-def test_srt_to_microdvd() -> None:
-    with tempfile.TemporaryDirectory() as dirpath:
-        temp_dir_path = Path(dirpath)
-        inpath = temp_dir_path / "test.srt"
-        with inpath.open("w", encoding="utf-8") as fp:
-            fp.write(TEST_SRT_FILE)
+def test_srt_to_microdvd(tmp_path: Any) -> None:
+    inpath = tmp_path / "test.srt"
+    with inpath.open("w", encoding="utf-8") as fp:
+        fp.write(TEST_SRT_FILE)
 
-        cli = Pysubs2CLI()
-        cli(["--to", "microdvd", "--fps", "1000", str(inpath)])
+    cli = Pysubs2CLI()
+    cli(["--to", "microdvd", "--fps", "1000", str(inpath)])
 
-        outpath = temp_dir_path / "test.sub"
-        with outpath.open("r", encoding="utf-8") as fp:
-            out = fp.read()
-            assert out == TEST_MICRODVD_FILE
+    outpath = tmp_path / "test.sub"
+    with outpath.open("r", encoding="utf-8") as fp:
+        out = fp.read()
+        assert out == TEST_MICRODVD_FILE
 
 
 def test_srt_to_microdvd_subprocess_pipe() -> None:
@@ -56,39 +53,35 @@ def test_srt_to_microdvd_subprocess_pipe() -> None:
     assert output.strip() == TEST_MICRODVD_FILE.strip()
 
 
-def test_srt_to_microdvd_multiple_files() -> None:
+def test_srt_to_microdvd_multiple_files(tmp_path: Any) -> None:
     N = 3
-    with tempfile.TemporaryDirectory() as temp_dir:
-        dirpath = Path(temp_dir)
-        inpaths = [dirpath / f"test-{i}.srt" for i in range(N)]
-        for inpath in inpaths:
-            with inpath.open("w", encoding="utf-8") as fp:
-                fp.write(TEST_SRT_FILE)
-
-        cli = Pysubs2CLI()
-        cli(["--to", "microdvd", "--fps", "1000"] + [str(p) for p in inpaths])
-
-        outpaths = [p.with_suffix(".sub") for p in inpaths]
-        for outpath in outpaths:
-            with outpath.open("r", encoding="utf-8") as fp:
-                out = fp.read()
-                assert out == TEST_MICRODVD_FILE
-
-
-def test_microdvd_to_srt() -> None:
-    with tempfile.TemporaryDirectory() as temp_dir:
-        dirpath = Path(temp_dir)
-        inpath = dirpath / "test.sub"
+    inpaths = [tmp_path / f"test-{i}.srt" for i in range(N)]
+    for inpath in inpaths:
         with inpath.open("w", encoding="utf-8") as fp:
-            fp.write(TEST_MICRODVD_FILE)
+            fp.write(TEST_SRT_FILE)
 
-        cli = Pysubs2CLI()
-        cli(["--to", "srt", str(inpath)])
+    cli = Pysubs2CLI()
+    cli(["--to", "microdvd", "--fps", "1000"] + [str(p) for p in inpaths])
 
-        outpath = dirpath / "test.srt"
+    outpaths = [p.with_suffix(".sub") for p in inpaths]
+    for outpath in outpaths:
         with outpath.open("r", encoding="utf-8") as fp:
             out = fp.read()
-            assert out == TEST_SRT_FILE
+            assert out == TEST_MICRODVD_FILE
+
+
+def test_microdvd_to_srt(tmp_path: Any) -> None:
+    inpath = tmp_path / "test.sub"
+    with inpath.open("w", encoding="utf-8") as fp:
+        fp.write(TEST_MICRODVD_FILE)
+
+    cli = Pysubs2CLI()
+    cli(["--to", "srt", str(inpath)])
+
+    outpath = tmp_path / "test.srt"
+    with outpath.open("r", encoding="utf-8") as fp:
+        out = fp.read()
+        assert out == TEST_SRT_FILE
 
 
 TEST_SRT_FILE_SHIFTED = """\
@@ -104,58 +97,50 @@ two.
 """
 
 
-def test_srt_shift() -> None:
-    with tempfile.TemporaryDirectory() as temp_dir:
-        dirpath = Path(temp_dir)
-        inpath = outpath = dirpath / "test.srt"
-        with inpath.open("w", encoding="utf-8") as fp:
-            fp.write(TEST_SRT_FILE)
+def test_srt_shift(tmp_path: Any) -> None:
+    inpath = outpath = tmp_path / "test.srt"
+    with inpath.open("w", encoding="utf-8") as fp:
+        fp.write(TEST_SRT_FILE)
 
-        cli = Pysubs2CLI()
-        cli(["--shift", "1h1.5s", str(inpath)])
+    cli = Pysubs2CLI()
+    cli(["--shift", "1h1.5s", str(inpath)])
 
-        with outpath.open("r", encoding="utf-8") as fp:
-            out = fp.read()
-            assert out == TEST_SRT_FILE_SHIFTED
+    with outpath.open("r", encoding="utf-8") as fp:
+        out = fp.read()
+        assert out == TEST_SRT_FILE_SHIFTED
 
 
-def test_srt_shift_back() -> None:
-    with tempfile.TemporaryDirectory() as temp_dir:
-        dirpath = Path(temp_dir)
-        inpath = outpath = dirpath / "test.srt"
-        with inpath.open("w", encoding="utf-8") as fp:
-            fp.write(TEST_SRT_FILE_SHIFTED)
+def test_srt_shift_back(tmp_path: Any) -> None:
+    inpath = outpath = tmp_path / "test.srt"
+    with inpath.open("w", encoding="utf-8") as fp:
+        fp.write(TEST_SRT_FILE_SHIFTED)
 
-        cli = Pysubs2CLI()
-        cli(["--shift-back", "1h1.5s", str(inpath)])
+    cli = Pysubs2CLI()
+    cli(["--shift-back", "1h1.5s", str(inpath)])
 
-        with outpath.open("r", encoding="utf-8") as fp:
-            out = fp.read()
-            assert out == TEST_SRT_FILE
+    with outpath.open("r", encoding="utf-8") as fp:
+        out = fp.read()
+        assert out == TEST_SRT_FILE
 
 
-def test_srt_shift_to_output_dir() -> None:
-    with tempfile.TemporaryDirectory() as indir:
-        indirpath = Path(indir)
-        inpath = indirpath / "test.srt"
-        with inpath.open("w", encoding="utf-8") as fp:
-            fp.write(TEST_SRT_FILE)
+def test_srt_shift_to_output_dir(tmp_path: Any) -> None:
+    inpath = tmp_path / "test.srt"
+    with inpath.open("w", encoding="utf-8") as fp:
+        fp.write(TEST_SRT_FILE)
 
-        with tempfile.TemporaryDirectory() as outdir:
-            outdirpath = Path(outdir)
-            outdirpath2 = outdirpath / "subdir-that-must-be-created"
-            outpath = outdirpath2 / "test.srt"
+    outdirpath = tmp_path / "subdir-that-must-be-created"
+    outpath = outdirpath / "test.srt"
 
-            cli = Pysubs2CLI()
-            cli(["--shift", "1h1.5s", "-o", str(outdirpath2), str(inpath)])
+    cli = Pysubs2CLI()
+    cli(["--shift", "1h1.5s", "-o", str(outdirpath), str(inpath)])
 
-            with outpath.open("r", encoding="utf-8") as fp:
-                out = fp.read()
-                assert out == TEST_SRT_FILE_SHIFTED
+    with outpath.open("r", encoding="utf-8") as fp:
+        out = fp.read()
+        assert out == TEST_SRT_FILE_SHIFTED
 
-            with inpath.open("r", encoding="utf-8") as fp:
-                out = fp.read()
-                assert out == TEST_SRT_FILE
+    with inpath.open("r", encoding="utf-8") as fp:
+        out = fp.read()
+        assert out == TEST_SRT_FILE
 
 
 TEST_SUBSTATION_WITH_KARAOKE = r"""
@@ -266,146 +251,136 @@ Some unsupported <blink>tag</blink>
 """
 
 
-def test_srt_clean() -> None:
+def test_srt_clean(tmp_path: Any) -> None:
     # see issue #37
-    with tempfile.TemporaryDirectory() as temp_dir:
-        dirpath = Path(temp_dir)
-        inpath = dirpath / "test.ass"
-        outpath = dirpath / "test.srt"
+    inpath = tmp_path / "test.ass"
+    outpath = tmp_path / "test.srt"
 
-        with inpath.open("w", encoding="utf-8") as fp:
-            fp.write(TEST_SUBSTATION_WITH_KARAOKE)
+    with inpath.open("w", encoding="utf-8") as fp:
+        fp.write(TEST_SUBSTATION_WITH_KARAOKE)
 
-        cli = Pysubs2CLI()
-        cli(["--to", "srt", "--clean", str(inpath)])
+    cli = Pysubs2CLI()
+    cli(["--to", "srt", "--clean", str(inpath)])
 
-        with outpath.open("r", encoding="utf-8") as fp:
-            out = fp.read()
-            assert out.strip() == TEST_SUBSTATION_WITH_KARAOKE_SRT_CLEAN_OUTPUT.strip()
+    with outpath.open("r", encoding="utf-8") as fp:
+        out = fp.read()
+        assert out.strip() == TEST_SUBSTATION_WITH_KARAOKE_SRT_CLEAN_OUTPUT.strip()
 
 
-def test_srt_clean_styling() -> None:
+def test_srt_clean_styling(tmp_path: Any) -> None:
     # see issue #39
-    with tempfile.TemporaryDirectory() as temp_dir:
-        dirpath = Path(temp_dir)
-        inpath = dirpath / "test.ass"
-        outpath = dirpath / "test.srt"
+    inpath = tmp_path / "test.ass"
+    outpath = tmp_path / "test.srt"
 
-        with inpath.open("w", encoding="utf-8") as fp:
-            fp.write(TEST_SUBSTATION_WITH_ITALICS)
+    with inpath.open("w", encoding="utf-8") as fp:
+        fp.write(TEST_SUBSTATION_WITH_ITALICS)
 
-        # test standard
-        cli = Pysubs2CLI()
-        cli(["--to", "srt", str(inpath)])
+    # test standard
+    cli = Pysubs2CLI()
+    cli(["--to", "srt", str(inpath)])
 
-        with outpath.open("r", encoding="utf-8") as fp:
-            out = fp.read()
-            assert out.strip() == TEST_SUBSTATION_WITH_ITALICS_SRT_OUTPUT.strip()
+    with outpath.open("r", encoding="utf-8") as fp:
+        out = fp.read()
+        assert out.strip() == TEST_SUBSTATION_WITH_ITALICS_SRT_OUTPUT.strip()
 
-        # test clean
-        cli = Pysubs2CLI()
-        cli(["--to", "srt", "--clean", str(inpath)])
+    # test clean
+    cli = Pysubs2CLI()
+    cli(["--to", "srt", "--clean", str(inpath)])
 
-        with outpath.open("r", encoding="utf-8") as fp:
-            out = fp.read()
-            assert out.strip() == TEST_SUBSTATION_WITH_ITALICS_SRT_CLEAN_OUTPUT.strip()
+    with outpath.open("r", encoding="utf-8") as fp:
+        out = fp.read()
+        assert out.strip() == TEST_SUBSTATION_WITH_ITALICS_SRT_CLEAN_OUTPUT.strip()
 
 
-def test_srt_keep_ssa_tags() -> None:
+def test_srt_keep_ssa_tagstmp_path(tmp_path: Any) -> None:
     # see issue #48
-    with tempfile.TemporaryDirectory() as temp_dir:
-        dirpath = Path(temp_dir)
-        path = dirpath / "test.srt"
+    path = tmp_path / "test.srt"
 
-        # test standard
-        with path.open("w", encoding="utf-8") as fp:
-            fp.write(TEST_SRT_KEEP_SSA_TAGS)
+    # test standard
+    with path.open("w", encoding="utf-8") as fp:
+        fp.write(TEST_SRT_KEEP_SSA_TAGS)
 
-        cli = Pysubs2CLI()
-        cli(["--to", "srt", str(path)])
+    cli = Pysubs2CLI()
+    cli(["--to", "srt", str(path)])
 
-        with path.open("r", encoding="utf-8") as fp:
-            out = fp.read()
-            assert out.strip() != TEST_SRT_KEEP_SSA_TAGS.strip()
+    with path.open("r", encoding="utf-8") as fp:
+        out = fp.read()
+        assert out.strip() != TEST_SRT_KEEP_SSA_TAGS.strip()
 
-        # test keep tags
-        with path.open("w", encoding="utf-8") as fp:
-            fp.write(TEST_SRT_KEEP_SSA_TAGS)
+    # test keep tags
+    with path.open("w", encoding="utf-8") as fp:
+        fp.write(TEST_SRT_KEEP_SSA_TAGS)
 
-        cli = Pysubs2CLI()
-        cli(["--to", "srt", "--srt-keep-ssa-tags", str(path)])
+    cli = Pysubs2CLI()
+    cli(["--to", "srt", "--srt-keep-ssa-tags", str(path)])
 
-        with path.open("r", encoding="utf-8") as fp:
-            out = fp.read()
-            assert out.strip() == TEST_SRT_KEEP_SSA_TAGS.strip()
+    with path.open("r", encoding="utf-8") as fp:
+        out = fp.read()
+        assert out.strip() == TEST_SRT_KEEP_SSA_TAGS.strip()
 
 
-def test_srt_keep_ssa_tags_mixed_with_html() -> None:
+def test_srt_keep_ssa_tags_mixed_with_html(tmp_path: Any) -> None:
     # see issue #48
-    with tempfile.TemporaryDirectory() as temp_dir:
-        dirpath = Path(temp_dir)
-        path = dirpath / "test.srt"
+    path = tmp_path / "test.srt"
 
-        # test standard - does not pass
-        with path.open("w", encoding="utf-8") as fp:
-            fp.write(TEST_SRT_KEEP_SSA_TAGS_MIXED_WITH_HTML)
+    # test standard - does not pass
+    with path.open("w", encoding="utf-8") as fp:
+        fp.write(TEST_SRT_KEEP_SSA_TAGS_MIXED_WITH_HTML)
 
-        cli = Pysubs2CLI()
-        cli(["--to", "srt", str(path)])
+    cli = Pysubs2CLI()
+    cli(["--to", "srt", str(path)])
 
-        with path.open("r", encoding="utf-8") as fp:
-            out = fp.read()
-            assert out.strip() != TEST_SRT_KEEP_SSA_TAGS_MIXED_WITH_HTML.strip()
+    with path.open("r", encoding="utf-8") as fp:
+        out = fp.read()
+        assert out.strip() != TEST_SRT_KEEP_SSA_TAGS_MIXED_WITH_HTML.strip()
 
-        # test juts keep SSA tags - does not pass
-        with path.open("w", encoding="utf-8") as fp:
-            fp.write(TEST_SRT_KEEP_SSA_TAGS_MIXED_WITH_HTML)
+    # test juts keep SSA tags - does not pass
+    with path.open("w", encoding="utf-8") as fp:
+        fp.write(TEST_SRT_KEEP_SSA_TAGS_MIXED_WITH_HTML)
 
-        cli = Pysubs2CLI()
-        cli(["--to", "srt", "--srt-keep-ssa-tags", str(path)])
+    cli = Pysubs2CLI()
+    cli(["--to", "srt", "--srt-keep-ssa-tags", str(path)])
 
-        with path.open("r", encoding="utf-8") as fp:
-            out = fp.read()
-            assert out.strip() != TEST_SRT_KEEP_SSA_TAGS_MIXED_WITH_HTML.strip()
+    with path.open("r", encoding="utf-8") as fp:
+        out = fp.read()
+        assert out.strip() != TEST_SRT_KEEP_SSA_TAGS_MIXED_WITH_HTML.strip()
 
-        # test keep SSA tags and keep HTML tags - should pass
-        with path.open("w", encoding="utf-8") as fp:
-            fp.write(TEST_SRT_KEEP_SSA_TAGS_MIXED_WITH_HTML)
+    # test keep SSA tags and keep HTML tags - should pass
+    with path.open("w", encoding="utf-8") as fp:
+        fp.write(TEST_SRT_KEEP_SSA_TAGS_MIXED_WITH_HTML)
 
-        cli = Pysubs2CLI()
-        cli(["--to", "srt", "--srt-keep-ssa-tags", "--srt-keep-html-tags", str(path)])
+    cli = Pysubs2CLI()
+    cli(["--to", "srt", "--srt-keep-ssa-tags", "--srt-keep-html-tags", str(path)])
 
-        with path.open("r", encoding="utf-8") as fp:
-            out = fp.read()
-            assert out.strip() == TEST_SRT_KEEP_SSA_TAGS_MIXED_WITH_HTML.strip()
+    with path.open("r", encoding="utf-8") as fp:
+        out = fp.read()
+        assert out.strip() == TEST_SRT_KEEP_SSA_TAGS_MIXED_WITH_HTML.strip()
 
 
-def test_srt_keep_unknown_html_tags() -> None:
-    with tempfile.TemporaryDirectory() as temp_dir:
-        dirpath = Path(temp_dir)
-        path = dirpath / "test.srt"
+def test_srt_keep_unknown_html_tags(tmp_path: Any) -> None:
+    path = tmp_path / "test.srt"
 
-        # test standard
-        with path.open("w", encoding="utf-8") as fp:
-            fp.write(TEST_SRT_KEEP_UNKNOWN_HTML_TAGS)
+    # test standard
+    with path.open("w", encoding="utf-8") as fp:
+        fp.write(TEST_SRT_KEEP_UNKNOWN_HTML_TAGS)
 
-        cli = Pysubs2CLI()
-        cli(["--to", "srt", str(path)])
+    cli = Pysubs2CLI()
+    cli(["--to", "srt", str(path)])
 
-        with path.open("r", encoding="utf-8") as fp:
-            out = fp.read()
-            assert out.strip() != TEST_SRT_KEEP_UNKNOWN_HTML_TAGS.strip()
+    with path.open("r", encoding="utf-8") as fp:
+        out = fp.read()
+        assert out.strip() != TEST_SRT_KEEP_UNKNOWN_HTML_TAGS.strip()
 
-        # test keep tags
-        with path.open("w", encoding="utf-8") as fp:
-            fp.write(TEST_SRT_KEEP_UNKNOWN_HTML_TAGS)
+    # test keep tags
+    with path.open("w", encoding="utf-8") as fp:
+        fp.write(TEST_SRT_KEEP_UNKNOWN_HTML_TAGS)
 
-        cli = Pysubs2CLI()
-        cli(["--to", "srt", "--srt-keep-unknown-html-tags", str(path)])
+    cli = Pysubs2CLI()
+    cli(["--to", "srt", "--srt-keep-unknown-html-tags", str(path)])
 
-        with path.open("r", encoding="utf-8") as fp:
-            out = fp.read()
-            assert out.strip() == TEST_SRT_KEEP_UNKNOWN_HTML_TAGS.strip()
+    with path.open("r", encoding="utf-8") as fp:
+        out = fp.read()
+        assert out.strip() == TEST_SRT_KEEP_UNKNOWN_HTML_TAGS.strip()
 
 
 def test_print_help_on_empty_tty_input(capsys: Any, monkeypatch: Any) -> None:
@@ -419,33 +394,29 @@ def test_print_help_on_empty_tty_input(capsys: Any, monkeypatch: Any) -> None:
     assert captured.out.startswith("usage: pysubs2")
 
 
-def test_empty_notty_input_doesnt_print_help(capsys: Any, monkeypatch: Any) -> None:
-    with tempfile.TemporaryDirectory() as temp_dir:
-        dirpath = Path(temp_dir)
-        path = dirpath / "test.srt"
-        with path.open("w+") as in_fp:
-            cmd = [sys.executable, "-m", "pysubs2"]
-            p = subprocess.run(cmd, stdin=in_fp, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-            assert p.returncode == 1
-            assert not p.stdout.startswith("usage: pysubs2")
-            assert "FormatAutodetectionError" in p.stderr
+def test_empty_notty_input_doesnt_print_help(tmp_path: Any, capsys: Any, monkeypatch: Any) -> None:
+    path = tmp_path / "test.srt"
+    with path.open("w+") as in_fp:
+        cmd = [sys.executable, "-m", "pysubs2"]
+        p = subprocess.run(cmd, stdin=in_fp, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        assert p.returncode == 1
+        assert not p.stdout.startswith("usage: pysubs2")
+        assert "FormatAutodetectionError" in p.stderr
 
 
-def test_win1250_passthrough_with_surrogateescape() -> None:
+def test_win1250_passthrough_with_surrogateescape(tmp_path: Any) -> None:
     input_bytes_win1250 = TEST_SRT_FILE_WIN1250.encode("windows-1250")
 
-    with tempfile.TemporaryDirectory() as temp_dir:
-        dirpath = Path(temp_dir)
-        input_path = dirpath / "input.srt"
-        output_dir = dirpath / "output"
-        outpath = output_dir / "input.srt"
-        with input_path.open("wb") as fp:
-            fp.write(input_bytes_win1250)
+    input_path = tmp_path / "input.srt"
+    output_dir = tmp_path / "output"
+    outpath = output_dir / "input.srt"
+    with input_path.open("wb") as fp:
+        fp.write(input_bytes_win1250)
 
-        cmd: list[str] = [sys.executable, "-m", "pysubs2", "-o", str(output_dir), str(input_path)]
-        subprocess.check_call(cmd)
+    cmd: list[str] = [sys.executable, "-m", "pysubs2", "-o", str(output_dir), str(input_path)]
+    subprocess.check_call(cmd)
 
-        with outpath.open("rb") as fp:
-            output_bytes = fp.read().replace(b"\r", b"")
+    with outpath.open("rb") as fp:
+        output_bytes = fp.read().replace(b"\r", b"")
 
-        assert input_bytes_win1250 == output_bytes
+    assert input_bytes_win1250 == output_bytes

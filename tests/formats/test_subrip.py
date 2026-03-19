@@ -2,10 +2,9 @@
 pysubs2.formats.subrip tests
 
 """
-from pathlib import Path
-import tempfile
 from textwrap import dedent
 import pytest
+from typing import Any
 
 from pysubs2 import SSAFile, SSAEvent, make_time
 from pysubs2.formats.subrip import MAX_REPRESENTABLE_TIME
@@ -305,7 +304,7 @@ def test_overflow_timestamp_write() -> None:
     assert subs[0].end == MAX_REPRESENTABLE_TIME
 
 
-def test_win1250_passthrough_with_surrogateescape() -> None:
+def test_win1250_passthrough_with_surrogateescape(tmp_path: Any) -> None:
     input_text = dedent("""\
     1
     00:00:00,000 --> 00:01:00,000
@@ -319,30 +318,28 @@ def test_win1250_passthrough_with_surrogateescape() -> None:
 
     input_bytes_win1250 = input_text.encode("windows-1250")
 
-    with tempfile.TemporaryDirectory() as temp_dir:
-        dirpath = Path(temp_dir)
-        input_path = dirpath / "input.srt"
-        output_path = dirpath / "output.srt"
-        with input_path.open("wb") as fp:
-            fp.write(input_bytes_win1250)
+    input_path = tmp_path / "input.srt"
+    output_path = tmp_path / "output.srt"
+    with input_path.open("wb") as fp:
+        fp.write(input_bytes_win1250)
 
-        with pytest.raises(UnicodeDecodeError):
-            SSAFile.load(input_path)
+    with pytest.raises(UnicodeDecodeError):
+        SSAFile.load(input_path)
 
-        subs = SSAFile.load(input_path, errors="surrogateescape")
+    subs = SSAFile.load(input_path, errors="surrogateescape")
 
-        assert subs[0].text == "The quick brown fox jumps over the lazy dog"
-        assert subs[1].text.startswith("P") and subs[1].text.endswith("dy")
+    assert subs[0].text == "The quick brown fox jumps over the lazy dog"
+    assert subs[1].text.startswith("P") and subs[1].text.endswith("dy")
 
-        subs.save(output_path, errors="surrogateescape")
+    subs.save(output_path, errors="surrogateescape")
 
-        with output_path.open("rb") as fp:
-            output_bytes = fp.read().replace(b"\r", b"")
+    with output_path.open("rb") as fp:
+        output_bytes = fp.read().replace(b"\r", b"")
 
-        assert input_bytes_win1250 == output_bytes
+    assert input_bytes_win1250 == output_bytes
 
 
-def test_multiencoding_passthrough_with_surrogateescape() -> None:
+def test_multiencoding_passthrough_with_surrogateescape(tmp_path: Any) -> None:
     input_text = dedent("""\
     1
     00:00:00,000 --> 00:01:00,000
@@ -355,30 +352,28 @@ def test_multiencoding_passthrough_with_surrogateescape() -> None:
     input_bytes += b"\n" + "道德經".encode("big5")
     input_bytes += b"\n\n"
 
-    with tempfile.TemporaryDirectory() as temp_dir:
-        dir_path = Path(temp_dir)
-        input_path = dir_path / "input.srt"
-        output_path = dir_path / "output.srt"
-        with input_path.open("wb") as fp:
-            fp.write(input_bytes)
+    input_path = tmp_path / "input.srt"
+    output_path = tmp_path / "output.srt"
+    with input_path.open("wb") as fp:
+        fp.write(input_bytes)
 
-        with pytest.raises(UnicodeDecodeError):
-            SSAFile.load(input_path)
+    with pytest.raises(UnicodeDecodeError):
+        SSAFile.load(input_path)
 
-        subs = SSAFile.load(input_path, errors="surrogateescape")
+    subs = SSAFile.load(input_path, errors="surrogateescape")
 
-        assert subs[0].text.startswith("The quick brown fox jumps over the lazy dog")
-        assert "Felix bzw. Jody" in subs[0].text
+    assert subs[0].text.startswith("The quick brown fox jumps over the lazy dog")
+    assert "Felix bzw. Jody" in subs[0].text
 
-        subs.save(output_path, errors="surrogateescape")
+    subs.save(output_path, errors="surrogateescape")
 
-        with output_path.open("rb") as fp:
-            output_bytes = fp.read().replace(b"\r", b"")
+    with output_path.open("rb") as fp:
+        output_bytes = fp.read().replace(b"\r", b"")
 
-        assert input_bytes == output_bytes
+    assert input_bytes == output_bytes
 
 
-def test_utf8_read_write() -> None:
+def test_utf8_read_write(tmp_path: Any) -> None:
     input_text = dedent("""\
     1
     00:00:00,000 --> 00:01:00,000
@@ -392,27 +387,25 @@ def test_utf8_read_write() -> None:
 
     input_bytes = input_text.encode("utf-8")
 
-    with tempfile.TemporaryDirectory() as temp_dir:
-        dir_path = Path(temp_dir)
-        input_path = dir_path / "input.srt"
-        output_path = dir_path / "output.srt"
-        with input_path.open("wb") as fp:
-            fp.write(input_bytes)
+    input_path = tmp_path / "input.srt"
+    output_path = tmp_path / "output.srt"
+    with input_path.open("wb") as fp:
+        fp.write(input_bytes)
 
-        # legacy behaviour
-        subs_legacy = SSAFile.load(input_path, errors=None)
-        subs = SSAFile.load(input_path)
-        assert subs.equals(subs_legacy)
+    # legacy behaviour
+    subs_legacy = SSAFile.load(input_path, errors=None)
+    subs = SSAFile.load(input_path)
+    assert subs.equals(subs_legacy)
 
-        subs.save(output_path)
+    subs.save(output_path)
 
-        with output_path.open("rb") as fp:
-            output_bytes = fp.read().replace(b"\r", b"")
+    with output_path.open("rb") as fp:
+        output_bytes = fp.read().replace(b"\r", b"")
 
-        assert input_bytes == output_bytes
+    assert input_bytes == output_bytes
 
 
-def test_win1250_read_write() -> None:
+def test_win1250_read_write(tmp_path: Any) -> None:
     input_text = dedent("""\
     1
     00:00:00,000 --> 00:01:00,000
@@ -423,27 +416,25 @@ def test_win1250_read_write() -> None:
 
     input_bytes = input_text.encode("windows-1250")
 
-    with tempfile.TemporaryDirectory() as temp_dir:
-        dir_path = Path(temp_dir)
-        input_path = dir_path / "input.srt"
-        output_path = dir_path / "output.srt"
-        with input_path.open("wb") as fp:
-            fp.write(input_bytes)
+    input_path = tmp_path / "input.srt"
+    output_path = tmp_path / "output.srt"
+    with input_path.open("wb") as fp:
+        fp.write(input_bytes)
 
-        # legacy behaviour
-        subs_legacy = SSAFile.load(input_path, encoding="windows-1250", errors=None)
-        subs = SSAFile.load(input_path, encoding="windows-1250")
-        assert subs.equals(subs_legacy)
+    # legacy behaviour
+    subs_legacy = SSAFile.load(input_path, encoding="windows-1250", errors=None)
+    subs = SSAFile.load(input_path, encoding="windows-1250")
+    assert subs.equals(subs_legacy)
 
-        subs.save(output_path, encoding="windows-1250")
+    subs.save(output_path, encoding="windows-1250")
 
-        with output_path.open("rb") as fp:
-            output_bytes = fp.read().replace(b"\r", b"")
+    with output_path.open("rb") as fp:
+        output_bytes = fp.read().replace(b"\r", b"")
 
-        assert input_bytes == output_bytes
+    assert input_bytes == output_bytes
 
 
-def test_big5_read_write() -> None:
+def test_big5_read_write(tmp_path: Any) -> None:
     input_text = dedent("""\
     1
     00:00:00,000 --> 00:01:00,000
@@ -453,21 +444,19 @@ def test_big5_read_write() -> None:
 
     input_bytes = input_text.encode("big5")
 
-    with tempfile.TemporaryDirectory() as temp_dir:
-        dir_path = Path(temp_dir)
-        input_path = dir_path / "input.srt"
-        output_path = dir_path / "output.srt"
-        with input_path.open("wb") as fp:
-            fp.write(input_bytes)
+    input_path = tmp_path / "input.srt"
+    output_path = tmp_path / "output.srt"
+    with input_path.open("wb") as fp:
+        fp.write(input_bytes)
 
-        # legacy behaviour
-        subs_legacy = SSAFile.load(input_path, encoding="big5", errors=None)
-        subs = SSAFile.load(input_path, encoding="big5")
-        assert subs.equals(subs_legacy)
+    # legacy behaviour
+    subs_legacy = SSAFile.load(input_path, encoding="big5", errors=None)
+    subs = SSAFile.load(input_path, encoding="big5")
+    assert subs.equals(subs_legacy)
 
-        subs.save(output_path, encoding="big5")
+    subs.save(output_path, encoding="big5")
 
-        with output_path.open("rb") as fp:
-            output_bytes = fp.read().replace(b"\r", b"")
+    with output_path.open("rb") as fp:
+        output_bytes = fp.read().replace(b"\r", b"")
 
-        assert input_bytes == output_bytes
+    assert input_bytes == output_bytes

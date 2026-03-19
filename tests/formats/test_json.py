@@ -1,7 +1,8 @@
 import pytest
-from pathlib import Path
-from pysubs2 import SSAFile, SSAEvent, SSAStyle, Color, FormatAutodetectionError
-import tempfile
+from typing import Any
+
+from pysubs2 import SSAFile, SSAEvent, SSAStyle, Color
+from pysubs2.exceptions import FormatAutodetectionError
 
 
 def test_write_read() -> None:
@@ -23,12 +24,10 @@ def test_write_read() -> None:
     assert subs3.equals(subs)
 
 
-def test_read_unsupported_json_issue_85() -> None:
-    with tempfile.TemporaryDirectory() as temp_dir:
-        dirpath = Path(temp_dir)
-        path = dirpath / "test.atpj"
-        with path.open("w") as fp:
-            print("""{"some data": [1,2,3]}""", file=fp)
+def test_read_unsupported_json_issue_85(tmp_path: Any) -> None:
+    path = tmp_path / "test.atpj"
+    with path.open("w") as fp:
+        print("""{"some data": [1,2,3]}""", file=fp)
 
-        with pytest.raises(FormatAutodetectionError):
-            SSAFile.load(path)
+    with pytest.raises(FormatAutodetectionError):
+        SSAFile.load(path)
