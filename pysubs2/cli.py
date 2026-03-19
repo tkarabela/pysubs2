@@ -180,7 +180,7 @@ class Pysubs2CLI:
                         assert output_format is not None, "subs.format must not be None (it was read from file)"
                     else:
                         ext = get_file_extension(args.output_format)
-                        outpath = change_ext(path, ext)
+                        outpath = change_ext(inpath, ext)
                         output_format = args.output_format
                         assert output_format is not None, "args.output_format must not be None (see if/else)"
 
