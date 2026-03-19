@@ -1,3 +1,0 @@
-sphinx==7.3.7
-sphinx-rtd-theme==2.0.0
-enum-tools[sphinx]==0.12.0
