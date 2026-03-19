@@ -61,7 +61,7 @@ SSA_ALIGNMENT: tuple[int, ...] = (1, 2, 3, 9, 10, 11, 5, 6, 7)
 
 
 #: Version of the pysubs2 library.
-VERSION = "1.8.0"
+VERSION = "1.8.1"
 
 
 IntOrFloat = Union[int, float]

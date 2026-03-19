@@ -22,7 +22,8 @@ the native format of `Aegisub <http://www.aegisub.org/>`_; it also supports  *Su
 
 The library works in Python 3.9 or newer, with no extra dependencies.
 It’s available under the MIT license (see bottom of the page).
-To get started, simply install it using `pip <https://pypi.python.org/pypi/pip>`_: ``pip install pysubs2``.
+To get started, simply install it using `uv <https://docs.astral.sh/uv/>`_: ``uv add pysubs2`` or
+`pip <https://pypi.python.org/pypi/pip>`_: ``pip install pysubs2``.
 You can also clone `the GitHub repository <https://github.com/tkarabela/pysubs2/>`_.
 
 If you find a bug or have something to say, please let me know `via GitHub <https://github.com/tkarabela/pysubs2/issues>`_ or
@@ -46,7 +47,7 @@ License
 
 .. code-block:: text
 
-    Copyright (c) 2014-2024 Tomas Karabela
+    Copyright (c) 2014-2026 Tomas Karabela
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal

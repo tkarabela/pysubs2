@@ -1,6 +1,16 @@
 Release Notes
 =============
 
+**1.8.1** --- released on 2026-03-19
+
+- TMP subtitle writer now supports newlines, patch by CK-Explorer (https://github.com/CK-Explorer)
+- TTML reader now accepts optional parameter ``ignore_par_time_offset=True`` for compatibility with Apple Music TTML format (Issue #108)
+- Refactoring to use ``pathlib.Path`` for paths, patch by Christopher Slycord (https://github.com/slycordinator)
+- Type hints improvements, patch by Rafael Alexander Muijsert (https://github.com/RafaelMuijsert)
+- CLI tests properly get path to Python binary, patch by Alexandre Detiste (https://github.com/a-detiste)
+- Added support for Python 3.14
+- Migrated from legacy Setuptools project to uv, hatch and pyproject.toml
+
 **1.8.0** --- released on 2024-12-24
 
 - Added reader and writer for TTML subtitle format
