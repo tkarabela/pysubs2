@@ -2,7 +2,7 @@
 pysubs2.formats.subrip tests
 
 """
-import os.path as op
+from pathlib import Path
 import tempfile
 from textwrap import dedent
 import pytest
@@ -320,9 +320,10 @@ def test_win1250_passthrough_with_surrogateescape() -> None:
     input_bytes_win1250 = input_text.encode("windows-1250")
 
     with tempfile.TemporaryDirectory() as temp_dir:
-        input_path = op.join(temp_dir, "input.srt")
-        output_path = op.join(temp_dir, "output.srt")
-        with open(input_path, "wb") as fp:
+        dirpath = Path(temp_dir)
+        input_path = dirpath / "input.srt"
+        output_path = dirpath / "output.srt"
+        with input_path.open("wb") as fp:
             fp.write(input_bytes_win1250)
 
         with pytest.raises(UnicodeDecodeError):
@@ -335,7 +336,7 @@ def test_win1250_passthrough_with_surrogateescape() -> None:
 
         subs.save(output_path, errors="surrogateescape")
 
-        with open(output_path, "rb") as fp:
+        with output_path.open("rb") as fp:
             output_bytes = fp.read().replace(b"\r", b"")
 
         assert input_bytes_win1250 == output_bytes
@@ -355,9 +356,10 @@ def test_multiencoding_passthrough_with_surrogateescape() -> None:
     input_bytes += b"\n\n"
 
     with tempfile.TemporaryDirectory() as temp_dir:
-        input_path = op.join(temp_dir, "input.srt")
-        output_path = op.join(temp_dir, "output.srt")
-        with open(input_path, "wb") as fp:
+        dir_path = Path(temp_dir)
+        input_path = dir_path / "input.srt"
+        output_path = dir_path / "output.srt"
+        with input_path.open("wb") as fp:
             fp.write(input_bytes)
 
         with pytest.raises(UnicodeDecodeError):
@@ -370,7 +372,7 @@ def test_multiencoding_passthrough_with_surrogateescape() -> None:
 
         subs.save(output_path, errors="surrogateescape")
 
-        with open(output_path, "rb") as fp:
+        with output_path.open("rb") as fp:
             output_bytes = fp.read().replace(b"\r", b"")
 
         assert input_bytes == output_bytes
@@ -391,9 +393,10 @@ def test_utf8_read_write() -> None:
     input_bytes = input_text.encode("utf-8")
 
     with tempfile.TemporaryDirectory() as temp_dir:
-        input_path = op.join(temp_dir, "input.srt")
-        output_path = op.join(temp_dir, "output.srt")
-        with open(input_path, "wb") as fp:
+        dir_path = Path(temp_dir)
+        input_path = dir_path / "input.srt"
+        output_path = dir_path / "output.srt"
+        with input_path.open("wb") as fp:
             fp.write(input_bytes)
 
         # legacy behaviour
@@ -403,7 +406,7 @@ def test_utf8_read_write() -> None:
 
         subs.save(output_path)
 
-        with open(output_path, "rb") as fp:
+        with output_path.open("rb") as fp:
             output_bytes = fp.read().replace(b"\r", b"")
 
         assert input_bytes == output_bytes
@@ -421,9 +424,10 @@ def test_win1250_read_write() -> None:
     input_bytes = input_text.encode("windows-1250")
 
     with tempfile.TemporaryDirectory() as temp_dir:
-        input_path = op.join(temp_dir, "input.srt")
-        output_path = op.join(temp_dir, "output.srt")
-        with open(input_path, "wb") as fp:
+        dir_path = Path(temp_dir)
+        input_path = dir_path / "input.srt"
+        output_path = dir_path / "output.srt"
+        with input_path.open("wb") as fp:
             fp.write(input_bytes)
 
         # legacy behaviour
@@ -433,7 +437,7 @@ def test_win1250_read_write() -> None:
 
         subs.save(output_path, encoding="windows-1250")
 
-        with open(output_path, "rb") as fp:
+        with output_path.open("rb") as fp:
             output_bytes = fp.read().replace(b"\r", b"")
 
         assert input_bytes == output_bytes
@@ -450,9 +454,10 @@ def test_big5_read_write() -> None:
     input_bytes = input_text.encode("big5")
 
     with tempfile.TemporaryDirectory() as temp_dir:
-        input_path = op.join(temp_dir, "input.srt")
-        output_path = op.join(temp_dir, "output.srt")
-        with open(input_path, "wb") as fp:
+        dir_path = Path(temp_dir)
+        input_path = dir_path / "input.srt"
+        output_path = dir_path / "output.srt"
+        with input_path.open("wb") as fp:
             fp.write(input_bytes)
 
         # legacy behaviour
@@ -462,7 +467,7 @@ def test_big5_read_write() -> None:
 
         subs.save(output_path, encoding="big5")
 
-        with open(output_path, "rb") as fp:
+        with output_path.open("rb") as fp:
             output_bytes = fp.read().replace(b"\r", b"")
 
         assert input_bytes == output_bytes
