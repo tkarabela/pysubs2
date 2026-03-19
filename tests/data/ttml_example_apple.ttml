@@ -1,0 +1,304 @@
+<tt xmlns="http://www.w3.org/ns/ttml" xmlns:itunes="http://music.apple.com/lyric-ttml-internal"
+    xmlns:ttm="http://www.w3.org/ns/ttml#metadata" itunes:timing="Word" xml:lang="en">
+    <head>
+        <metadata>
+            <ttm:agent type="person" xml:id="v1">
+                <ttm:name type="full">Radiohead</ttm:name>
+            </ttm:agent>
+            <iTunesMetadata xmlns="http://music.apple.com/lyric-ttml-internal" leadingSilence="0.940">
+                <translations/>
+                <songwriters>
+                    <songwriter>Albert Hammond</songwriter>
+                    <songwriter>Colin Greenwood</songwriter>
+                    <songwriter>EOB</songwriter>
+                    <songwriter>Jonny Greenwood</songwriter>
+                    <songwriter>Mike Hazlewood</songwriter>
+                    <songwriter>Philip Selway</songwriter>
+                    <songwriter>Thom Yorke</songwriter>
+                </songwriters>
+            </iTunesMetadata>
+        </metadata>
+    </head>
+    <body dur="3:58.640">
+        <div begin="19.764" end="59.300" itunes:songPart="Verse">
+            <p begin="19.764" end="21.900" itunes:key="L1" ttm:agent="v1">
+                <span begin="19.764" end="20.105">When</span>
+                <span begin="20.105" end="20.326">you were</span>
+                <span begin="20.326" end="20.607">here</span>
+                <span begin="20.607" end="20.841">be</span>
+                <span begin="20.841" end="21.900">fore</span>
+            </p>
+            <p begin="24.594" end="26.898" itunes:key="L2" ttm:agent="v1">
+                <span begin="24.594" end="25.028">Couldn't</span>
+                <span begin="25.028" end="25.356">look</span>
+                <span begin="25.356" end="25.585">you</span>
+                <span begin="25.585" end="25.695">in</span>
+                <span begin="25.695" end="25.805">the</span>
+                <span begin="25.805" end="26.898">eye</span>
+            </p>
+            <p begin="29.862" end="33.048" itunes:key="L3" ttm:agent="v1">
+                <span begin="29.862" end="30.249">You're</span>
+                <span begin="30.249" end="30.529">just</span>
+                <span begin="30.529" end="30.886">like</span>
+                <span begin="30.886" end="31.176">an</span>
+                <span begin="31.176" end="31.723">an</span>
+                <span begin="31.723" end="33.048">gel</span>
+            </p>
+            <p begin="34.919" end="37.499" itunes:key="L4" ttm:agent="v1">
+                <span begin="34.919" end="35.115">Your</span>
+                <span begin="35.115" end="35.587">skin</span>
+                <span begin="35.587" end="35.954">makes</span>
+                <span begin="35.954" end="36.246">me</span>
+                <span begin="36.246" end="37.499">cry</span>
+            </p>
+            <p begin="40.029" end="43.699" itunes:key="L5" ttm:agent="v1">
+                <span begin="40.029" end="40.398">You</span>
+                <span begin="40.398" end="40.701">float</span>
+                <span begin="40.701" end="41.076">like</span>
+                <span begin="41.076" end="41.292">a</span>
+                <span begin="41.292" end="42.068">fea</span>
+                <span begin="42.068" end="43.699">ther</span>
+            </p>
+            <p begin="45.146" end="48.010" itunes:key="L6" ttm:agent="v1">
+                <span begin="45.146" end="45.467">In</span>
+                <span begin="45.467" end="45.626">a</span>
+                <span begin="45.626" end="45.882">beauti</span>
+                <span begin="45.882" end="46.566">ful</span>
+                <span begin="46.567" end="48.010">world</span>
+            </p>
+            <p begin="50.570" end="53.685" itunes:key="L7" ttm:agent="v1">
+                <span begin="50.570" end="50.856">I</span>
+                <span begin="50.856" end="51.183">wish</span>
+                <span begin="51.183" end="51.479">I</span>
+                <span begin="51.479" end="51.676">was</span>
+                <span begin="51.676" end="52.353">spe</span>
+                <span begin="52.353" end="53.685">cial</span>
+            </p>
+            <p begin="55.567" end="59.300" itunes:key="L8" ttm:agent="v1">
+                <span begin="55.567" end="55.912">You're</span>
+                <span begin="55.912" end="56.346">so</span>
+                <span begin="56.346" end="56.897">fucking</span>
+                <span begin="56.897" end="57.506">spe</span>
+                <span begin="57.506" end="59.300">cial</span>
+            </p>
+        </div>
+        <div begin="1:00.998" end="1:19.943" itunes:songPart="Chorus">
+            <p begin="1:00.998" end="1:02.794" itunes:key="L9" ttm:agent="v1">
+                <span begin="1:00.998" end="1:01.293">But</span>
+                <span begin="1:01.293" end="1:01.609">I'm</span>
+                <span begin="1:01.609" end="1:01.982">a</span>
+                <span begin="1:01.982" end="1:02.794">creep</span>
+            </p>
+            <p begin="1:06.342" end="1:10.017" itunes:key="L10" ttm:agent="v1">
+                <span begin="1:06.342" end="1:06.828">I'm</span>
+                <span begin="1:06.828" end="1:07.397">a</span>
+                <span begin="1:07.397" end="1:08.116">weir</span>
+                <span begin="1:08.116" end="1:10.017">do</span>
+            </p>
+            <p begin="1:10.944" end="1:14.907" itunes:key="L11" ttm:agent="v1">
+                <span begin="1:10.944" end="1:11.377">What</span>
+                <span begin="1:11.377" end="1:11.584">the</span>
+                <span begin="1:11.584" end="1:11.949">hell</span>
+                <span begin="1:11.949" end="1:12.084">am</span>
+                <span begin="1:12.084" end="1:12.368">I</span>
+                <span begin="1:12.368" end="1:12.835">doing</span>
+                <span begin="1:12.835" end="1:14.907">here?</span>
+            </p>
+            <p begin="1:16.807" end="1:19.943" itunes:key="L12" ttm:agent="v1">
+                <span begin="1:16.807" end="1:17.304">I</span>
+                <span begin="1:17.304" end="1:17.607">don't</span>
+                <span begin="1:17.607" end="1:17.903">be</span>
+                <span begin="1:17.903" end="1:18.551">long</span>
+                <span begin="1:18.551" end="1:19.943">here</span>
+            </p>
+        </div>
+        <div begin="1:21.844" end="2:02.050" itunes:songPart="Verse">
+            <p begin="1:21.844" end="1:24.346" itunes:key="L13" ttm:agent="v1">
+                <span begin="1:21.844" end="1:22.160">I</span>
+                <span begin="1:22.160" end="1:22.497">don't</span>
+                <span begin="1:22.497" end="1:22.728">care</span>
+                <span begin="1:22.728" end="1:22.909">if</span>
+                <span begin="1:22.909" end="1:23.186">it</span>
+                <span begin="1:23.186" end="1:24.346">hurts</span>
+            </p>
+            <p begin="1:27.092" end="1:29.343" itunes:key="L14" ttm:agent="v1">
+                <span begin="1:27.092" end="1:27.332">I</span>
+                <span begin="1:27.332" end="1:27.663">wanna</span>
+                <span begin="1:27.663" end="1:27.958">have</span>
+                <span begin="1:27.958" end="1:28.245">con</span>
+                <span begin="1:28.245" end="1:29.343">trol</span>
+            </p>
+            <p begin="1:32.367" end="1:36.276" itunes:key="L15" ttm:agent="v1">
+                <span begin="1:32.367" end="1:32.663">I</span>
+                <span begin="1:32.663" end="1:32.798">want</span>
+                <span begin="1:32.798" end="1:32.968">a</span>
+                <span begin="1:32.968" end="1:33.553">perfect</span>
+                <span begin="1:33.553" end="1:34.255">bo</span>
+                <span begin="1:34.255" end="1:36.276">dy</span>
+            </p>
+            <p begin="1:37.594" end="1:41.429" itunes:key="L16" ttm:agent="v1">
+                <span begin="1:37.594" end="1:37.808">I</span>
+                <span begin="1:37.808" end="1:38.017">want</span>
+                <span begin="1:38.017" end="1:38.177">a</span>
+                <span begin="1:38.177" end="1:38.677">perfect</span>
+                <span begin="1:38.677" end="1:41.429">soul</span>
+            </p>
+            <p begin="1:42.798" end="1:46.558" itunes:key="L17" ttm:agent="v1">
+                <span begin="1:42.798" end="1:43.096">I</span>
+                <span begin="1:43.096" end="1:43.462">want</span>
+                <span begin="1:43.462" end="1:43.778">you</span>
+                <span begin="1:43.778" end="1:44.094">to</span>
+                <span begin="1:44.094" end="1:44.722">no</span>
+                <span begin="1:44.722" end="1:46.558">tice</span>
+            </p>
+            <p begin="1:48.074" end="1:51.147" itunes:key="L18" ttm:agent="v1">
+                <span begin="1:48.074" end="1:48.401">When</span>
+                <span begin="1:48.401" end="1:48.728">I'm</span>
+                <span begin="1:48.728" end="1:49.109">not</span>
+                <span begin="1:49.109" end="1:49.332">a</span>
+                <span begin="1:49.332" end="1:51.147">round</span>
+            </p>
+            <p begin="1:53.218" end="1:56.794" itunes:key="L19" ttm:agent="v1">
+                <span begin="1:53.218" end="1:53.559">You're</span>
+                <span begin="1:53.559" end="1:53.889">so</span>
+                <span begin="1:53.889" end="1:54.442">fucking</span>
+                <span begin="1:54.442" end="1:55.173">spe</span>
+                <span begin="1:55.173" end="1:56.794">cial</span>
+            </p>
+            <p begin="1:58.415" end="2:02.050" itunes:key="L20" ttm:agent="v1">
+                <span begin="1:58.415" end="1:58.845">I</span>
+                <span begin="1:58.845" end="1:59.218">wish</span>
+                <span begin="1:59.218" end="1:59.546">I</span>
+                <span begin="1:59.546" end="1:59.785">was</span>
+                <span begin="1:59.785" end="2:00.429">spe</span>
+                <span begin="2:00.429" end="2:02.050">cial</span>
+            </p>
+        </div>
+        <div begin="2:03.766" end="2:26.121" itunes:songPart="Chorus">
+            <p begin="2:03.766" end="2:05.642" itunes:key="L21" ttm:agent="v1">
+                <span begin="2:03.766" end="2:04.078">But</span>
+                <span begin="2:04.078" end="2:04.395">I'm</span>
+                <span begin="2:04.395" end="2:04.879">a</span>
+                <span begin="2:04.879" end="2:05.642">creep</span>
+            </p>
+            <p begin="2:09.212" end="2:13.299" itunes:key="L22" ttm:agent="v1">
+                <span begin="2:09.212" end="2:09.701">I'm</span>
+                <span begin="2:09.701" end="2:10.352">a</span>
+                <span begin="2:10.352" end="2:11.002">weir</span>
+                <span begin="2:11.002" end="2:13.299">do</span>
+            </p>
+            <p begin="2:14.040" end="2:17.995" itunes:key="L23" ttm:agent="v1">
+                <span begin="2:14.040" end="2:14.397">What</span>
+                <span begin="2:14.397" end="2:14.615">the</span>
+                <span begin="2:14.615" end="2:14.921">hell</span>
+                <span begin="2:14.921" end="2:15.105">am</span>
+                <span begin="2:15.105" end="2:15.315">I</span>
+                <span begin="2:15.315" end="2:15.819">doing</span>
+                <span begin="2:15.819" end="2:17.995">here?</span>
+            </p>
+            <p begin="2:19.821" end="2:22.693" itunes:key="L24" ttm:agent="v1">
+                <span begin="2:19.821" end="2:20.278">I</span>
+                <span begin="2:20.278" end="2:20.612">don't</span>
+                <span begin="2:20.612" end="2:20.938">be</span>
+                <span begin="2:20.938" end="2:21.550">long</span>
+                <span begin="2:21.550" end="2:22.693">here</span>
+            </p>
+            <p begin="2:23.440" end="2:26.121" itunes:key="L25" ttm:agent="v1">
+                <span begin="2:23.440" end="2:24.581">Oh,</span>
+                <span begin="2:24.791" end="2:26.121">oh</span>
+            </p>
+        </div>
+        <div begin="2:26.121" end="3:03.294" itunes:songPart="Bridge">
+            <p begin="2:26.121" end="2:35.593" itunes:key="L26" ttm:agent="v1">
+                <span begin="2:26.121" end="2:28.719">She's</span>
+                <span begin="2:28.901" end="2:29.740">run</span>
+                <span begin="2:29.740" end="2:30.013">ning</span>
+                <span begin="2:30.013" end="2:30.843">out</span>
+                <span begin="2:31.005" end="2:31.339">the</span>
+                <span begin="2:31.339" end="2:35.593">door</span>
+            </p>
+            <p begin="2:36.523" end="2:41.566" itunes:key="L27" ttm:agent="v1">
+                <span begin="2:36.523" end="2:39.039">She's</span>
+                <span begin="2:39.424" end="2:40.122">run</span>
+                <span begin="2:40.122" end="2:40.476">ning</span>
+                <span begin="2:40.476" end="2:41.566">out</span>
+            </p>
+            <p begin="2:41.566" end="2:52.691" itunes:key="L28" ttm:agent="v1">
+                <span begin="2:41.566" end="2:42.009">She</span>
+                <span begin="2:42.009" end="2:42.992">run,</span>
+                <span begin="2:43.193" end="2:44.320">run,</span>
+                <span begin="2:44.476" end="2:45.536">run,</span>
+                <span begin="2:45.714" end="2:52.691">run</span>
+            </p>
+            <p begin="2:56.964" end="3:03.294" itunes:key="L29" ttm:agent="v1">
+                <span begin="2:56.964" end="3:03.294">Run</span>
+            </p>
+        </div>
+        <div begin="3:06.122" end="3:24.647" itunes:songPart="Verse">
+            <p begin="3:06.122" end="3:08.598" itunes:key="L30" ttm:agent="v1">
+                <span begin="3:06.122" end="3:06.620">Whatever</span>
+                <span begin="3:06.620" end="3:07.003">makes</span>
+                <span begin="3:07.003" end="3:07.270">you</span>
+                <span begin="3:07.270" end="3:07.934">ha</span>
+                <span begin="3:07.934" end="3:08.598">ppy</span>
+            </p>
+            <p begin="3:11.322" end="3:13.450" itunes:key="L31" ttm:agent="v1">
+                <span begin="3:11.322" end="3:11.902">Whatever</span>
+                <span begin="3:11.902" end="3:12.537">you</span>
+                <span begin="3:12.537" end="3:13.450">want</span>
+            </p>
+            <p begin="3:16.268" end="3:19.249" itunes:key="L32" ttm:agent="v1">
+                <span begin="3:16.268" end="3:16.542">You're</span>
+                <span begin="3:16.542" end="3:17.006">so</span>
+                <span begin="3:17.006" end="3:17.613">fucking</span>
+                <span begin="3:17.613" end="3:18.245">spe</span>
+                <span begin="3:18.245" end="3:19.249">cial</span>
+            </p>
+            <p begin="3:21.347" end="3:24.647" itunes:key="L33" ttm:agent="v1">
+                <span begin="3:21.347" end="3:21.770">I</span>
+                <span begin="3:21.770" end="3:22.127">wish</span>
+                <span begin="3:22.127" end="3:22.460">I</span>
+                <span begin="3:22.460" end="3:22.646">was</span>
+                <span begin="3:22.646" end="3:23.308">spe</span>
+                <span begin="3:23.308" end="3:24.647">cial</span>
+            </p>
+        </div>
+        <div begin="3:26.660" end="3:50.693" itunes:songPart="Outro">
+            <p begin="3:26.660" end="3:28.696" itunes:key="L34" ttm:agent="v1">
+                <span begin="3:26.660" end="3:26.981">But</span>
+                <span begin="3:26.981" end="3:27.297">I'm</span>
+                <span begin="3:27.297" end="3:27.788">a</span>
+                <span begin="3:27.788" end="3:28.696">creep</span>
+            </p>
+            <p begin="3:32.047" end="3:35.556" itunes:key="L35" ttm:agent="v1">
+                <span begin="3:32.047" end="3:32.502">I'm</span>
+                <span begin="3:32.502" end="3:33.073">a</span>
+                <span begin="3:33.073" end="3:33.754">weir</span>
+                <span begin="3:33.754" end="3:35.556">do</span>
+            </p>
+            <p begin="3:36.891" end="3:40.293" itunes:key="L36" ttm:agent="v1">
+                <span begin="3:36.891" end="3:37.180">What</span>
+                <span begin="3:37.180" end="3:37.403">the</span>
+                <span begin="3:37.403" end="3:37.630">hell</span>
+                <span begin="3:37.630" end="3:37.795">am</span>
+                <span begin="3:37.795" end="3:38.048">I</span>
+                <span begin="3:38.048" end="3:38.512">doing</span>
+                <span begin="3:38.512" end="3:40.293">here?</span>
+            </p>
+            <p begin="3:42.521" end="3:45.428" itunes:key="L37" ttm:agent="v1">
+                <span begin="3:42.521" end="3:42.999">I</span>
+                <span begin="3:42.999" end="3:43.315">don't</span>
+                <span begin="3:43.315" end="3:43.568">be</span>
+                <span begin="3:43.568" end="3:44.262">long</span>
+                <span begin="3:44.262" end="3:45.428">here</span>
+            </p>
+            <p begin="3:47.741" end="3:50.693" itunes:key="L38" ttm:agent="v1">
+                <span begin="3:47.741" end="3:48.240">I</span>
+                <span begin="3:48.240" end="3:48.609">don't</span>
+                <span begin="3:48.609" end="3:48.859">be</span>
+                <span begin="3:48.859" end="3:49.695">long</span>
+                <span begin="3:49.695" end="3:50.693">here</span>
+            </p>
+        </div>
+    </body>
+</tt>
