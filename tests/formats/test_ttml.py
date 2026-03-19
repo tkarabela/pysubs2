@@ -8,9 +8,8 @@ from pysubs2 import SSAFile, SSAEvent, SSAStyle
 from pysubs2 import load as LoadSubFile
 from pathlib import Path
 
-
 def get_data_path(filename: str) -> Path:
-    return Path(__file__).parent / "data" / filename
+    return Path(__file__).parent.parent / "data" / filename
 
 
 @pytest.mark.parametrize(
