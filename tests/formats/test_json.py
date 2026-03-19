@@ -1,5 +1,5 @@
 import pytest
-import os.path as op
+from pathlib import Path
 from pysubs2 import SSAFile, SSAEvent, SSAStyle, Color, FormatAutodetectionError
 import tempfile
 
@@ -25,8 +25,9 @@ def test_write_read() -> None:
 
 def test_read_unsupported_json_issue_85() -> None:
     with tempfile.TemporaryDirectory() as temp_dir:
-        path = op.join(temp_dir, "test.atpj")
-        with open(path, "w") as fp:
+        dirpath = Path(temp_dir)
+        path = dirpath / "test.atpj"
+        with path.open("w") as fp:
             print("""{"some data": [1,2,3]}""", file=fp)
 
         with pytest.raises(FormatAutodetectionError):

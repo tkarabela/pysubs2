@@ -29,13 +29,20 @@ def test_simple_write() -> None:
     e3.text = "Invisible subtitle."
     e3.is_comment = True
 
+    e4 = SSAEvent()
+    e4.start = 120000
+    e4.end = 180000
+    e4.text = "ten--chars-\nten-chars"
+
     subs.append(e1)
     subs.append(e2)
     subs.append(e3)
+    subs.append(e4)
 
     ref = dedent("""\
     00:00:00:ten--chars
     00:01:00:ten--chars-ten-chars
+    00:02:00:ten--chars-|ten-chars
     """)
 
     text = subs.to_string("tmp")
@@ -46,11 +53,13 @@ def test_simple_read() -> None:
     text = dedent("""\
     00:00:00:ten--chars
     00:01:00:ten--chars-ten-chars
+    00:02:00:ten--chars|ten-chars
     """)
     #calculate endtime from starttime + 500 miliseconds + 67 miliseconds per each character (15 chars per second)
     ref = SSAFile()
     ref.append(SSAEvent(start=0, end=make_time(ms=1840), text="ten--chars"))
     ref.append(SSAEvent(start=make_time(m=1), end=make_time(ms=62510), text="ten--chars-ten-chars"))
+    ref.append(SSAEvent(start=make_time(m=2), end=make_time(ms=122510), text="ten--chars\\Nten-chars"))
 
     subs = SSAFile.from_string(text)
     assert subs.equals(ref)

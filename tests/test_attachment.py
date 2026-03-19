@@ -4,14 +4,15 @@ test of SubStation [Fonts] handling
 """
 
 from pysubs2 import SSAFile
-import os.path as op
+from pathlib import Path
 
+current_dir = Path(__file__).parent
 
-FONT_SUBS_AEGISUB_PATH = op.join(op.dirname(__file__), "data/subtitle_with_attached_fonts_aegisub.ass")
-FONT_SUBS_PYSUBS_PATH = op.join(op.dirname(__file__), "data/subtitle_with_attached_fonts_pysubs2_ref.ass")
-FONT_SUBS_NO_EVENTS_PATH = op.join(op.dirname(__file__), "data/subtitle_with_attached_fonts_no_events.ass")
-IMAGE_SUBS_AEGISUB_PATH = op.join(op.dirname(__file__), "data/subtitle_with_attached_images_aegisub.ass")
-IMAGE_SUBS_PYSUBS_PATH = op.join(op.dirname(__file__), "data/subtitle_with_attached_images_pysubs2_ref.ass")
+FONT_SUBS_AEGISUB_PATH = current_dir / "data/subtitle_with_attached_fonts_aegisub.ass"
+FONT_SUBS_PYSUBS_PATH = current_dir / "data/subtitle_with_attached_fonts_pysubs2_ref.ass"
+FONT_SUBS_NO_EVENTS_PATH = current_dir / "data/subtitle_with_attached_fonts_no_events.ass"
+IMAGE_SUBS_AEGISUB_PATH = current_dir / "data/subtitle_with_attached_images_aegisub.ass"
+IMAGE_SUBS_PYSUBS_PATH = current_dir / "data/subtitle_with_attached_images_pysubs2_ref.ass"
 
 def test_font_passthrough_from_aegisub() -> None:
     subs_aegisub = SSAFile.load(FONT_SUBS_AEGISUB_PATH)
@@ -56,8 +57,8 @@ def test_image_passthrough_from_aegisub() -> None:
 
 # the following tests would be useful if we supported fonts in a non-opaque way
 
-# GARAMOND_REGULAR_PATH = op.join(op.dirname(__file__), "data/EBGaramond08-Regular.ttf")
-# GARAMOND_ITALIC_PATH = op.join(op.dirname(__file__), "data/EBGaramond08-Italic.ttf")
+# GARAMOND_REGULAR_PATH = current_dir / "data" / "EBGaramond08-Regular.ttf"
+# GARAMOND_ITALIC_PATH = current_dir / "data" / "EBGaramond08-Italic.ttf"
 #
 #
 # def test_synthetic_empty_font():
@@ -108,14 +109,14 @@ def test_image_passthrough_from_aegisub() -> None:
 #
 #
 # def test_real_multiple_fonts():
-#     with open(GARAMOND_REGULAR_PATH, "rb") as fp:
+#     with GARAMOND_REGULAR_PATH.open("rb") as fp:
 #         garamond_regular_data = fp.read()
-#     with open(GARAMOND_ITALIC_PATH, "rb") as fp:
+#     with GARAMOND_ITALIC_PATH.open("rb") as fp:
 #         garamond_italic_data = fp.read()
 #
 #     fonts = {
-#         op.basename(GARAMOND_REGULAR_PATH): garamond_regular_data,
-#         op.basename(GARAMOND_ITALIC_PATH): garamond_italic_data
+#         GARAMOND_REGULAR_PATH.name: garamond_regular_data,
+#         GARAMOND_ITALIC_PATH.name: garamond_italic_data
 #     }
 #
 #     subs = SSAFile()

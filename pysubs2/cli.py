@@ -1,12 +1,11 @@
 import argparse
 import codecs
-import os
 import re
-import os.path as op
+from pathlib import Path
 from io import TextIOWrapper
 import sys
 from textwrap import dedent
-from typing import List
+from typing import List, Any, Union
 
 from .formats import get_file_extension, FORMAT_IDENTIFIERS
 from .time import make_time
@@ -37,9 +36,8 @@ def time(s: str) -> int:
     return make_time(**d)  # type: ignore  # Argument 1 has incomp. type "**Dict[Any, float]"; expected "Optional[int]"
 
 
-def change_ext(path: str, ext: str) -> str:
-    base, _ = op.splitext(path)
-    return base + ext
+def change_ext(old_path: Path, ext: str) -> Path:
+    return old_path.with_suffix(ext)
 
 
 class Pysubs2CLI:
@@ -136,15 +134,19 @@ class Pysubs2CLI:
 
         if args.verbose:
             logging.basicConfig(level=logging.DEBUG)
+        
+        output_dir: Union[Path, None] = None
+        if args.output_dir:
+            output_dir = Path(args.output_dir)
 
-        if args.output_dir and not op.exists(args.output_dir):
-            os.makedirs(args.output_dir)
+        if output_dir is not None and not output_dir.exists():
+            output_dir.mkdir(parents=True)
 
         if args.output_enc is None:
             args.output_enc = args.input_enc
 
-        extra_input_args = {}
-        extra_output_args = {}
+        extra_input_args: dict[str, Any] = {}
+        extra_output_args: dict[str, Any] = {}
         if args.srt_keep_unknown_html_tags:
             extra_input_args["keep_unknown_html_tags"] = True
         if args.srt_keep_html_tags:
@@ -158,33 +160,35 @@ class Pysubs2CLI:
 
         if args.files:
             for path in args.files:
-                if not op.exists(path):
-                    print("Skipping", path, "(does not exist)")
+                inpath = Path(path)
+                if not inpath.exists():
+                    print(f"Skipping {inpath} (does not exist)")
                     errors += 1
-                elif not op.isfile(path):
-                    print("Skipping", path, "(not a file)")
+                elif not inpath.is_file():
+                    print(f"Skipping {inpath} (not a file)")
                     errors += 1
                 else:
-                    with open(path, encoding=args.input_enc, errors=args.enc_error_handling) as infile:
+                    with inpath.open("r", encoding=args.input_enc, errors=args.enc_error_handling) as infile:
                         subs = SSAFile.from_file(infile, args.input_format, args.fps, **extra_input_args)
 
                     self.process(subs, args)
 
+                    outpath: Path
                     if args.output_format is None:
-                        outpath = path
+                        outpath = inpath
                         output_format = subs.format
                         assert output_format is not None, "subs.format must not be None (it was read from file)"
                     else:
                         ext = get_file_extension(args.output_format)
-                        outpath = change_ext(path, ext)
+                        outpath = change_ext(inpath, ext)
                         output_format = args.output_format
                         assert output_format is not None, "args.output_format must not be None (see if/else)"
 
-                    if args.output_dir is not None:
-                        _, filename = op.split(outpath)
-                        outpath = op.join(args.output_dir, filename)
+                    if output_dir is not None:
+                        filename = outpath.name
+                        outpath = output_dir / filename
 
-                    with open(outpath, "w", encoding=args.output_enc, errors=args.enc_error_handling) as outfile:
+                    with outpath.open("w", encoding=args.output_enc, errors=args.enc_error_handling) as outfile:
                         subs.to_file(outfile, output_format, args.fps, apply_styles=not args.clean,
                                      **extra_output_args)
         elif not sys.stdin.isatty():
