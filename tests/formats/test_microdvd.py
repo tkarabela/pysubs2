@@ -209,3 +209,36 @@ def test_write_drawing() -> None:
     """)
 
     assert subs.to_string("microdvd", fps=1000) == f
+
+
+@pytest.mark.parametrize("fps", [23.976, 24.0, 25.0, 29.97, 30.0, 48.0, 60.0])
+def test_writer_fps_declaration_uses_frame_one(fps: float) -> None:
+    # The fps-declaration line must carry the literal {1}{1} frame markers for
+    # every framerate, not only fps == 1000. It used to be built from a 1 ms
+    # placeholder event run through ms_to_frames(), which rounds down to frame
+    # 0 for any realistic fps, writing an unreadable {0}{0} line.
+    subs = SSAFile()
+    subs.append(SSAEvent(start=0, end=2000, text="Hello!"))
+
+    out = subs.to_string("microdvd", fps=fps)
+    assert out.splitlines()[0] == "{1}{1}%s" % fps
+
+    # The output must round-trip through the default (strict) reader: the fps
+    # is inferred from the declaration and the event survives unchanged.
+    back = SSAFile.from_string(out, format_="microdvd")
+    assert back.fps == fps
+    assert len(back) == 1
+    assert back[0].plaintext == "Hello!"
+
+
+def test_writer_does_not_mutate_input() -> None:
+    # Writing must not leave the artificial fps-declaration event behind in
+    # the caller's subtitle list (the writer used to insert(0, ...)/pop(0)).
+    subs = SSAFile()
+    subs.append(SSAEvent(start=0, end=2000, text="Hello!"))
+    subs.append(SSAEvent(start=2000, end=4000, text="World!"))
+    before = list(subs.events)
+
+    subs.to_string("microdvd", fps=25.0)
+
+    assert subs.events == before
