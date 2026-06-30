@@ -120,9 +120,14 @@ class MicroDVDFormat(FormatBase):
                     return False
             return True
 
-        # insert an artificial first line telling the framerate
+        # Write an artificial first line declaring the framerate. The reader
+        # identifies it by the literal {1}{1} frame markers (see the
+        # strict_fps_inference check in from_file), so emit them directly.
+        # Routing a placeholder event through to_frames() instead would
+        # convert its 1 ms start/end to frame 0 for any realistic fps, writing
+        # an unreadable {0}{0} line (it only worked for fps == 1000).
         if write_fps_declaration:
-            subs.insert(0, SSAEvent(start=1, end=1, text=str(fps)))
+            print("{1}{1}%s" % fps, file=fp)
 
         for line in subs.get_text_events():
             text = "|".join(line.plaintext.splitlines())
@@ -138,7 +143,3 @@ class MicroDVDFormat(FormatBase):
                 end = 0
 
             print("{%d}{%d}%s" % (start, end, text), file=fp)
-
-        # remove the artificial framerate-telling line
-        if write_fps_declaration:
-            subs.pop(0)
