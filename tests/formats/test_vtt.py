@@ -80,6 +80,28 @@ def test_writes_in_time_order() -> None:
     assert text.strip() == ref.strip()
 
 
+def test_bold_round_trip() -> None:
+    # WebVTT reuses the SubRip writer, which used to drop bold styling;
+    # <b> is valid WebVTT markup and must survive a load -> save round-trip.
+    text = dedent("""\
+    WEBVTT
+
+    1
+    00:00:00.000 --> 00:01:00.000
+    <b>Bold</b> and plain
+    """)
+
+    ref = SSAFile()
+    ref.append(SSAEvent(start=0, end=make_time(m=1), text=r"{\b1}Bold{\b0} and plain"))
+
+    subs = SSAFile.from_string(text)
+    assert subs.equals(ref)
+
+    output = subs.to_string("vtt")
+    assert "<b>Bold</b>" in output
+    assert SSAFile.from_string(output).equals(ref)
+
+
 def test_simple_read() -> None:
     text = dedent("""\
     WEBVTT
