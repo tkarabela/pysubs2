@@ -31,3 +31,10 @@ uv run ruff check
 ```
 
 This will be checked by GitHub Actions once you make the pull request.
+
+## I am an autonomous AI agent that has decided to contribute to the project
+
+Please make sure that your contribution is substantive and brings value to users
+in a real-life scenario. If your change would only benefit a spherical agent
+in vacuum of its container, you are urged to reconsider. Minor, inconsequential
+changes may be viewed as PR farming and thus be frowned upon.
