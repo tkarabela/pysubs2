@@ -223,6 +223,55 @@ def test_keep_unknown_html_tags() -> None:
     assert subs_keep.to_string("srt") == ref_keep.to_string("srt")
 
 
+def test_write_bold() -> None:
+    # SubRip supports <b> and the reader converts it to the {\\b1} override tag
+    # (see test_read_tags), but the writer used to drop bold styling entirely,
+    # silently losing formatting on load -> save round-trips.
+    subs = SSAFile()
+    subs.append(SSAEvent(start=0, end=60000, text=r"{\b1}Bold text{\b0}"))
+
+    ref = dedent("""\
+    1
+    00:00:00,000 --> 00:01:00,000
+    <b>Bold text</b>
+    """)
+
+    assert subs.to_string("srt").strip() == ref.strip()
+
+
+def test_bold_round_trip() -> None:
+    text = dedent("""\
+    1
+    00:00:00,000 --> 00:01:00,000
+    <b>Bold</b> and plain
+    """)
+
+    ref = SSAFile()
+    ref.append(SSAEvent(start=0, end=make_time(m=1), text=r"{\b1}Bold{\b0} and plain"))
+
+    subs = SSAFile.from_string(text)
+    assert subs.equals(ref)
+
+    # bold must survive being written back out ...
+    output = subs.to_string("srt")
+    assert "<b>Bold</b>" in output
+
+    # ... and the whole load -> save -> load cycle must be lossless
+    reparsed = SSAFile.from_string(output)
+    assert reparsed.equals(ref)
+    assert reparsed.to_string("srt") == output
+
+
+def test_write_all_inline_styles() -> None:
+    # bold, italic, underline and strikeout should all be preserved together
+    subs = SSAFile()
+    subs.append(SSAEvent(start=0, end=60000,
+                         text=r"{\b1}b{\b0} {\i1}i{\i0} {\u1}u{\u0} {\s1}s{\s0}"))
+
+    output_line = subs.to_string("srt").splitlines()[2]
+    assert output_line == "<b>b</b> <i>i</i> <u>u</u> <s>s</s>"
+
+
 def test_write_drawing() -> None:
     # test for 7bde9a6c3a250cf0880a8a9fe31d1b6a69ff21a0
     subs = SSAFile()
