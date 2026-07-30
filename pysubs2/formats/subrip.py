@@ -1,14 +1,14 @@
 import re
 import warnings
-from typing import Sequence, Optional, TextIO, Any
+from collections.abc import Sequence
+from typing import Any, TextIO
 
-from .base import FormatBase
 from ..ssaevent import SSAEvent
-from ..ssastyle import SSAStyle
-from .substation import parse_tags
-from ..time import ms_to_times, make_time, TIMESTAMP, timestamp_to_ms
 from ..ssafile import SSAFile
-
+from ..ssastyle import SSAStyle
+from ..time import TIMESTAMP, make_time, ms_to_times, timestamp_to_ms
+from .base import FormatBase
+from .substation import parse_tags
 
 #: Largest timestamp allowed in SubRip, ie. 99:59:59,999.
 MAX_REPRESENTABLE_TIME = make_time(h=100) - 1
@@ -21,8 +21,7 @@ class SubripFormat(FormatBase):
     @staticmethod
     def ms_to_timestamp(ms: int) -> str:
         """Convert ms to 'HH:MM:SS,mmm'"""
-        if ms < 0:
-            ms = 0
+        ms = max(ms, 0)
         if ms > MAX_REPRESENTABLE_TIME:
             warnings.warn("Overflow in SubRip timestamp, clamping to MAX_REPRESENTABLE_TIME", RuntimeWarning)
             ms = MAX_REPRESENTABLE_TIME
@@ -34,7 +33,7 @@ class SubripFormat(FormatBase):
         return timestamp_to_ms(groups)
 
     @classmethod
-    def guess_format(cls, text: str) -> Optional[str]:
+    def guess_format(cls, text: str) -> str | None:
         """See :meth:`pysubs2.formats.FormatBase.guess_format()`"""
         if "[Script Info]" in text or "[V4+ Styles]" in text:
             # disambiguation vs. SSA/ASS

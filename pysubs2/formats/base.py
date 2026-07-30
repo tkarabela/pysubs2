@@ -1,4 +1,5 @@
-from typing import Optional, Any, TextIO
+from typing import Any, TextIO
+
 from ..ssafile import SSAFile
 
 
@@ -66,7 +67,7 @@ class FormatBase:
         raise NotImplementedError("Writing is not supported for this format")
 
     @classmethod
-    def guess_format(cls, text: str) -> Optional[str]:
+    def guess_format(cls, text: str) -> str | None:
         """
         Return format identifier of recognized format, or None.
 

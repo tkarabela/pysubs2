@@ -4,10 +4,20 @@ pysubs2.time tests
 """
 import typing
 from fractions import Fraction
+
 import pytest
 
-from pysubs2.time import TIMESTAMP, TIMESTAMP_SHORT, timestamp_to_ms, times_to_ms, ms_to_times, Times, frames_to_ms, \
-    ms_to_frames, ms_to_str
+from pysubs2.time import (
+    TIMESTAMP,
+    TIMESTAMP_SHORT,
+    Times,
+    frames_to_ms,
+    ms_to_frames,
+    ms_to_str,
+    ms_to_times,
+    times_to_ms,
+    timestamp_to_ms,
+)
 
 
 # helper functions

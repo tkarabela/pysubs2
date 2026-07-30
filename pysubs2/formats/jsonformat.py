@@ -1,12 +1,12 @@
 import dataclasses
 import json
-from typing import Any, Optional, TextIO
+from typing import Any, TextIO
 
 from ..common import Color
 from ..ssaevent import SSAEvent
+from ..ssafile import SSAFile
 from ..ssastyle import SSAStyle
 from .base import FormatBase
-from ..ssafile import SSAFile
 
 
 # Custom JSONEncoder is needed since our `Color` is a dataclass
@@ -26,7 +26,7 @@ class JSONFormat(FormatBase):
     This is essentially SubStation Alpha as JSON.
     """
     @classmethod
-    def guess_format(cls, text: str) -> Optional[str]:
+    def guess_format(cls, text: str) -> str | None:
         """See :meth:`pysubs2.formats.FormatBase.guess_format()`"""
         if text.startswith("{\"") and "\"info\":" in text:
             return "json"

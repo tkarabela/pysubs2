@@ -1,10 +1,10 @@
+import dataclasses
 import re
 import warnings
-from typing import Optional, Any, ClassVar, Literal
-import dataclasses
+from typing import Any, ClassVar, Literal
 
 from .common import IntOrFloat
-from .time import ms_to_str, make_time
+from .time import make_time, ms_to_str
 
 
 @dataclasses.dataclass(repr=False, eq=False, order=False)
@@ -129,7 +129,7 @@ class SSAEvent:
         self.text = text.replace("\n", r"\N")
 
     def shift(self, h: IntOrFloat = 0, m: IntOrFloat = 0, s: IntOrFloat = 0, ms: IntOrFloat = 0,
-              frames: Optional[int] = None, fps: Optional[float] = None) -> None:
+              frames: int | None = None, fps: float | None = None) -> None:
         """
         Shift start and end times.
 

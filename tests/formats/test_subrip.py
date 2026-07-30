@@ -3,10 +3,11 @@ pysubs2.formats.subrip tests
 
 """
 from textwrap import dedent
-import pytest
 from typing import Any
 
-from pysubs2 import SSAFile, SSAEvent, make_time
+import pytest
+
+from pysubs2 import SSAEvent, SSAFile, make_time
 from pysubs2.formats.subrip import MAX_REPRESENTABLE_TIME
 
 

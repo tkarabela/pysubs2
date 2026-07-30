@@ -3,7 +3,7 @@ pysubs2
 
 [![pysubs2 build master branch](https://img.shields.io/github/actions/workflow/status/tkarabela/pysubs2/main.yml?branch=master)](https://github.com/tkarabela/pysubs2/actions)
 [![pysubs2 test code coverage](https://img.shields.io/codecov/c/github/tkarabela/pysubs2)](https://app.codecov.io/github/tkarabela/pysubs2)
-[![Static Badge](https://img.shields.io/badge/MyPy%20%26%20Ruffle-checked-blue?style=flat)](https://github.com/tkarabela/pysubs2/actions)
+[![Static Badge](https://img.shields.io/badge/MyPy%20%26%20Pyrefly%20%26%20Ruff-checked-blue?style=flat)](https://github.com/tkarabela/pysubs2/actions)
 [![PyPI - Version](https://img.shields.io/pypi/v/pysubs2.svg?style=flat)](https://pypi.org/project/pysubs2/)
 [![PyPI - Status](https://img.shields.io/pypi/status/pysubs2.svg?style=flat)](https://pypi.org/project/pysubs2/)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/pysubs2.svg?style=flat)](https://pypi.org/project/pysubs2/)

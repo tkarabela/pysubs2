@@ -1,18 +1,19 @@
-from typing import Type
-
+from ..exceptions import (
+    FormatAutodetectionError,
+    UnknownFileExtensionError,
+    UnknownFormatIdentifierError,
+)
 from .base import FormatBase
+from .jsonformat import JSONFormat
 from .microdvd import MicroDVDFormat
+from .mpl2 import MPL2Format
 from .sami import SAMIFormat
 from .subrip import SubripFormat
-from .jsonformat import JSONFormat
 from .substation import SubstationFormat
-from .mpl2 import MPL2Format
 from .tmp import TmpFormat
 from .ttml import TTMLFormat
 from .webvtt import WebVTTFormat
 from .whisper import WhisperJAXFormat
-from ..exceptions import UnknownFormatIdentifierError, UnknownFileExtensionError, FormatAutodetectionError
-
 
 #: Dict mapping file extensions to format identifiers.
 FILE_EXTENSION_TO_FORMAT_IDENTIFIER: dict[str, str] = {
@@ -29,7 +30,7 @@ FILE_EXTENSION_TO_FORMAT_IDENTIFIER: dict[str, str] = {
 }
 
 #: Dict mapping format identifiers to implementations (FormatBase subclasses).
-FORMAT_IDENTIFIER_TO_FORMAT_CLASS: dict[str, Type[FormatBase]] = {
+FORMAT_IDENTIFIER_TO_FORMAT_CLASS: dict[str, type[FormatBase]] = {
     "srt": SubripFormat,
     "ass": SubstationFormat,
     "ssa": SubstationFormat,
@@ -46,7 +47,7 @@ FORMAT_IDENTIFIER_TO_FORMAT_CLASS: dict[str, Type[FormatBase]] = {
 FORMAT_IDENTIFIERS = list(FORMAT_IDENTIFIER_TO_FORMAT_CLASS.keys())
 
 
-def get_format_class(format_: str) -> Type[FormatBase]:
+def get_format_class(format_: str) -> type[FormatBase]:
     """Format identifier -> format class (ie. subclass of FormatBase)"""
     try:
         return FORMAT_IDENTIFIER_TO_FORMAT_CLASS[format_]

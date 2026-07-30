@@ -1,8 +1,8 @@
+import dataclasses
 import warnings
 from typing import Any, ClassVar
-import dataclasses
 
-from .common import Color, Alignment
+from .common import Alignment, Color
 
 
 @dataclasses.dataclass(repr=False)

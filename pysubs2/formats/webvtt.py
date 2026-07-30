@@ -1,10 +1,11 @@
 import re
-from typing import Sequence, Optional, TextIO, Any
+from collections.abc import Sequence
+from typing import Any, TextIO
 
 from ..ssaevent import SSAEvent
-from .subrip import SubripFormat
-from ..time import make_time
 from ..ssafile import SSAFile
+from ..time import make_time
+from .subrip import SubripFormat
 
 
 class WebVTTFormat(SubripFormat):
@@ -31,7 +32,7 @@ class WebVTTFormat(SubripFormat):
         return make_time(h=h, m=m, s=s, ms=ms)
 
     @classmethod
-    def guess_format(cls, text: str) -> Optional[str]:
+    def guess_format(cls, text: str) -> str | None:
         """See :meth:`pysubs2.formats.FormatBase.guess_format()`"""
         if text.lstrip().startswith("WEBVTT"):
             return "vtt"
@@ -44,8 +45,7 @@ class WebVTTFormat(SubripFormat):
         See :meth:`pysubs2.formats.SubripFormat.to_file()`, additional SRT options are supported by VTT as well
         """
         print("WEBVTT\n", file=fp)
-        return super(WebVTTFormat, cls).to_file(
-            subs=subs, fp=fp, format_=format_, **kwargs)
+        return super().to_file(subs=subs, fp=fp, format_=format_, **kwargs)
 
     @classmethod
     def _get_visible_lines(cls, subs: "SSAFile") -> list[SSAEvent]:

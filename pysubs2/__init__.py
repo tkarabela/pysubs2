@@ -1,26 +1,26 @@
-from .ssafile import SSAFile
-from .ssaevent import SSAEvent
-from .ssastyle import SSAStyle
-from . import time, formats, cli, exceptions
+from . import cli, exceptions, formats, time
+from .common import VERSION, Alignment, Color
+from .exceptions import *
 from .formats import whisper
-from .exceptions import *  # noqa: F403
-from .common import Color, Alignment, VERSION
+from .ssaevent import SSAEvent
+from .ssafile import SSAFile
+from .ssastyle import SSAStyle
 
 __all__ = [
-    "SSAFile",
-    "SSAEvent",
-    "SSAStyle",
-    "time",
-    "formats",
-    "cli",
-    "whisper",
-    "exceptions",
-    "Color",
-    "Alignment",
     "VERSION",
+    "Alignment",
+    "Color",
+    "SSAEvent",
+    "SSAFile",
+    "SSAStyle",
+    "cli",
+    "exceptions",
+    "formats",
     "load",
     "load_from_whisper",
     "make_time",
+    "time",
+    "whisper",
 ]
 
 #: Alias for :meth:`SSAFile.load()`.

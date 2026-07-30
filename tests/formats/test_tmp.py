@@ -4,9 +4,10 @@ pysubs2.formats.tmp tests
 """
 
 from textwrap import dedent
+
 import pytest
 
-from pysubs2 import SSAFile, SSAEvent, make_time
+from pysubs2 import SSAEvent, SSAFile, make_time
 from pysubs2.formats.tmp import MAX_REPRESENTABLE_TIME
 
 

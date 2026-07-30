@@ -3,10 +3,13 @@ pysubs2.formats.ttml tests
 
 """
 
-import pytest
-from pysubs2 import SSAFile, SSAEvent, SSAStyle
-import pysubs2
 from pathlib import Path
+
+import pytest
+
+import pysubs2
+from pysubs2 import SSAEvent, SSAFile, SSAStyle
+
 
 def get_data_path(filename: str) -> Path:
     return Path(__file__).parent.parent / "data" / filename

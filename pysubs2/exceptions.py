@@ -1,11 +1,11 @@
 from typing import Any
 
 __all__ = [
+    "FormatAutodetectionError",
     "Pysubs2Error",
     "UnknownFPSError",
     "UnknownFileExtensionError",
     "UnknownFormatIdentifierError",
-    "FormatAutodetectionError",
 ]
 
 

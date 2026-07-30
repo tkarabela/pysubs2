@@ -85,3 +85,4 @@ CLI parameters
       python -m pysubs2 --shift 0.3s <my_file.srt >retimed_file.srt
       python -m pysubs2 --shift-back 0.3s --output-dir retimed *.srt
       python -m pysubs2 --transform-framerate 25 23.976 *.srt
+

@@ -1,5 +1,6 @@
 import re
-from typing import Optional, Sequence, NamedTuple
+from collections.abc import Sequence
+from typing import NamedTuple
 
 from .common import IntOrFloat
 
@@ -19,7 +20,7 @@ class Times(NamedTuple):
 
 
 def make_time(h: IntOrFloat = 0, m: IntOrFloat = 0, s: IntOrFloat = 0, ms: IntOrFloat = 0,
-              frames: Optional[int] = None, fps: Optional[float] = None) -> int:
+              frames: int | None = None, fps: float | None = None) -> int:
     """
     Convert time to milliseconds.
 

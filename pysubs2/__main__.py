@@ -1,4 +1,5 @@
 import sys
+
 from .cli import Pysubs2CLI
 
 if __name__ == "__main__":

@@ -1,17 +1,17 @@
 from dataclasses import dataclass
 from html.parser import HTMLParser
-from typing import Optional, TextIO, Any
+from typing import Any, TextIO
 
-from .base import FormatBase
 from ..ssaevent import SSAEvent
 from ..ssafile import SSAFile
+from .base import FormatBase
 
 
 class SAMIFormat(FormatBase):
     """Synchronized Accessible Media Interchange (SAMI) subtitle format implementation"""
 
     @classmethod
-    def guess_format(cls, text: str) -> Optional[str]:
+    def guess_format(cls, text: str) -> str | None:
         """See :meth:`pysubs2.formats.FormatBase.guess_format()`"""
         if text.lstrip().startswith("<SAMI>"):
             return "sami"
@@ -68,7 +68,7 @@ class SAMIParser(HTMLParser):
     def __init__(self) -> None:
         super().__init__()
         self.sync_elements: list[SyncElement] = []
-        self.current_sync_element: Optional[SyncElement] = None
+        self.current_sync_element: SyncElement | None = None
 
     def begin_sync_element(self, start_ms: int) -> None:
         if self.current_sync_element is not None:
@@ -84,7 +84,7 @@ class SAMIParser(HTMLParser):
         if self.current_sync_element is not None:
             self.current_sync_element.text += text
 
-    def handle_starttag(self, tag: str, attrs: list[tuple[str, Optional[str]]]) -> None:
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         if tag == "sync":
             start_ms = int(dict(attrs)["start"] or 0)
             self.begin_sync_element(start_ms)

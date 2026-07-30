@@ -3,8 +3,9 @@ test of SubStation [Fonts] handling
 
 """
 
-from pysubs2 import SSAFile
 from pathlib import Path
+
+from pysubs2 import SSAFile
 
 current_dir = Path(__file__).parent
 

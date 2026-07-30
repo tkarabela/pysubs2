@@ -1,6 +1,5 @@
 import pysubs2
 
-
 SAMI_INPUT1 = """\
 <SAMI>
 <Head>

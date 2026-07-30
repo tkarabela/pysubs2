@@ -1,10 +1,9 @@
-import sys
-from typing import Any
 import subprocess
+import sys
 from io import StringIO
+from typing import Any
 
 from pysubs2.cli import Pysubs2CLI
-
 
 TEST_SRT_FILE = """\
 1
@@ -398,7 +397,7 @@ def test_empty_notty_input_doesnt_print_help(tmp_path: Any, capsys: Any, monkeyp
     path = tmp_path / "test.srt"
     with path.open("w+") as in_fp:
         cmd = [sys.executable, "-m", "pysubs2"]
-        p = subprocess.run(cmd, stdin=in_fp, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        p = subprocess.run(cmd, stdin=in_fp, capture_output=True, text=True)
         assert p.returncode == 1
         assert not p.stdout.startswith("usage: pysubs2")
         assert "FormatAutodetectionError" in p.stderr

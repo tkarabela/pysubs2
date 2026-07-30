@@ -1,7 +1,8 @@
 from textwrap import dedent
+
 import pytest
 
-from pysubs2 import SSAFile, SSAEvent, SSAStyle, UnknownFPSError
+from pysubs2 import SSAEvent, SSAFile, SSAStyle, UnknownFPSError
 
 
 def test_framerate_inference() -> None:
@@ -221,7 +222,7 @@ def test_writer_fps_declaration_uses_frame_one(fps: float) -> None:
     subs.append(SSAEvent(start=0, end=2000, text="Hello!"))
 
     out = subs.to_string("microdvd", fps=fps)
-    assert out.splitlines()[0] == "{1}{1}%s" % fps
+    assert out.splitlines()[0] == f"{{1}}{{1}}{fps}"
 
     # The output must round-trip through the default (strict) reader: the fps
     # is inferred from the declaration and the event survives unchanged.

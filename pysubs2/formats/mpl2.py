@@ -1,10 +1,10 @@
 import re
-from typing import Optional, Any, TextIO
-from ..time import times_to_ms
-from .base import FormatBase
+from typing import Any, TextIO
+
 from ..ssaevent import SSAEvent
 from ..ssafile import SSAFile
-
+from ..time import times_to_ms
+from .base import FormatBase
 
 # thanks to http://otsaloma.io/gaupol/doc/api/aeidon.files.mpl2_source.html
 MPL2_FORMAT = re.compile(r"^\[(-?\d+)\]\[(-?\d+)\](.*)", re.MULTILINE)
@@ -13,7 +13,7 @@ MPL2_FORMAT = re.compile(r"^\[(-?\d+)\]\[(-?\d+)\](.*)", re.MULTILINE)
 class MPL2Format(FormatBase):
     """MPL2 subtitle format implementation"""
     @classmethod
-    def guess_format(cls, text: str) -> Optional[str]:
+    def guess_format(cls, text: str) -> str | None:
         """See :meth:`pysubs2.formats.FormatBase.guess_format()`"""
         if MPL2_FORMAT.search(text):
             return "mpl2"
@@ -30,13 +30,13 @@ class MPL2Format(FormatBase):
 
                 if s.startswith("/"):
                     # line beginning with '/' is in italics
-                    s = r"{\i1}%s{\i0}" % s[1:].strip()
+                    s = r"{\i1}" + s[1:].strip() + r"{\i0}"
 
                 out.append(s)
             return "\\N".join(out)
 
-        text = fp.read()
-        for start, end, text in MPL2_FORMAT.findall(text):
+        all_text = fp.read()
+        for start, end, text in MPL2_FORMAT.findall(all_text):
             e = SSAEvent(
                 start=times_to_ms(s=float(start) / 10),
                 end=times_to_ms(s=float(end) / 10),

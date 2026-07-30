@@ -1,6 +1,8 @@
-import multiprocessing
 import itertools
+import multiprocessing
+
 import pytest
+
 import pysubs2
 
 

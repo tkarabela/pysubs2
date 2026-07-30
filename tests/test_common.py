@@ -1,7 +1,9 @@
+import xml.etree.ElementTree as ET
+
+import pytest
+
 from pysubs2 import Color
 from pysubs2.common import etree_register_namespace_override
-import pytest
-import xml.etree.ElementTree as ET
 
 
 def test_color_argument_validation() -> None:

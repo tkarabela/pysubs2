@@ -1,9 +1,10 @@
-from dataclasses import dataclass
-from os import PathLike
-from typing import Union, Optional, Iterable, Iterator, Any
-from enum import IntEnum
 import xml.etree.ElementTree as ET
+from collections.abc import Generator, Iterable, Iterator
 from contextlib import contextmanager
+from dataclasses import dataclass
+from enum import IntEnum
+from os import PathLike
+from typing import Any
 
 
 @dataclass(init=False)
@@ -64,11 +65,11 @@ SSA_ALIGNMENT: tuple[int, ...] = (1, 2, 3, 9, 10, 11, 5, 6, 7)
 VERSION = "1.8.1"
 
 
-IntOrFloat = Union[int, float]
-PathOrStr = Union[str, PathLike[Any]]
+IntOrFloat = int | float
+PathOrStr = str | PathLike[Any]
 
 
-def etree_iter_child_nodes(elem: ET.Element) -> Iterator[Union[ET.Element, str]]:
+def etree_iter_child_nodes(elem: ET.Element) -> Iterator[ET.Element | str]:
     """
     Yield child text nodes (as str) and subelements for given XML element
 
@@ -86,7 +87,7 @@ def etree_iter_child_nodes(elem: ET.Element) -> Iterator[Union[ET.Element, str]]
             yield child_elem.tail
 
 
-def etree_append_child_nodes(elem: ET.Element, nodes: Iterable[Union[ET.Element, str]]) -> None:
+def etree_append_child_nodes(elem: ET.Element, nodes: Iterable[ET.Element | str]) -> None:
     """
     Add child text nodes and subelements to given XML element
 
@@ -113,15 +114,15 @@ def etree_append_child_nodes(elem: ET.Element, nodes: Iterable[Union[ET.Element,
 
 
 @contextmanager
-def etree_register_namespace_override() -> Iterator[None]:
+def etree_register_namespace_override() -> Generator[None]:
     """
     Context manager that reverts global changes from ``xml.etree.ElementTree.register_namespace()``
 
     Workaround for poor namespace handling in ``xml.etree.ElementTree``.
 
     """
-    namespace_map: Optional[dict[str, str]] = None
-    namespace_map_original_content = {}
+    namespace_map: dict[str, str] | None = None
+    namespace_map_original_content: dict[str, str] = {}
     try:
         namespace_map = getattr(ET.register_namespace, "_namespace_map", None)
         if namespace_map is not None:

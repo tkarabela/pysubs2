@@ -4,7 +4,7 @@ dynamic = ["version"]
 description = "A library for editing subtitle files"
 readme = "README.md"
 license = "MIT"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 authors = [
     { name = "Tomas Karabela", email = "tkarabela@seznam.cz" },
 ]
@@ -15,7 +15,6 @@ keywords = [
 classifiers = [
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
@@ -47,6 +46,7 @@ dev = [
     "pytest-timeout~=2.3",
     "mypy~=1.11",
     "ruff~=0.5",
+    "pyrefly>=1.1.1",
 ]
 docs = [
     "sphinx==8.2.3; python_version >= '3.11'",
@@ -79,3 +79,22 @@ branch = true
 [tool.coverage.report]
 show_missing = true
 skip_covered = true
+
+[tool.pyrefly]
+project-includes = [
+    "pysubs2",
+    "tests/test_*.py",
+]
+preset = "strict"
+
+[tool.pyrefly.errors]
+missing-override-decorator = false
+
+[tool.ruff.lint]
+ignore = [
+    "PLW1510",
+    "UP012",
+    "RUF046",
+    "BLE001",
+    "S110",
+]

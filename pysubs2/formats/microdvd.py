@@ -1,24 +1,24 @@
-from functools import partial
 import re
-from typing import Optional, TextIO, Any, Match
+from functools import partial
+from re import Match
+from typing import Any, TextIO
 
 from ..exceptions import UnknownFPSError
 from ..ssaevent import SSAEvent
+from ..ssafile import SSAFile
 from ..ssastyle import SSAStyle
+from ..time import frames_to_ms, ms_to_frames
 from .base import FormatBase
 from .substation import parse_tags
-from ..time import ms_to_frames, frames_to_ms
-from ..ssafile import SSAFile
-
 
 #: Matches a MicroDVD line.
-MICRODVD_LINE = re.compile(r" *\{ *(\d+) *\} *\{ *(\d+) *\}(.+)")
+MICRODVD_LINE = re.compile(r" *\{ *(\d+) *} *\{ *(\d+) *}(.+)")
 
 
 class MicroDVDFormat(FormatBase):
     """MicroDVD subtitle format implementation"""
     @classmethod
-    def guess_format(cls, text: str) -> Optional[str]:
+    def guess_format(cls, text: str) -> str | None:
         """See :meth:`pysubs2.formats.FormatBase.guess_format()`"""
         if any(map(MICRODVD_LINE.match, text.splitlines())):
             return "microdvd"
@@ -26,7 +26,7 @@ class MicroDVDFormat(FormatBase):
             return None
 
     @classmethod
-    def from_file(cls, subs: "SSAFile", fp: TextIO, format_: str, fps: Optional[float] = None,
+    def from_file(cls, subs: "SSAFile", fp: TextIO, format_: str, fps: float | None = None,
                   strict_fps_inference: bool = True, **kwargs: Any) -> None:
         """
         See :meth:`pysubs2.formats.FormatBase.from_file()`
@@ -76,13 +76,13 @@ class MicroDVDFormat(FormatBase):
                 text = text.replace("|", r"\N")
 
                 def style_replacer(match: Match[str]) -> str:
-                    tags = [c for c in "biu" if c in match.group(0)]
-                    return "{%s}" % "".join(f"\\{c}1" for c in tags)
+                    tags = [c for c in "biu" if c in match.group(0)]  # noqa: B023
+                    return "{" + "".join(f"\\{c}1" for c in tags) + "}"
 
-                text = re.sub(r"\{[Yy]:[^}]+\}", style_replacer, text)
-                text = re.sub(r"\{[Ff]:([^}]+)\}", r"{\\fn\1}", text)
-                text = re.sub(r"\{[Ss]:([^}]+)\}", r"{\\fs\1}", text)
-                text = re.sub(r"\{P:(\d+),(\d+)\}", r"{\\pos(\1,\2)}", text)
+                text = re.sub(r"\{[Yy]:[^}]+}", style_replacer, text)
+                text = re.sub(r"\{[Ff]:([^}]+)}", r"{\\fn\1}", text)
+                text = re.sub(r"\{[Ss]:([^}]+)}", r"{\\fs\1}", text)
+                text = re.sub(r"\{P:(\d+),(\d+)}", r"{\\pos(\1,\2)}", text)
 
                 return text.strip()
 
@@ -90,7 +90,7 @@ class MicroDVDFormat(FormatBase):
             subs.append(ev)
 
     @classmethod
-    def to_file(cls, subs: "SSAFile", fp: TextIO, format_: str, fps: Optional[float] = None,
+    def to_file(cls, subs: "SSAFile", fp: TextIO, format_: str, fps: float | None = None,
                 write_fps_declaration: bool = True, apply_styles: bool = True, **kwargs: Any) -> None:
         """
         See :meth:`pysubs2.formats.FormatBase.to_file()`
@@ -127,7 +127,7 @@ class MicroDVDFormat(FormatBase):
         # convert its 1 ms start/end to frame 0 for any realistic fps, writing
         # an unreadable {0}{0} line (it only worked for fps == 1000).
         if write_fps_declaration:
-            print("{1}{1}%s" % fps, file=fp)
+            print("{1}{1}" + str(fps), file=fp)
 
         for line in subs.get_text_events():
             text = "|".join(line.plaintext.splitlines())
@@ -137,9 +137,7 @@ class MicroDVDFormat(FormatBase):
             start, end = map(to_frames, (line.start, line.end))
 
             # XXX warn on underflow?
-            if start < 0:
-                start = 0
-            if end < 0:
-                end = 0
+            start = max(start, 0)
+            end = max(end, 0)
 
-            print("{%d}{%d}%s" % (start, end, text), file=fp)
+            print(f"{{{start:d}}}{{{end:d}}}{text}", file=fp)

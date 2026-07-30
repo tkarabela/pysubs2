@@ -1,7 +1,8 @@
-import pytest
 from typing import Any
 
-from pysubs2 import SSAFile, SSAEvent, SSAStyle, Color
+import pytest
+
+from pysubs2 import Color, SSAEvent, SSAFile, SSAStyle
 from pysubs2.exceptions import FormatAutodetectionError
 
 

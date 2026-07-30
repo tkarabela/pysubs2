@@ -1,6 +1,5 @@
 import pysubs2
 
-
 TRANSCRIBE_RESULT = {
     'text': ' And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.',
     'segments': [{'id': 0, 'seek': 0, 'start': 0.0, 'end': 7.6000000000000005,

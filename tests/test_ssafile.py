@@ -1,6 +1,6 @@
 import pytest
 
-from pysubs2 import SSAFile, SSAStyle, SSAEvent, make_time
+from pysubs2 import SSAEvent, SSAFile, SSAStyle, make_time
 
 
 def test_repr_default() -> None:
@@ -69,7 +69,7 @@ def test_rename_style() -> None:
 
     def prepare() -> None:
         subs.events = [SSAEvent(style="red"), SSAEvent(style="unrelated")]
-        subs.styles = dict(red=red, green=green)
+        subs.styles = {"red": red, "green": green}
 
     prepare()
     subs.rename_style("red", "blue")

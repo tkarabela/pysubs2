@@ -1,14 +1,13 @@
 import re
 import warnings
-from typing import Optional, TextIO, Any
+from typing import Any, TextIO
 
-from .base import FormatBase
 from ..ssaevent import SSAEvent
-from ..ssastyle import SSAStyle
-from .substation import parse_tags
-from ..time import ms_to_times, make_time, TIMESTAMP_SHORT, timestamp_to_ms
 from ..ssafile import SSAFile
-
+from ..ssastyle import SSAStyle
+from ..time import TIMESTAMP_SHORT, make_time, ms_to_times, timestamp_to_ms
+from .base import FormatBase
+from .substation import parse_tags
 
 #: Pattern that matches TMP line
 TMP_LINE = re.compile(r"(\d{1,2}:\d{2}:\d{2}):(.+)")
@@ -23,8 +22,7 @@ class TmpFormat(FormatBase):
     @staticmethod
     def ms_to_timestamp(ms: int) -> str:
         """Convert ms to 'HH:MM:SS'"""
-        if ms < 0:
-            ms = 0
+        ms = max(ms, 0)
         if ms > MAX_REPRESENTABLE_TIME:
             warnings.warn("Overflow in TMP timestamp, clamping to MAX_REPRESENTABLE_TIME", RuntimeWarning)
             ms = MAX_REPRESENTABLE_TIME
@@ -32,7 +30,7 @@ class TmpFormat(FormatBase):
         return f"{h:02d}:{m:02d}:{s:02d}"
 
     @classmethod
-    def guess_format(cls, text: str) -> Optional[str]:
+    def guess_format(cls, text: str) -> str | None:
         """See :meth:`pysubs2.formats.FormatBase.guess_format()`"""
         if "[Script Info]" in text or "[V4+ Styles]" in text:
             # disambiguation vs. SSA/ASS

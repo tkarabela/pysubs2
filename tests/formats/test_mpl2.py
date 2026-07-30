@@ -1,6 +1,6 @@
 from textwrap import dedent
 
-from pysubs2 import SSAFile, SSAEvent, make_time
+from pysubs2 import SSAEvent, SSAFile, make_time
 
 
 def test_simple_parsing() -> None:
