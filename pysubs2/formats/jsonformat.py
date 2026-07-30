@@ -1,13 +1,16 @@
+# mypy: disable-error-code="override"
+
 import dataclasses
 import json
-from typing import Any, TextIO
+from typing import TYPE_CHECKING, Any, TextIO, TypedDict, Unpack
 
 from ..common import Color
 from ..ssaevent import SSAEvent
-from ..ssafile import SSAFile
 from ..ssastyle import SSAStyle
 from .base import FormatBase
 
+if TYPE_CHECKING:
+    from ..ssafile import SSAFile
 
 # Custom JSONEncoder is needed since our `Color` is a dataclass
 # https://stackoverflow.com/questions/51286748/make-the-python-json-encoder-support-pythons-new-dataclasses
@@ -25,6 +28,13 @@ class JSONFormat(FormatBase):
 
     This is essentially SubStation Alpha as JSON.
     """
+
+    class ReaderArgs(TypedDict):
+        pass
+
+    class WriterArgs(TypedDict):
+        pass
+
     @classmethod
     def guess_format(cls, text: str) -> str | None:
         """See :meth:`pysubs2.formats.FormatBase.guess_format()`"""
@@ -34,7 +44,7 @@ class JSONFormat(FormatBase):
             return None
 
     @classmethod
-    def from_file(cls, subs: "SSAFile", fp: TextIO, format_: str, **kwargs: Any) -> None:
+    def from_file(cls, subs: "SSAFile", fp: TextIO, format_: str, **kwargs: Unpack[ReaderArgs]) -> None:
         """See :meth:`pysubs2.formats.FormatBase.from_file()`"""
         data = json.load(fp)
 
@@ -53,7 +63,7 @@ class JSONFormat(FormatBase):
         subs.events = [SSAEvent(**fields) for fields in data["events"]]
 
     @classmethod
-    def to_file(cls, subs: "SSAFile", fp: TextIO, format_: str, **kwargs: Any) -> None:
+    def to_file(cls, subs: "SSAFile", fp: TextIO, format_: str, **kwargs: Unpack[WriterArgs]) -> None:
         """See :meth:`pysubs2.formats.FormatBase.to_file()`"""
         data = {
             "info": dict(**subs.info),

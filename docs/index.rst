@@ -20,7 +20,7 @@ the native format of `Aegisub <http://www.aegisub.org/>`_; it also supports  *Su
         line.text = "{\\be1}" + line.text
     subs.save("my_subtitles_edited.ass")
 
-The library works in Python 3.9 or newer, with no extra dependencies.
+The library works in Python 3.12 or newer, with no extra dependencies.
 It’s available under the MIT license (see bottom of the page).
 To get started, simply install it using `uv <https://docs.astral.sh/uv/>`_: ``uv add pysubs2`` or
 `pip <https://pypi.python.org/pypi/pip>`_: ``pip install pysubs2``.

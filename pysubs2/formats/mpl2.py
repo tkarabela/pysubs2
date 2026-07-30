@@ -1,10 +1,15 @@
+# mypy: disable-error-code="override"
+
 import re
-from typing import Any, TextIO
+from typing import TYPE_CHECKING, TextIO, TypedDict, Unpack
 
 from ..ssaevent import SSAEvent
-from ..ssafile import SSAFile
 from ..time import times_to_ms
 from .base import FormatBase
+
+if TYPE_CHECKING:
+    from ..ssafile import SSAFile
+
 
 # thanks to http://otsaloma.io/gaupol/doc/api/aeidon.files.mpl2_source.html
 MPL2_FORMAT = re.compile(r"^\[(-?\d+)\]\[(-?\d+)\](.*)", re.MULTILINE)
@@ -12,6 +17,13 @@ MPL2_FORMAT = re.compile(r"^\[(-?\d+)\]\[(-?\d+)\](.*)", re.MULTILINE)
 
 class MPL2Format(FormatBase):
     """MPL2 subtitle format implementation"""
+
+    class ReaderArgs(TypedDict):
+        pass
+
+    class WriterArgs(TypedDict):
+        pass
+
     @classmethod
     def guess_format(cls, text: str) -> str | None:
         """See :meth:`pysubs2.formats.FormatBase.guess_format()`"""
@@ -21,7 +33,7 @@ class MPL2Format(FormatBase):
             return None
 
     @classmethod
-    def from_file(cls, subs: "SSAFile", fp: TextIO, format_: str, **kwargs: Any) -> None:
+    def from_file(cls, subs: "SSAFile", fp: TextIO, format_: str, **kwargs: Unpack[ReaderArgs]) -> None:
         """See :meth:`pysubs2.formats.FormatBase.from_file()`"""
         def prepare_text(lines: str) -> str:
             out = []
@@ -45,7 +57,7 @@ class MPL2Format(FormatBase):
             subs.append(e)
 
     @classmethod
-    def to_file(cls, subs: "SSAFile", fp: TextIO, format_: str, **kwargs: Any) -> None:
+    def to_file(cls, subs: "SSAFile", fp: TextIO, format_: str, **kwargs: Unpack[WriterArgs]) -> None:
         """
         See :meth:`pysubs2.formats.FormatBase.to_file()`
 

@@ -1,11 +1,23 @@
+# mypy: disable-error-code="no-overload-impl,overload-cannot-match,no-redef"
+
 import io
 import logging
 from collections.abc import Iterable, Iterator, MutableSequence
 from itertools import chain
 from pathlib import Path
-from typing import Any, ClassVar, TextIO, overload
+from typing import Any, ClassVar, Literal, TextIO, Unpack, overload
 
 from .common import IntOrFloat, PathOrStr
+from .formats.jsonformat import JSONFormat
+from .formats.microdvd import MicroDVDFormat
+from .formats.mpl2 import MPL2Format
+from .formats.sami import SAMIFormat
+from .formats.subrip import SubripFormat
+from .formats.substation import SubstationFormat
+from .formats.tmp import TmpFormat
+from .formats.ttml import TTMLFormat
+from .formats.webvtt import WebVTTFormat
+from .formats.whisper import WhisperJAXFormat
 from .ssaevent import SSAEvent
 from .ssastyle import SSAStyle
 from .time import make_time, ms_to_str
@@ -66,11 +78,618 @@ class SSAFile(MutableSequence[SSAEvent]):
         self.format = None
 
     # ------------------------------------------------------------------------
-    # I/O methods
+    # I/O methods - overloads per format
+    # ------------------------------------------------------------------------
+
+    @overload
+    @classmethod
+    def load(
+            cls,
+            path: PathOrStr,
+            encoding: str = "utf-8",
+            format_: str | None = None,
+            errors: str | None = None
+    ) -> "SSAFile":
+        pass
+
+    @overload
+    @classmethod
+    def load(
+            cls,
+            path: PathOrStr,
+            encoding: str = "utf-8",
+            format_: Literal["json"] | str | None = None,
+            errors: str | None = None,
+            **kwargs: Unpack[JSONFormat.ReaderArgs]
+    ) -> "SSAFile":
+        pass
+
+    @overload
+    @classmethod
+    def load(
+            cls,
+            path: PathOrStr,
+            encoding: str = "utf-8",
+            format_: Literal["microdvd"] | str | None = None,
+            errors: str | None = None,
+            **kwargs: Unpack[MicroDVDFormat.ReaderArgs]
+    ) -> "SSAFile":
+        pass
+
+    @overload
+    @classmethod
+    def load(
+            cls,
+            path: PathOrStr,
+            encoding: str = "utf-8",
+            format_: Literal["mpl2"] | str | None = None,
+            errors: str | None = None,
+            **kwargs: Unpack[MPL2Format.ReaderArgs]
+    ) -> "SSAFile":
+        pass
+
+    @overload
+    @classmethod
+    def load(
+            cls,
+            path: PathOrStr,
+            encoding: str = "utf-8",
+            format_: Literal["sami"] | str | None = None,
+            errors: str | None = None,
+            **kwargs: Unpack[SAMIFormat.ReaderArgs]
+    ) -> "SSAFile":
+        pass
+
+    @overload
+    @classmethod
+    def load(
+            cls,
+            path: PathOrStr,
+            encoding: str = "utf-8",
+            format_: Literal["srt"] | str | None = None,
+            errors: str | None = None,
+            **kwargs: Unpack[SubripFormat.ReaderArgs]
+    ) -> "SSAFile":
+        pass
+
+    @overload
+    @classmethod
+    def load(
+            cls,
+            path: PathOrStr,
+            encoding: str = "utf-8",
+            format_: Literal["ass", "ssa"] | str | None = None,
+            errors: str | None = None,
+            **kwargs: Unpack[SubstationFormat.ReaderArgs]
+    ) -> "SSAFile":
+        pass
+
+    @overload
+    @classmethod
+    def load(
+            cls,
+            path: PathOrStr,
+            encoding: str = "utf-8",
+            format_: Literal["tmp"] | str | None = None,
+            errors: str | None = None,
+            **kwargs: Unpack[TmpFormat.ReaderArgs]
+    ) -> "SSAFile":
+        pass
+
+    @overload
+    @classmethod
+    def load(
+            cls,
+            path: PathOrStr,
+            encoding: str = "utf-8",
+            format_: Literal["ttml"] | str | None = None,
+            errors: str | None = None,
+            **kwargs: Unpack[TTMLFormat.ReaderArgs]
+    ) -> "SSAFile":
+        pass
+
+    @overload
+    @classmethod
+    def load(
+            cls,
+            path: PathOrStr,
+            encoding: str = "utf-8",
+            format_: Literal["vtt"] | str | None = None,
+            errors: str | None = None,
+            **kwargs: Unpack[WebVTTFormat.ReaderArgs]
+    ) -> "SSAFile":
+        pass
+
+    @overload
+    @classmethod
+    def load(
+            cls,
+            path: PathOrStr,
+            encoding: str = "utf-8",
+            format_: Literal["whisper_jax"] | str | None = None,
+            errors: str | None = None,
+            **kwargs: Unpack[WhisperJAXFormat.ReaderArgs]
+    ) -> "SSAFile":
+        pass
+
+    @overload
+    @classmethod
+    def from_string(
+            cls,
+            string: str,
+            format_: str | None = None,
+            **kwargs: Any
+    ) -> "SSAFile":
+        pass
+
+    @overload
+    @classmethod
+    def from_string(
+            cls,
+            string: str,
+            format_: Literal["json"] | str | None = None,
+            **kwargs: Unpack[JSONFormat.ReaderArgs]
+    ) -> "SSAFile":
+        pass
+
+    @overload
+    @classmethod
+    def from_string(
+            cls,
+            string: str,
+            format_: Literal["microdvd"] | str | None = None,
+            **kwargs: Unpack[MicroDVDFormat.ReaderArgs]
+    ) -> "SSAFile":
+        pass
+
+    @overload
+    @classmethod
+    def from_string(
+            cls,
+            string: str,
+            format_: Literal["mpl2"] | str | None = None,
+            **kwargs: Unpack[MPL2Format.ReaderArgs]
+    ) -> "SSAFile":
+        pass
+
+    @overload
+    @classmethod
+    def from_string(
+            cls,
+            string: str,
+            format_: Literal["sami"] | str | None = None,
+            **kwargs: Unpack[SAMIFormat.ReaderArgs]
+    ) -> "SSAFile":
+        pass
+
+    @overload
+    @classmethod
+    def from_string(
+            cls,
+            string: str,
+            format_: Literal["srt"] | str | None = None,
+            **kwargs: Unpack[SubripFormat.ReaderArgs]
+    ) -> "SSAFile":
+        pass
+
+    @overload
+    @classmethod
+    def from_string(
+            cls,
+            string: str,
+            format_: Literal["ass", "ssa"] | str | None = None,
+            **kwargs: Unpack[SubstationFormat.ReaderArgs]
+    ) -> "SSAFile":
+        pass
+
+    @overload
+    @classmethod
+    def from_string(
+            cls,
+            string: str,
+            format_: Literal["tmp"] | str | None = None,
+            **kwargs: Unpack[TmpFormat.ReaderArgs]
+    ) -> "SSAFile":
+        pass
+
+    @overload
+    @classmethod
+    def from_string(
+            cls,
+            string: str,
+            format_: Literal["ttml"] | str | None = None,
+            **kwargs: Unpack[TTMLFormat.ReaderArgs]
+    ) -> "SSAFile":
+        pass
+
+    @overload
+    @classmethod
+    def from_string(
+            cls,
+            string: str,
+            format_: Literal["vtt"] | str | None = None,
+            **kwargs: Unpack[WebVTTFormat.ReaderArgs]
+    ) -> "SSAFile":
+        pass
+
+    @overload
+    @classmethod
+    def from_string(
+            cls,
+            string: str,
+            format_: Literal["whisper_jax"] | str | None = None,
+            **kwargs: Unpack[WhisperJAXFormat.ReaderArgs]
+    ) -> "SSAFile":
+        pass
+
+    @overload
+    @classmethod
+    def from_file(
+            cls,
+            fp: TextIO,
+            format_: str | None = None,
+            **kwargs: Any
+    ) -> "SSAFile":
+        pass
+
+    @overload
+    @classmethod
+    def from_file(
+            cls,
+            fp: TextIO,
+            format_: Literal["json"] | str | None = None,
+            **kwargs: Unpack[JSONFormat.ReaderArgs]
+    ) -> "SSAFile":
+        pass
+
+    @overload
+    @classmethod
+    def from_file(
+            cls,
+            fp: TextIO,
+            format_: Literal["microdvd"] | str | None = None,
+            **kwargs: Unpack[MicroDVDFormat.ReaderArgs]
+    ) -> "SSAFile":
+        pass
+
+    @overload
+    @classmethod
+    def from_file(
+            cls,
+            fp: TextIO,
+            format_: Literal["mpl2"] | str | None = None,
+            **kwargs: Unpack[MPL2Format.ReaderArgs]
+    ) -> "SSAFile":
+        pass
+
+    @overload
+    @classmethod
+    def from_file(
+            cls,
+            fp: TextIO,
+            format_: Literal["sami"] | str | None = None,
+            **kwargs: Unpack[SAMIFormat.ReaderArgs]
+    ) -> "SSAFile":
+        pass
+
+    @overload
+    @classmethod
+    def from_file(
+            cls,
+            fp: TextIO,
+            format_: Literal["srt"] | str | None = None,
+            **kwargs: Unpack[SubripFormat.ReaderArgs]
+    ) -> "SSAFile":
+        pass
+
+    @overload
+    @classmethod
+    def from_file(
+            cls,
+            fp: TextIO,
+            format_: Literal["ass", "ssa"] | str | None = None,
+            **kwargs: Unpack[SubstationFormat.ReaderArgs]
+    ) -> "SSAFile":
+        pass
+
+    @overload
+    @classmethod
+    def from_file(
+            cls,
+            fp: TextIO,
+            format_: Literal["tmp"] | str | None = None,
+            **kwargs: Unpack[TmpFormat.ReaderArgs]
+    ) -> "SSAFile":
+        pass
+
+    @overload
+    @classmethod
+    def from_file(
+            cls,
+            fp: TextIO,
+            format_: Literal["ttml"] | str | None = None,
+            **kwargs: Unpack[TTMLFormat.ReaderArgs]
+    ) -> "SSAFile":
+        pass
+
+    @overload
+    @classmethod
+    def from_file(
+            cls,
+            fp: TextIO,
+            format_: Literal["vtt"] | str | None = None,
+            **kwargs: Unpack[WebVTTFormat.ReaderArgs]
+    ) -> "SSAFile":
+        pass
+
+    @overload
+    @classmethod
+    def from_file(
+            cls,
+            fp: TextIO,
+            format_: Literal["whisper_jax"] | str | None = None,
+            **kwargs: Unpack[WhisperJAXFormat.ReaderArgs]
+    ) -> "SSAFile":
+        pass
+
+    @overload
+    def save(
+            cls,
+            path: PathOrStr,
+            encoding: str = "utf-8",
+            format_: str | None = None,
+            errors: str | None = None,
+            **kwargs: Any
+    ) -> None:
+        pass
+
+    @overload
+    def save(
+            cls,
+            path: PathOrStr,
+            encoding: str = "utf-8",
+            format_: Literal["json"] | str | None = None,
+            errors: str | None = None,
+            **kwargs: Unpack[JSONFormat.WriterArgs]
+    ) -> None:
+        pass
+
+    @overload
+    def save(
+            cls,
+            path: PathOrStr,
+            encoding: str = "utf-8",
+            format_: Literal["microdvd"] | str | None = None,
+            errors: str | None = None,
+            **kwargs: Unpack[MicroDVDFormat.WriterArgs]
+    ) -> None:
+        pass
+
+    @overload
+    def save(
+            cls,
+            path: PathOrStr,
+            encoding: str = "utf-8",
+            format_: Literal["mpl2"] | str | None = None,
+            errors: str | None = None,
+            **kwargs: Unpack[MPL2Format.WriterArgs]
+    ) -> None:
+        pass
+
+    @overload
+    def save(
+            cls,
+            path: PathOrStr,
+            encoding: str = "utf-8",
+            format_: Literal["srt"] | str | None = None,
+            errors: str | None = None,
+            **kwargs: Unpack[SubripFormat.WriterArgs]
+    ) -> None:
+        pass
+
+    @overload
+    def save(
+            cls,
+            path: PathOrStr,
+            encoding: str = "utf-8",
+            format_: Literal["ass", "ssa"] | str | None = None,
+            errors: str | None = None,
+            **kwargs: Unpack[SubstationFormat.WriterArgs]
+    ) -> None:
+        pass
+
+    @overload
+    def save(
+            cls,
+            path: PathOrStr,
+            encoding: str = "utf-8",
+            format_: Literal["tmp"] | str | None = None,
+            errors: str | None = None,
+            **kwargs: Unpack[TmpFormat.WriterArgs]
+    ) -> None:
+        pass
+
+    @overload
+    def save(
+            cls,
+            path: PathOrStr,
+            encoding: str = "utf-8",
+            format_: Literal["ttml"] | str | None = None,
+            errors: str | None = None,
+            **kwargs: Unpack[TTMLFormat.WriterArgs]
+    ) -> None:
+        pass
+
+    @overload
+    def save(
+            cls,
+            path: PathOrStr,
+            encoding: str = "utf-8",
+            format_: Literal["vtt"] | str | None = None,
+            errors: str | None = None,
+            **kwargs: Unpack[WebVTTFormat.WriterArgs]
+    ) -> None:
+        pass
+
+    @overload
+    def to_string(
+            cls,
+            format_: str,
+            **kwargs: Any
+    ) -> str:
+        pass
+
+    @overload
+    def to_string(
+            cls,
+            format_: Literal["json"] | str,
+            **kwargs: Unpack[JSONFormat.WriterArgs]
+    ) -> str:
+        pass
+
+    @overload
+    def to_string(
+            cls,
+            format_: Literal["microdvd"] | str,
+            **kwargs: Unpack[MicroDVDFormat.WriterArgs]
+    ) -> str:
+        pass
+
+    @overload
+    def to_string(
+            cls,
+            format_: Literal["mpl2"] | str,
+            **kwargs: Unpack[MPL2Format.WriterArgs]
+    ) -> str:
+        pass
+
+    @overload
+    def to_string(
+            cls,
+            format_: Literal["srt"] | str,
+            **kwargs: Unpack[SubripFormat.WriterArgs]
+    ) -> str:
+        pass
+
+    @overload
+    def to_string(
+            cls,
+            format_: Literal["ass", "ssa"] | str,
+            **kwargs: Unpack[SubstationFormat.WriterArgs]
+    ) -> str:
+        pass
+
+    @overload
+    def to_string(
+            cls,
+            format_: Literal["tmp"] | str,
+            **kwargs: Unpack[TmpFormat.WriterArgs]
+    ) -> str:
+        pass
+
+    @overload
+    def to_string(
+            cls,
+            format_: Literal["ttml"] | str,
+            **kwargs: Unpack[TTMLFormat.WriterArgs]
+    ) -> str:
+        pass
+
+    @overload
+    def to_string(
+            cls,
+            format_: Literal["vtt"] | str,
+            **kwargs: Unpack[WebVTTFormat.WriterArgs]
+    ) -> str:
+        pass
+
+    @overload
+    def to_file(
+            cls,
+            fp: TextIO,
+            format_: str,
+            **kwargs: Any
+    ) -> None:
+        pass
+
+    @overload
+    def to_file(
+            cls,
+            fp: TextIO,
+            format_: Literal["json"] | str,
+            **kwargs: Unpack[JSONFormat.WriterArgs]
+    ) -> None:
+        pass
+
+    @overload
+    def to_file(
+            cls,
+            fp: TextIO,
+            format_: Literal["microdvd"] | str,
+            **kwargs: Unpack[MicroDVDFormat.WriterArgs]
+    ) -> None:
+        pass
+
+    @overload
+    def to_file(
+            cls,
+            fp: TextIO,
+            format_: Literal["mpl2"] | str,
+            **kwargs: Unpack[MPL2Format.WriterArgs]
+    ) -> None:
+        pass
+
+    @overload
+    def to_file(
+            cls,
+            fp: TextIO,
+            format_: Literal["srt"] | str,
+            **kwargs: Unpack[SubripFormat.WriterArgs]
+    ) -> None:
+        pass
+
+    @overload
+    def to_file(
+            cls,
+            fp: TextIO,
+            format_: Literal["ass", "ssa"] | str,
+            **kwargs: Unpack[SubstationFormat.WriterArgs]
+    ) -> None:
+        pass
+
+    @overload
+    def to_file(
+            cls,
+            fp: TextIO,
+            format_: Literal["tmp"] | str,
+            **kwargs: Unpack[TmpFormat.WriterArgs]
+    ) -> None:
+        pass
+
+    @overload
+    def to_file(
+            cls,
+            fp: TextIO,
+            format_: Literal["ttml"] | str,
+            **kwargs: Unpack[TTMLFormat.WriterArgs]
+    ) -> None:
+        pass
+
+    @overload
+    def to_file(
+            cls,
+            fp: TextIO,
+            format_: Literal["vtt"] | str,
+            **kwargs: Unpack[WebVTTFormat.WriterArgs]
+    ) -> None:
+        pass
+
+    # ------------------------------------------------------------------------
+    # I/O methods - actual implementation
     # ------------------------------------------------------------------------
 
     @classmethod
-    def load(cls, path: PathOrStr, encoding: str = "utf-8", format_: str | None = None, fps: float | None = None,
+    def load(cls, path: PathOrStr, encoding: str = "utf-8", format_: str | None = None,
              errors: str | None = None, **kwargs: Any) -> "SSAFile":
         """
         Load subtitle file from given path.
@@ -130,10 +749,10 @@ class SSAFile(MutableSequence[SSAEvent]):
 
         """
         with Path(path).open(encoding=encoding, errors=errors) as fp:
-            return cls.from_file(fp, format_, fps=fps, **kwargs)
+            return cls.from_file(fp, format_, **kwargs)
 
     @classmethod
-    def from_string(cls, string: str, format_: str | None = None, fps: float | None = None,
+    def from_string(cls, string: str, format_: str | None = None,
                     **kwargs: Any) -> "SSAFile":
         """
         Load subtitle file from string.
@@ -165,10 +784,10 @@ class SSAFile(MutableSequence[SSAEvent]):
 
         """
         fp = io.StringIO(string)
-        return cls.from_file(fp, format_, fps=fps, **kwargs)
+        return cls.from_file(fp, format_, **kwargs)
 
     @classmethod
-    def from_file(cls, fp: TextIO, format_: str | None = None, fps: float | None = None,
+    def from_file(cls, fp: TextIO, format_: str | None = None,
                   **kwargs: Any) -> "SSAFile":
         """
         Read subtitle file from file object.
@@ -210,11 +829,10 @@ class SSAFile(MutableSequence[SSAEvent]):
         impl = get_format_class(format_)
         subs = cls() # an empty subtitle file
         subs.format = format_
-        subs.fps = fps
-        impl.from_file(subs, fp, format_, fps=fps, **kwargs)
+        impl.from_file(subs, fp, format_, **kwargs)
         return subs
 
-    def save(self, path: PathOrStr, encoding: str = "utf-8", format_: str | None = None, fps: float | None = None,
+    def save(self, path: PathOrStr, encoding: str = "utf-8", format_: str | None = None,
              errors: str | None = None, **kwargs: Any) -> None:
         """
         Save subtitle file to given path.
@@ -271,9 +889,9 @@ class SSAFile(MutableSequence[SSAEvent]):
             format_ = get_format_identifier(ext)
 
         with outpath.open("w", encoding=encoding, errors=errors) as fp:
-            self.to_file(fp, format_, fps=fps, **kwargs)
+            self.to_file(fp, format_, **kwargs)
 
-    def to_string(self, format_: str, fps: float | None = None, **kwargs: Any) -> str:
+    def to_string(self, format_: str, **kwargs: Any) -> str:
         """
         Get subtitle file as a string.
 
@@ -284,10 +902,10 @@ class SSAFile(MutableSequence[SSAEvent]):
 
         """
         fp = io.StringIO()
-        self.to_file(fp, format_, fps=fps, **kwargs)
+        self.to_file(fp, format_, **kwargs)
         return fp.getvalue()
 
-    def to_file(self, fp: TextIO, format_: str, fps: float | None = None, **kwargs: Any) -> None:
+    def to_file(self, fp: TextIO, format_: str, **kwargs: Any) -> None:
         """
         Write subtitle file to file object.
 
@@ -305,7 +923,7 @@ class SSAFile(MutableSequence[SSAEvent]):
         from .formats import get_format_class
 
         impl = get_format_class(format_)
-        impl.to_file(self, fp, format_, fps=fps, **kwargs)
+        impl.to_file(self, fp, format_, **kwargs)
 
     # ------------------------------------------------------------------------
     # Retiming subtitles

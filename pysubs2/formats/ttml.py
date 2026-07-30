@@ -1,7 +1,9 @@
+# mypy: disable-error-code="override"
+
 import re
 import xml.etree.ElementTree as ET
 from enum import Enum
-from typing import Any, TextIO
+from typing import TYPE_CHECKING, NotRequired, TextIO, TypedDict, Unpack
 
 from ..common import (
     etree_append_child_nodes,
@@ -9,11 +11,14 @@ from ..common import (
     etree_register_namespace_override,
 )
 from ..ssaevent import SSAEvent
-from ..ssafile import SSAFile
 from ..ssastyle import SSAStyle
 from ..time import make_time, ms_to_times
 from .base import FormatBase
 from .substation import parse_tags
+
+if TYPE_CHECKING:
+    from ..ssafile import SSAFile
+
 
 TT_NS = "{http://www.w3.org/ns/ttml}"
 TTS_NS = "{http://www.w3.org/ns/ttml#styling}"
@@ -26,6 +31,12 @@ class TimeContainer(Enum):
 
 class TTMLFormat(FormatBase):
     """Timed Text Markup Language (TTML) subtitle format implementation"""
+
+    class ReaderArgs(TypedDict):
+        ignore_par_time_offset: NotRequired[bool]
+
+    class WriterArgs(TypedDict):
+        pass
 
     @staticmethod
     def ms_to_timestamp(ms: int) -> str:
@@ -67,8 +78,7 @@ class TTMLFormat(FormatBase):
             subs: "SSAFile",
             fp: TextIO,
             format_: str,
-            ignore_par_time_offset: bool = False,
-            **kwargs: Any
+            **kwargs: Unpack[ReaderArgs]
     ) -> None:
         """
         Rudimentary TTML parser. No formatting/styling apart from newlines is supported.
@@ -82,6 +92,8 @@ class TTMLFormat(FormatBase):
                 but is used in Apple Music lyrics.
 
         """
+        ignore_par_time_offset: bool = kwargs.get("ignore_par_time_offset", False)
+
         tree = ET.parse(fp)
         root = tree.getroot()
 
@@ -93,7 +105,7 @@ class TTMLFormat(FormatBase):
         parser.parse_body(body_elem)
 
     @classmethod
-    def to_file(cls, subs: "SSAFile", fp: TextIO, format_: str, **kwargs: Any) -> None:
+    def to_file(cls, subs: "SSAFile", fp: TextIO, format_: str, **kwargs: Unpack[WriterArgs]) -> None:
         """
         TTML writer. Has partial support for styles and override tags.
 

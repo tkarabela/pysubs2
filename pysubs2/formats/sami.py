@@ -1,14 +1,21 @@
+# mypy: disable-error-code="override"
+
 from dataclasses import dataclass
 from html.parser import HTMLParser
-from typing import Any, TextIO
+from typing import TYPE_CHECKING, TextIO, TypedDict, Unpack
 
 from ..ssaevent import SSAEvent
-from ..ssafile import SSAFile
 from .base import FormatBase
+
+if TYPE_CHECKING:
+    from ..ssafile import SSAFile
 
 
 class SAMIFormat(FormatBase):
     """Synchronized Accessible Media Interchange (SAMI) subtitle format implementation"""
+
+    class ReaderArgs(TypedDict):
+        pass
 
     @classmethod
     def guess_format(cls, text: str) -> str | None:
@@ -19,7 +26,7 @@ class SAMIFormat(FormatBase):
         return None
 
     @classmethod
-    def from_file(cls, subs: "SSAFile", fp: TextIO, format_: str, **kwargs: Any) -> None:
+    def from_file(cls, subs: "SSAFile", fp: TextIO, format_: str, **kwargs: Unpack[ReaderArgs]) -> None:
         """
         See :meth:`pysubs2.formats.FormatBase.from_file()`
 

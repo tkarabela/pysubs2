@@ -113,38 +113,47 @@ Here you can find specific details regarding support of the individual subtitle 
 
 .. autoclass:: pysubs2.formats.substation.SubstationFormat
    :members:
+   :undoc-members:
    :show-inheritance:
 
 .. autoclass:: pysubs2.formats.subrip.SubripFormat
    :members:
+   :undoc-members:
    :show-inheritance:
 
 .. autoclass:: pysubs2.formats.mpl2.MPL2Format
    :members:
+   :undoc-members:
    :show-inheritance:
 
 .. autoclass:: pysubs2.formats.tmp.TmpFormat
    :members:
+   :undoc-members:
    :show-inheritance:
 
 .. autoclass:: pysubs2.formats.webvtt.WebVTTFormat
    :members:
+   :undoc-members:
    :show-inheritance:
 
 .. autoclass:: pysubs2.formats.ttml.TTMLFormat
    :members:
+   :undoc-members:
    :show-inheritance:
 
 .. autoclass:: pysubs2.formats.sami.SAMIFormat
    :members:
+   :undoc-members:
    :show-inheritance:
 
 .. autoclass:: pysubs2.formats.microdvd.MicroDVDFormat
    :members:
+   :undoc-members:
    :show-inheritance:
 
 .. autoclass:: pysubs2.formats.jsonformat.JSONFormat
    :members:
+   :undoc-members:
    :show-inheritance:
 
 Misc functions

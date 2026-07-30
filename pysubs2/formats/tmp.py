@@ -1,13 +1,18 @@
+# mypy: disable-error-code="override"
+
 import re
 import warnings
-from typing import Any, TextIO
+from typing import TYPE_CHECKING, NotRequired, TextIO, TypedDict, Unpack
 
 from ..ssaevent import SSAEvent
-from ..ssafile import SSAFile
 from ..ssastyle import SSAStyle
 from ..time import TIMESTAMP_SHORT, make_time, ms_to_times, timestamp_to_ms
 from .base import FormatBase
 from .substation import parse_tags
+
+if TYPE_CHECKING:
+    from ..ssafile import SSAFile
+
 
 #: Pattern that matches TMP line
 TMP_LINE = re.compile(r"(\d{1,2}:\d{2}:\d{2}):(.+)")
@@ -18,6 +23,12 @@ MAX_REPRESENTABLE_TIME = make_time(h=99, m=59, s=59)
 
 class TmpFormat(FormatBase):
     """TMP subtitle format implementation"""
+
+    class ReaderArgs(TypedDict):
+        pass
+
+    class WriterArgs(TypedDict):
+        apply_styles: NotRequired[bool]
 
     @staticmethod
     def ms_to_timestamp(ms: int) -> str:
@@ -43,7 +54,7 @@ class TmpFormat(FormatBase):
         return None
 
     @classmethod
-    def from_file(cls, subs: "SSAFile", fp: TextIO, format_: str, **kwargs: Any) -> None:
+    def from_file(cls, subs: "SSAFile", fp: TextIO, format_: str, **kwargs: Unpack[ReaderArgs]) -> None:
         """See :meth:`pysubs2.formats.FormatBase.from_file()`"""
         events = []
 
@@ -77,7 +88,7 @@ class TmpFormat(FormatBase):
         subs.events = events
 
     @classmethod
-    def to_file(cls, subs: "SSAFile", fp: TextIO, format_: str, apply_styles: bool = True, **kwargs: Any) -> None:
+    def to_file(cls, subs: "SSAFile", fp: TextIO, format_: str, **kwargs: Unpack[WriterArgs]) -> None:
         """
         See :meth:`pysubs2.formats.FormatBase.to_file()`
 
@@ -87,6 +98,8 @@ class TmpFormat(FormatBase):
             apply_styles: If False, do not write any styling.
 
         """
+        apply_styles: bool = kwargs.get("apply_styles", True)
+
         def prepare_text(text: str, style: SSAStyle) -> str:
             body = []
             for fragment, sty in parse_tags(text, style, subs.styles):

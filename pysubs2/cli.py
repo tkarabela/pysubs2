@@ -165,7 +165,7 @@ class Pysubs2CLI:
                     errors += 1
                 else:
                     with inpath.open("r", encoding=args.input_enc, errors=args.enc_error_handling) as infile:
-                        subs = SSAFile.from_file(infile, args.input_format, args.fps, **extra_input_args)
+                        subs = SSAFile.from_file(infile, args.input_format, fps=args.fps, **extra_input_args)
 
                     self.process(subs, args)
 
@@ -184,17 +184,17 @@ class Pysubs2CLI:
                         outpath = output_dir / filename
 
                     with outpath.open("w", encoding=args.output_enc, errors=args.enc_error_handling) as outfile:
-                        subs.to_file(outfile, output_format, args.fps, apply_styles=not args.clean,
+                        subs.to_file(outfile, output_format, fps=args.fps, apply_styles=not args.clean,
                                      **extra_output_args)
         elif not sys.stdin.isatty():
             infile = TextIOWrapper(sys.stdin.buffer, encoding=args.input_enc, errors=args.enc_error_handling)
             outfile = TextIOWrapper(sys.stdout.buffer, encoding=args.output_enc, errors=args.enc_error_handling)
 
-            subs = SSAFile.from_file(infile, args.input_format, args.fps)
+            subs = SSAFile.from_file(infile, args.input_format, fps=args.fps)
             self.process(subs, args)
             output_format = args.output_format or subs.format
             assert output_format is not None, "output_format must not be None (it's either given or inferred at read time)"
-            subs.to_file(outfile, output_format, args.fps, apply_styles=not args.clean)
+            subs.to_file(outfile, output_format, fps=args.fps, apply_styles=not args.clean)
         else:
             self.parser.print_help()
             errors += 1

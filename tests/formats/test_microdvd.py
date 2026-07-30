@@ -144,7 +144,7 @@ def test_writer_tags() -> None:
     {0}{10}Not italic.
     """)
     
-    assert subs.to_string("microdvd", 1000) == f
+    assert subs.to_string("microdvd", fps=1000) == f
 
 
 def test_writer_uses_original_fps() -> None:

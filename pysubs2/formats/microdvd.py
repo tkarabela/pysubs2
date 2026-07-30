@@ -1,15 +1,19 @@
+# mypy: disable-error-code="override"
+
 import re
 from functools import partial
 from re import Match
-from typing import Any, TextIO
+from typing import TYPE_CHECKING, NotRequired, TextIO, TypedDict, Unpack
 
 from ..exceptions import UnknownFPSError
 from ..ssaevent import SSAEvent
-from ..ssafile import SSAFile
 from ..ssastyle import SSAStyle
 from ..time import frames_to_ms, ms_to_frames
 from .base import FormatBase
 from .substation import parse_tags
+
+if TYPE_CHECKING:
+    from ..ssafile import SSAFile
 
 #: Matches a MicroDVD line.
 MICRODVD_LINE = re.compile(r" *\{ *(\d+) *} *\{ *(\d+) *}(.+)")
@@ -17,6 +21,16 @@ MICRODVD_LINE = re.compile(r" *\{ *(\d+) *} *\{ *(\d+) *}(.+)")
 
 class MicroDVDFormat(FormatBase):
     """MicroDVD subtitle format implementation"""
+
+    class ReaderArgs(TypedDict):
+        fps: NotRequired[float | None]
+        strict_fps_inference: NotRequired[bool]
+
+    class WriterArgs(TypedDict):
+        fps: NotRequired[float | None]
+        write_fps_declaration: NotRequired[bool]
+        apply_styles: NotRequired[bool]
+
     @classmethod
     def guess_format(cls, text: str) -> str | None:
         """See :meth:`pysubs2.formats.FormatBase.guess_format()`"""
@@ -26,12 +40,12 @@ class MicroDVDFormat(FormatBase):
             return None
 
     @classmethod
-    def from_file(cls, subs: "SSAFile", fp: TextIO, format_: str, fps: float | None = None,
-                  strict_fps_inference: bool = True, **kwargs: Any) -> None:
+    def from_file(cls, subs: "SSAFile", fp: TextIO, format_: str, **kwargs: Unpack[ReaderArgs]) -> None:
         """
         See :meth:`pysubs2.formats.FormatBase.from_file()`
 
         Keyword args:
+            fps: Use provided framerate to interpret the file instead of trying to infer it from the first file line.
             strict_fps_inference: If True (default), in the case when ``fps`` is not given, it will be read
                 from the first subtitle text only if the start and end frame of this subtitle is ``{1}{1}``
                 (matches VLC Player behaviour), otherwise :class:`pysubs2.exceptions.UnknownFPSError` is raised.
@@ -45,6 +59,9 @@ class MicroDVDFormat(FormatBase):
                 .. versionchanged:: 1.7.0
                    Added the ``strict_fps_inference`` option.
         """
+        fps = kwargs.get("fps", None)
+        strict_fps_inference: bool = kwargs.get("strict_fps_inference", True)
+
         for line in fp:
             match = MICRODVD_LINE.match(line)
             if not match:
@@ -69,6 +86,8 @@ class MicroDVDFormat(FormatBase):
                     raise UnknownFPSError("Framerate was not specified and "
                                           "cannot be read from "
                                           "the MicroDVD file.")
+            else:
+                subs.fps = fps
 
             start, end = map(partial(frames_to_ms, fps=fps), (fstart, fend))
 
@@ -90,19 +109,23 @@ class MicroDVDFormat(FormatBase):
             subs.append(ev)
 
     @classmethod
-    def to_file(cls, subs: "SSAFile", fp: TextIO, format_: str, fps: float | None = None,
-                write_fps_declaration: bool = True, apply_styles: bool = True, **kwargs: Any) -> None:
+    def to_file(cls, subs: "SSAFile", fp: TextIO, format_: str, **kwargs: Unpack[WriterArgs]) -> None:
         """
         See :meth:`pysubs2.formats.FormatBase.to_file()`
 
         The only supported styling is marking whole lines italic.
 
         Keyword args:
+            fps: Use provided framerate to write the file instead of using previously inferred/set framerate.
             write_fps_declaration: If True, create a zero-duration first subtitle ``{1}{1}`` which will contain
                 the fps.
             apply_styles: If False, do not write any styling.
 
         """
+        fps: float | None = kwargs.get("fps", None)
+        write_fps_declaration: bool = kwargs.get("write_fps_declaration", True)
+        apply_styles: bool = kwargs.get("apply_styles", True)
+
         if fps is None:
             fps = subs.fps
 

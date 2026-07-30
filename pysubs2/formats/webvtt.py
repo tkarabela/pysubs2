@@ -1,11 +1,15 @@
+# mypy: disable-error-code="override"
+
 import re
 from collections.abc import Sequence
-from typing import Any, TextIO
+from typing import TYPE_CHECKING, TextIO, Unpack
 
 from ..ssaevent import SSAEvent
-from ..ssafile import SSAFile
 from ..time import make_time
 from .subrip import SubripFormat
+
+if TYPE_CHECKING:
+    from ..ssafile import SSAFile
 
 
 class WebVTTFormat(SubripFormat):
@@ -15,6 +19,12 @@ class WebVTTFormat(SubripFormat):
     Currently, this shares implementation with :class:`pysubs2.formats.subrip.SubripFormat`.
     """
     TIMESTAMP = re.compile(r"(\d{0,4}:)?(\d{2}):(\d{2})\.(\d{2,3})")
+
+    class ReaderArgs(SubripFormat.ReaderArgs):
+        pass
+
+    class WriterArgs(SubripFormat.WriterArgs):
+        pass
 
     @staticmethod
     def ms_to_timestamp(ms: int) -> str:
@@ -40,7 +50,14 @@ class WebVTTFormat(SubripFormat):
             return None
 
     @classmethod
-    def to_file(cls, subs: "SSAFile", fp: TextIO, format_: str, **kwargs: Any) -> None:  # type: ignore[override]
+    def from_file(cls, subs: "SSAFile", fp: TextIO, format_: str, **kwargs: Unpack[ReaderArgs]) -> None:
+        """
+        See :meth:`pysubs2.formats.SubripFormat.from_file()`, additional SRT options are supported by VTT as well
+        """
+        return super().from_file(subs, fp, format_, **kwargs)
+
+    @classmethod
+    def to_file(cls, subs: "SSAFile", fp: TextIO, format_: str, **kwargs: Unpack[WriterArgs]) -> None:
         """
         See :meth:`pysubs2.formats.SubripFormat.to_file()`, additional SRT options are supported by VTT as well
         """
