@@ -15,6 +15,11 @@ from pysubs2.formats.substation import (
     color_to_ssa_rgb,
     rgba_to_color,
 )
+from pysubs2.warnings import (
+    SubtitleAttributeWarning,
+    TimestampOverflow,
+    TimestampUnderflow,
+)
 
 SIMPLE_ASS_REF = """
 [Script Info]
@@ -385,11 +390,19 @@ def test_negative_timestamp_read() -> None:
 def test_overflow_timestamp_write() -> None:
     ref = build_ref()
     ref[0].end = make_time(h=1000)
-    with pytest.warns(RuntimeWarning):
+    with pytest.warns(TimestampOverflow):
         text = ref.to_string("ass")
     subs = SSAFile.from_string(text)
     assert subs[0].end == MAX_REPRESENTABLE_TIME
 
+
+def test_underflow_timestamp_write() -> None:
+    ref = build_ref()
+    ref[0].start = -1000
+    with pytest.warns(TimestampUnderflow):
+        text = ref.to_string("ass")
+    subs = SSAFile.from_string(text)
+    assert subs[0].start == 0
 
 def test_centisecond_rounding() -> None:
     ref = SSAFile()
@@ -469,7 +482,7 @@ def test_alignment_given_as_integer() -> None:
 
 
 def test_reading_invalid_alignment_raises_warning() -> None:
-    with pytest.warns(RuntimeWarning):
+    with pytest.warns(SubtitleAttributeWarning):
         subs = SSAFile.from_string(ASS_WITH_MALFORMED_STYLE_INVALID_ALIGNMENT)
     assert subs.styles["Default"].alignment == Alignment.BOTTOM_CENTER
 
@@ -498,6 +511,6 @@ def test_bad_style_format_line_issue_89() -> None:
 
 
 def test_empty_layer_issue_87() -> None:
-    with pytest.warns(RuntimeWarning, match="Failed to parse layer"):
+    with pytest.warns(SubtitleAttributeWarning, match="Failed to parse layer"):
         subs = SSAFile.from_string(ASS_EMPTY_LAYERS_ISSUE_87)
     assert subs[0].layer == 0

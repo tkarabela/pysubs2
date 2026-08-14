@@ -8,7 +8,8 @@ from pathlib import Path
 import pytest
 
 import pysubs2
-from pysubs2 import SSAEvent, SSAFile, SSAStyle
+from pysubs2 import SSAEvent, SSAFile, SSAStyle, make_time
+from pysubs2.warnings import TimestampUnderflow
 
 
 def get_data_path(filename: str) -> Path:
@@ -83,3 +84,12 @@ def test_serialize():
     ])
 
     assert subs.to_string("ttml").strip() == TEST_SERIALIZE_REFERENCE.strip()
+
+
+def test_underflow_timestamp_write():
+    ref = SSAFile()
+    ref.append(SSAEvent(start=make_time(h=-1000), end=make_time(h=-999), text="test"))
+    with pytest.warns(TimestampUnderflow):
+        text = ref.to_string("tmp")
+    subs = SSAFile.from_string(text)
+    assert subs[0].start == 0

@@ -9,7 +9,11 @@ import pytest
 
 from pysubs2 import SSAEvent, SSAFile, make_time
 from pysubs2.formats.subrip import MAX_REPRESENTABLE_TIME
-from pysubs2.warnings import PossibleMissedSubtitleWarning
+from pysubs2.warnings import (
+    PossibleMissedSubtitleWarning,
+    TimestampOverflow,
+    TimestampUnderflow,
+)
 
 
 def test_simple_write() -> None:
@@ -300,10 +304,19 @@ def test_keep_ssa_tags_and_html_tags() -> None:
 def test_overflow_timestamp_write() -> None:
     ref = SSAFile()
     ref.append(SSAEvent(start=make_time(h=1000), end=make_time(h=1001), text="test"))
-    with pytest.warns(RuntimeWarning):
+    with pytest.warns(TimestampOverflow):
         text = ref.to_string("srt")
     subs = SSAFile.from_string(text)
     assert subs[0].end == MAX_REPRESENTABLE_TIME
+
+
+def test_underflow_timestamp_write() -> None:
+    ref = SSAFile()
+    ref.append(SSAEvent(start=-1000, end=1000, text="test"))
+    with pytest.warns(TimestampUnderflow):
+        text = ref.to_string("srt")
+    subs = SSAFile.from_string(text)
+    assert subs[0].start == 0
 
 
 def test_win1250_passthrough_with_surrogateescape(tmp_path: Any) -> None:

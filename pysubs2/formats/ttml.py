@@ -1,6 +1,7 @@
 # mypy: disable-error-code="override"
 
 import re
+import warnings
 import xml.etree.ElementTree as ET
 from enum import Enum
 from typing import TYPE_CHECKING, NotRequired, TextIO, TypedDict, Unpack
@@ -13,6 +14,7 @@ from ..common import (
 from ..ssaevent import SSAEvent
 from ..ssastyle import SSAStyle
 from ..time import make_time, ms_to_times
+from ..warnings import TimestampUnderflow
 from .base import FormatBase
 from .substation import parse_tags
 
@@ -41,7 +43,9 @@ class TTMLFormat(FormatBase):
     @staticmethod
     def ms_to_timestamp(ms: int) -> str:
         """Convert ms to 'HH:MM:SS.mmm'"""
-        ms = max(ms, 0)
+        if ms < 0:
+            warnings.warn("Underflow in TTML timestamp, clamping to zero", TimestampUnderflow)
+            ms = 0
         h, m, s, ms = ms_to_times(ms)
         return f"{h:02d}:{m:02d}:{s:02d}.{ms:03d}"
 

@@ -7,7 +7,11 @@ from typing import TYPE_CHECKING, NotRequired, TextIO, TypedDict, Unpack
 from ..ssaevent import SSAEvent
 from ..ssastyle import SSAStyle
 from ..time import TIMESTAMP_SHORT, make_time, ms_to_times, timestamp_to_ms
-from ..warnings import PossibleMissedSubtitleWarning
+from ..warnings import (
+    PossibleMissedSubtitleWarning,
+    TimestampOverflow,
+    TimestampUnderflow,
+)
 from .base import FormatBase
 from .substation import parse_tags
 
@@ -34,9 +38,11 @@ class TmpFormat(FormatBase):
     @staticmethod
     def ms_to_timestamp(ms: int) -> str:
         """Convert ms to 'HH:MM:SS'"""
-        ms = max(ms, 0)
-        if ms > MAX_REPRESENTABLE_TIME:
-            warnings.warn("Overflow in TMP timestamp, clamping to MAX_REPRESENTABLE_TIME", RuntimeWarning)
+        if ms < 0:
+            warnings.warn("Underflow in TMP timestamp, clamping to zero", TimestampUnderflow)
+            ms = 0
+        elif ms > MAX_REPRESENTABLE_TIME:
+            warnings.warn("Overflow in TMP timestamp, clamping to MAX_REPRESENTABLE_TIME", TimestampOverflow)
             ms = MAX_REPRESENTABLE_TIME
         h, m, s, _ = ms_to_times(ms)
         return f"{h:02d}:{m:02d}:{s:02d}"

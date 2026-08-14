@@ -9,7 +9,11 @@ import pytest
 
 from pysubs2 import SSAEvent, SSAFile, make_time
 from pysubs2.formats.tmp import MAX_REPRESENTABLE_TIME
-from pysubs2.warnings import PossibleMissedSubtitleWarning
+from pysubs2.warnings import (
+    PossibleMissedSubtitleWarning,
+    TimestampOverflow,
+    TimestampUnderflow,
+)
 
 
 def test_simple_write() -> None:
@@ -129,7 +133,16 @@ def test_write_drawing() -> None:
 def test_overflow_timestamp_write() -> None:
     ref = SSAFile()
     ref.append(SSAEvent(start=make_time(h=1000), end=make_time(h=1001), text="test"))
-    with pytest.warns(RuntimeWarning):
+    with pytest.warns(TimestampOverflow):
         text = ref.to_string("tmp")
     subs = SSAFile.from_string(text)
     assert subs[0].start == MAX_REPRESENTABLE_TIME
+
+
+def test_underflow_timestamp_write() -> None:
+    ref = SSAFile()
+    ref.append(SSAEvent(start=make_time(h=-1000), end=make_time(h=-999), text="test"))
+    with pytest.warns(TimestampUnderflow):
+        text = ref.to_string("tmp")
+    subs = SSAFile.from_string(text)
+    assert subs[0].start == 0

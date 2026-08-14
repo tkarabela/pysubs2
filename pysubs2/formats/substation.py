@@ -9,6 +9,7 @@ from ..common import SSA_ALIGNMENT, Alignment, Color
 from ..ssaevent import SSAEvent
 from ..ssastyle import SSAStyle
 from ..time import TIMESTAMP, TIMESTAMP_SHORT, make_time, ms_to_times, timestamp_to_ms
+from ..warnings import SubtitleAttributeWarning, TimestampOverflow, TimestampUnderflow
 from .base import FormatBase
 
 if TYPE_CHECKING:
@@ -177,9 +178,11 @@ class SubstationFormat(FormatBase):
     @staticmethod
     def ms_to_timestamp(requested_ms: int) -> str:
         """Convert ms to 'H:MM:SS.cc'"""
-        requested_ms = max(requested_ms, 0)
-        if requested_ms > MAX_REPRESENTABLE_TIME:
-            warnings.warn("Overflow in SubStation timestamp, clamping to MAX_REPRESENTABLE_TIME", RuntimeWarning)
+        if requested_ms < 0:
+            warnings.warn("Underflow in SubStation timestamp, clamping to zero", TimestampUnderflow)
+            requested_ms = 0
+        elif requested_ms > MAX_REPRESENTABLE_TIME:
+            warnings.warn("Overflow in SubStation timestamp, clamping to MAX_REPRESENTABLE_TIME", TimestampOverflow)
             requested_ms = MAX_REPRESENTABLE_TIME
 
         # Aegisub does rounding, see https://github.com/Aegisub/Aegisub/blob/6f546951b4f004da16ce19ba638bf3eedefb9f31/libaegisub/include/libaegisub/ass/time.h#L32
@@ -234,7 +237,7 @@ class SubstationFormat(FormatBase):
                 try:
                     return int(v)
                 except ValueError:
-                    warnings.warn(f"Failed to parse {f}, using default", RuntimeWarning)
+                    warnings.warn(f"Failed to parse {f}, using default", SubtitleAttributeWarning)
                     return 0
             elif f in {"fontsize", "scalex", "scaley", "spacing", "angle", "outline", "shadow"}:
                 return float(v)
@@ -247,7 +250,7 @@ class SubstationFormat(FormatBase):
                     else:
                         return Alignment.from_ssa_alignment(int(v))
                 except ValueError:
-                    warnings.warn("Failed to parse alignment, using default", RuntimeWarning)
+                    warnings.warn("Failed to parse alignment, using default", SubtitleAttributeWarning)
                     return Alignment.BOTTOM_CENTER
             elif f == "fontname":
                 return v.strip()
