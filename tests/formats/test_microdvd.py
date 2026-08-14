@@ -3,6 +3,7 @@ from textwrap import dedent
 import pytest
 
 from pysubs2 import SSAEvent, SSAFile, SSAStyle, UnknownFPSError
+from pysubs2.warnings import PossibleMissedSubtitleWarning
 
 
 def test_framerate_inference() -> None:
@@ -121,9 +122,19 @@ def test_parser_skipping_lines() -> None:
     as to paste them in their MicroDVD files!
     """)
     
-    subs = SSAFile.from_string(f, format_="microdvd")
+    with pytest.warns(PossibleMissedSubtitleWarning) as warnings:
+        subs = SSAFile.from_string(f, format_="microdvd")
     assert len(subs) == 1
     assert subs[0].text == "Hello!"
+    assert [str(w.message) for w in warnings] == [
+        "Possible missed subtitle at line 1",
+        "Possible missed subtitle at line 4",
+        "Possible missed subtitle at line 6",
+        "Possible missed subtitle at line 7",
+        "Possible missed subtitle at line 8",
+        "Possible missed subtitle at line 9",
+        "Possible missed subtitle at line 10",
+    ]
 
 
 def test_writer_tags() -> None:

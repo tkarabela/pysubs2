@@ -82,6 +82,13 @@ Misc methods
    :members:
    :show-inheritance:
 
+``pysubs2.warnings`` --- raised warnings
+----------------------------------------
+
+.. automodule:: pysubs2.warnings
+   :members:
+   :show-inheritance:
+
 ``pysubs2.formats`` --- subtitle format implementations
 -------------------------------------------------------
 

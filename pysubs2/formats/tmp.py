@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING, NotRequired, TextIO, TypedDict, Unpack
 from ..ssaevent import SSAEvent
 from ..ssastyle import SSAStyle
 from ..time import TIMESTAMP_SHORT, make_time, ms_to_times, timestamp_to_ms
+from ..warnings import PossibleMissedSubtitleWarning
 from .base import FormatBase
 from .substation import parse_tags
 
@@ -64,9 +65,14 @@ class TmpFormat(FormatBase):
             text = re.sub(r"< */? *[a-zA-Z][^>]*>", "", text) # strip other HTML tags
             return text
 
-        for line in fp:
+        for lineno, line in enumerate(fp, 1):
             match = TMP_LINE.match(line)
             if not match:
+                if re.search(r"\w", line):
+                    warnings.warn(
+                        f"Possible missed subtitle at line {lineno}",
+                        PossibleMissedSubtitleWarning
+                    )
                 continue
 
             start, text = match.groups()

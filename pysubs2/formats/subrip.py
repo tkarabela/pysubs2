@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING, NotRequired, TextIO, TypedDict, Unpack
 from ..ssaevent import SSAEvent
 from ..ssastyle import SSAStyle
 from ..time import TIMESTAMP, make_time, ms_to_times, timestamp_to_ms
+from ..warnings import PossibleMissedSubtitleWarning
 from .base import FormatBase
 from .substation import parse_tags
 
@@ -94,13 +95,18 @@ class SubripFormat(FormatBase):
         timestamps: list[tuple[int, int]] = [] # (start, end)
         following_lines: list[list[str]] = [] # contains lists of lines following each timestamp
 
-        for line in fp:
+        for lineno, line in enumerate(fp, 1):
             stamps = cls.TIMESTAMP.findall(line)
             if len(stamps) == 2: # timestamp line
                 start, end = map(cls.timestamp_to_ms, stamps)
                 timestamps.append((start, end))
                 following_lines.append([])
             else:
+                if stamps:
+                    warnings.warn(
+                        f"Possible missed subtitle start near line {lineno}",
+                        PossibleMissedSubtitleWarning
+                    )
                 if timestamps:
                     following_lines[-1].append(line)
 

@@ -9,6 +9,7 @@ import pytest
 
 from pysubs2 import SSAEvent, SSAFile, make_time
 from pysubs2.formats.tmp import MAX_REPRESENTABLE_TIME
+from pysubs2.warnings import PossibleMissedSubtitleWarning
 
 
 def test_simple_write() -> None:
@@ -55,6 +56,7 @@ def test_simple_read() -> None:
     00:00:00:ten--chars
     00:01:00:ten--chars-ten-chars
     00:02:00:ten--chars|ten-chars
+    xxx
     """)
     #calculate endtime from starttime + 500 miliseconds + 67 miliseconds per each character (15 chars per second)
     ref = SSAFile()
@@ -62,7 +64,8 @@ def test_simple_read() -> None:
     ref.append(SSAEvent(start=make_time(m=1), end=make_time(ms=62510), text="ten--chars-ten-chars"))
     ref.append(SSAEvent(start=make_time(m=2), end=make_time(ms=122510), text="ten--chars\\Nten-chars"))
 
-    subs = SSAFile.from_string(text)
+    with pytest.warns(PossibleMissedSubtitleWarning, match="Possible missed subtitle at line 4"):
+        subs = SSAFile.from_string(text)
     assert subs.equals(ref)
 
 

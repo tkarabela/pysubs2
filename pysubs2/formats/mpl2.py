@@ -1,10 +1,12 @@
 # mypy: disable-error-code="override"
 
 import re
+import warnings
 from typing import TYPE_CHECKING, TextIO, TypedDict, Unpack
 
 from ..ssaevent import SSAEvent
 from ..time import times_to_ms
+from ..warnings import PossibleMissedSubtitleWarning
 from .base import FormatBase
 
 if TYPE_CHECKING:
@@ -47,14 +49,20 @@ class MPL2Format(FormatBase):
                 out.append(s)
             return "\\N".join(out)
 
-        all_text = fp.read()
-        for start, end, text in MPL2_FORMAT.findall(all_text):
-            e = SSAEvent(
-                start=times_to_ms(s=float(start) / 10),
-                end=times_to_ms(s=float(end) / 10),
-                text=prepare_text(text)
-            )
-            subs.append(e)
+        for lineno, line in enumerate(fp, 1):
+            if (m := MPL2_FORMAT.search(line)) is not None:
+                start, end, text = m.groups()
+                e = SSAEvent(
+                    start=times_to_ms(s=float(start) / 10),
+                    end=times_to_ms(s=float(end) / 10),
+                    text=prepare_text(text),
+                )
+                subs.append(e)
+            elif re.search(r"\w", line):
+                warnings.warn(
+                    f"Possible missed subtitle at line {lineno}",
+                    PossibleMissedSubtitleWarning
+                )
 
     @classmethod
     def to_file(cls, subs: "SSAFile", fp: TextIO, format_: str, **kwargs: Unpack[WriterArgs]) -> None:

@@ -1,4 +1,7 @@
+import pytest
+
 import pysubs2
+from pysubs2.warnings import PossibleMissedSubtitleWarning
 
 TRANSCRIBE_RESULT = {
     'text': ' And so my fellow Americans ask not what your country can do for you, ask what you can do for your country.',
@@ -14,7 +17,7 @@ TRANSCRIBE_RESULT = {
                   'no_speech_prob': 0.0026147987227886915}], 'language': 'en'}
 
 
-WHISPER_JAX_INPUT = r"""
+WHISPER_JAX_INPUT = """\
 [01:14.500 -> 01:15.500]  Okay.
 [01:15.500 -> 01:17.500]  You know you can't smoke weed and drive, right?
 [01:17.500 -> 01:19.500]  That's a DWI, man.
@@ -29,6 +32,7 @@ WHISPER_JAX_INPUT = r"""
 [01:38.000 -> 01:40.000]  Yeah.
 [01:40.000 -> 01:44.000]  So, if you drink and drive, it's a DWI, right?
 [01:44.000 -> 01:47.880]  If you smoke weed and drive drive it's the DWI. They're both legal
+xxx
 """
 
 WHISPER_JAX_OUTPUT_SRT = r"""
@@ -115,5 +119,6 @@ def test_read_whisper_segments_list() -> None:
 
 
 def test_parse_whisper_jax() -> None:
-    subs = pysubs2.SSAFile.from_string(WHISPER_JAX_INPUT)
+    with pytest.warns(PossibleMissedSubtitleWarning, match="Possible missed subtitle at line 15"):
+        subs = pysubs2.SSAFile.from_string(WHISPER_JAX_INPUT)
     assert subs.to_string("srt").strip() == WHISPER_JAX_OUTPUT_SRT.strip()

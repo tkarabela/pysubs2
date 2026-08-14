@@ -7,11 +7,13 @@ See https://github.com/openai/whisper
 
 """
 import re
+import warnings
 from collections.abc import Sequence
 from typing import TYPE_CHECKING, Any, TextIO, TypedDict, Unpack
 
 from ..ssaevent import SSAEvent
 from ..time import make_time, timestamp_to_ms
+from ..warnings import PossibleMissedSubtitleWarning
 from .base import FormatBase
 
 if TYPE_CHECKING:
@@ -109,8 +111,13 @@ class WhisperJAXFormat(FormatBase):
         """
         See :meth:`pysubs2.formats.FormatBase.from_file()`
         """
-        for line in fp:
+        for lineno, line in enumerate(fp, 1):
             line = line.strip()
             e = cls.parse_line(line)
             if e is not None:
                 subs.append(e)
+            elif re.search(r"\w", line):
+                warnings.warn(
+                    f"Possible missed subtitle at line {lineno}",
+                    PossibleMissedSubtitleWarning
+                )

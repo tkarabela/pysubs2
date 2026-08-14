@@ -1,6 +1,7 @@
 # mypy: disable-error-code="override"
 
 import re
+import warnings
 from functools import partial
 from re import Match
 from typing import TYPE_CHECKING, NotRequired, TextIO, TypedDict, Unpack
@@ -9,6 +10,7 @@ from ..exceptions import UnknownFPSError
 from ..ssaevent import SSAEvent
 from ..ssastyle import SSAStyle
 from ..time import frames_to_ms, ms_to_frames
+from ..warnings import PossibleMissedSubtitleWarning
 from .base import FormatBase
 from .substation import parse_tags
 
@@ -62,9 +64,14 @@ class MicroDVDFormat(FormatBase):
         fps = kwargs.get("fps", None)
         strict_fps_inference: bool = kwargs.get("strict_fps_inference", True)
 
-        for line in fp:
+        for lineno, line in enumerate(fp, 1):
             match = MICRODVD_LINE.match(line)
             if not match:
+                if re.search(r"\w", line):
+                    warnings.warn(
+                        f"Possible missed subtitle at line {lineno}",
+                        PossibleMissedSubtitleWarning
+                    )
                 continue
 
             fstart, fend, text = match.groups()
