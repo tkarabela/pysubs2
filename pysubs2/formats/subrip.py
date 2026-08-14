@@ -13,6 +13,9 @@ from ..ssafile import SSAFile
 #: Largest timestamp allowed in SubRip, ie. 99:59:59,999.
 MAX_REPRESENTABLE_TIME = make_time(h=100) - 1
 
+#: Arrow separator used in SRT/VTT timing lines (``-->`` or the looser ``->``).
+TIMESTAMP_ARROW = re.compile(r"-+>")
+
 
 class SubripFormat(FormatBase):
     """SubRip Text (SRT) subtitle format implementation"""
@@ -34,6 +37,37 @@ class SubripFormat(FormatBase):
         return timestamp_to_ms(groups)
 
     @classmethod
+    def _parse_timestamp_line(cls, line: str) -> Optional[tuple[int, int]]:
+        """Return (start_ms, end_ms) if *line* is an SRT/VTT timing line.
+
+        A timing line must have a timestamp, then ``->`` / ``-->``, then another
+        timestamp. Dialogue that merely mentions two clock times (for example
+        ``Meet at 10:00:00,000 to 11:00:00,000``) is not treated as a cue.
+        """
+        arrow = TIMESTAMP_ARROW.search(line)
+        if arrow is None:
+            return None
+
+        left, right = line[:arrow.start()], line[arrow.end():]
+        left_stamps = cls.TIMESTAMP.findall(left)
+        right_stamps = cls.TIMESTAMP.findall(right)
+        if len(left_stamps) != 1 or not right_stamps:
+            return None
+        if cls.TIMESTAMP.match(left.lstrip()) is None:
+            return None
+
+        return cls.timestamp_to_ms(left_stamps[0]), cls.timestamp_to_ms(right_stamps[0])
+
+    @classmethod
+    def _is_broken_timestamp_line(cls, line: str) -> bool:
+        """True if *line* looks like a timing line but cannot be parsed."""
+        if TIMESTAMP_ARROW.search(line) is None:
+            return False
+        if cls._parse_timestamp_line(line) is not None:
+            return False
+        return cls.TIMESTAMP.match(line.lstrip()) is not None
+
+    @classmethod
     def guess_format(cls, text: str) -> Optional[str]:
         """See :meth:`pysubs2.formats.FormatBase.guess_format()`"""
         if "[Script Info]" in text or "[V4+ Styles]" in text:
@@ -49,7 +83,7 @@ class SubripFormat(FormatBase):
             return None
 
         for line in text.splitlines():
-            if len(cls.TIMESTAMP.findall(line)) == 2:
+            if cls._parse_timestamp_line(line) is not None:
                 return "srt"
 
         return None
@@ -81,12 +115,17 @@ class SubripFormat(FormatBase):
         following_lines: list[list[str]] = [] # contains lists of lines following each timestamp
 
         for line in fp:
-            stamps = cls.TIMESTAMP.findall(line)
-            if len(stamps) == 2: # timestamp line
-                start, end = map(cls.timestamp_to_ms, stamps)
-                timestamps.append((start, end))
+            parsed = cls._parse_timestamp_line(line)
+            if parsed is not None:
+                timestamps.append(parsed)
                 following_lines.append([])
             else:
+                if cls._is_broken_timestamp_line(line):
+                    warnings.warn(
+                        f"Skipping invalid subtitle timestamp line: {line.strip()!r}",
+                        RuntimeWarning,
+                        stacklevel=2,
+                    )
                 if timestamps:
                     following_lines[-1].append(line)
 

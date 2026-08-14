@@ -460,3 +460,43 @@ def test_big5_read_write(tmp_path: Any) -> None:
         output_bytes = fp.read().replace(b"\r", b"")
 
     assert input_bytes == output_bytes
+
+def test_dialogue_with_two_clock_times_is_not_a_cue() -> None:
+    """Text mentioning two HH:MM:SS,mmm times must stay in the cue (not become a new one)."""
+    text = dedent("""\
+    1
+    00:00:01,000 --> 00:00:04,000
+    Meet at 10:00:00,000 to 11:00:00,000 tomorrow
+
+    2
+    00:00:05,000 --> 00:00:08,000
+    hello
+    """)
+
+    subs = SSAFile.from_string(text)
+    assert len(subs) == 2
+    assert subs[0].start == make_time(s=1)
+    assert subs[0].end == make_time(s=4)
+    assert subs[0].plaintext == "Meet at 10:00:00,000 to 11:00:00,000 tomorrow"
+    assert subs[1].plaintext == "hello"
+
+
+def test_invalid_timestamp_line_is_skipped_with_warning() -> None:
+    """Issue #112: a broken timing line was dropped with no warning."""
+    text = dedent("""\
+    1
+    00:00:13,980 --> 00:00:19werwer,580
+    entry1
+
+    2
+    00:00:20,980 --> 00:00:21,680
+    entry2
+    """)
+
+    with pytest.warns(RuntimeWarning, match="Skipping invalid subtitle timestamp line"):
+        subs = SSAFile.from_string(text)
+
+    assert len(subs) == 1
+    assert subs[0].plaintext == "entry2"
+    assert subs[0].start == make_time(s=20, ms=980)
+
