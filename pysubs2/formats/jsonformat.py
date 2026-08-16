@@ -2,7 +2,7 @@
 
 import dataclasses
 import json
-from typing import TYPE_CHECKING, Any, TextIO, TypedDict, Unpack
+from typing import TYPE_CHECKING, Any, TextIO, TypedDict, Unpack, override
 
 from ..common import Color
 from ..ssaevent import SSAEvent
@@ -15,6 +15,7 @@ if TYPE_CHECKING:
 # Custom JSONEncoder is needed since our `Color` is a dataclass
 # https://stackoverflow.com/questions/51286748/make-the-python-json-encoder-support-pythons-new-dataclasses
 class EnhancedJSONEncoder(json.JSONEncoder):
+    @override
     def default(self, o: Any) -> Any:
         if not isinstance(o, type) and dataclasses.is_dataclass(o):
             # MyPy 1.11.0 thinks `o` is `type[DataclassInstance]` instead of `DataclassInstance` without the isinstance
@@ -36,6 +37,7 @@ class JSONFormat(FormatBase):
         pass
 
     @classmethod
+    @override
     def guess_format(cls, text: str) -> str | None:
         """See :meth:`pysubs2.formats.FormatBase.guess_format()`"""
         if text.startswith("{\"") and "\"info\":" in text:
@@ -44,6 +46,7 @@ class JSONFormat(FormatBase):
             return None
 
     @classmethod
+    @override
     def from_file(cls, subs: "SSAFile", fp: TextIO, format_: str, **kwargs: Unpack[ReaderArgs]) -> None:
         """See :meth:`pysubs2.formats.FormatBase.from_file()`"""
         data = json.load(fp)
@@ -63,6 +66,7 @@ class JSONFormat(FormatBase):
         subs.events = [SSAEvent(**fields) for fields in data["events"]]
 
     @classmethod
+    @override
     def to_file(cls, subs: "SSAFile", fp: TextIO, format_: str, **kwargs: Unpack[WriterArgs]) -> None:
         """See :meth:`pysubs2.formats.FormatBase.to_file()`"""
         data = {

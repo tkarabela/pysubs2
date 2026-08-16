@@ -397,7 +397,7 @@ def test_empty_notty_input_doesnt_print_help(tmp_path: Any, capsys: Any, monkeyp
     path = tmp_path / "test.srt"
     with path.open("w+") as in_fp:
         cmd = [sys.executable, "-m", "pysubs2"]
-        p = subprocess.run(cmd, stdin=in_fp, capture_output=True, text=True)
+        p = subprocess.run(cmd, stdin=in_fp, capture_output=True, text=True, check=False)
         assert p.returncode == 1
         assert not p.stdout.startswith("usage: pysubs2")
         assert "FormatAutodetectionError" in p.stderr

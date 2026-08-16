@@ -3,7 +3,7 @@
 import logging
 import re
 import warnings
-from typing import TYPE_CHECKING, Any, NotRequired, TextIO, TypedDict, Unpack
+from typing import TYPE_CHECKING, Any, NotRequired, TextIO, TypedDict, Unpack, override
 
 from ..common import SSA_ALIGNMENT, Alignment, Color
 from ..ssaevent import SSAEvent
@@ -193,6 +193,7 @@ class SubstationFormat(FormatBase):
         return f"{h:01d}:{m:02d}:{s:02d}.{cs:02d}"
 
     @classmethod
+    @override
     def guess_format(cls, text: str) -> str | None:
         """See :meth:`pysubs2.formats.FormatBase.guess_format()`"""
         if re.search(r"V4\+ Styles", text, re.IGNORECASE):
@@ -203,6 +204,7 @@ class SubstationFormat(FormatBase):
             return None
 
     @classmethod
+    @override
     def from_file(cls, subs: "SSAFile", fp: TextIO, format_: str, **kwargs: Unpack[ReaderArgs]) -> None:
         """See :meth:`pysubs2.formats.FormatBase.from_file()`"""
         subs.info.clear()
@@ -363,6 +365,7 @@ class SubstationFormat(FormatBase):
                 return value
 
     @classmethod
+    @override
     def to_file(cls, subs: "SSAFile", fp: TextIO, format_: str, **kwargs: Unpack[WriterArgs]) -> None:
         """See :meth:`pysubs2.formats.FormatBase.to_file()`"""
         header_notice: str = kwargs.get("header_notice", NOTICE)

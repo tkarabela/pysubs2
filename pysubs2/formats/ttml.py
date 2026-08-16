@@ -4,7 +4,7 @@ import re
 import warnings
 import xml.etree.ElementTree as ET
 from enum import Enum
-from typing import TYPE_CHECKING, NotRequired, TextIO, TypedDict, Unpack
+from typing import TYPE_CHECKING, NotRequired, TextIO, TypedDict, Unpack, override
 
 from ..common import (
     etree_append_child_nodes,
@@ -69,6 +69,7 @@ class TTMLFormat(FormatBase):
         raise NotImplementedError(f"Unsupported time expression: {expr}")
 
     @classmethod
+    @override
     def guess_format(cls, text: str) -> str | None:
         """See :meth:`pysubs2.formats.FormatBase.guess_format()`"""
         if "http://www.w3.org/ns/ttml" in text:
@@ -77,6 +78,7 @@ class TTMLFormat(FormatBase):
         return None
 
     @classmethod
+    @override
     def from_file(
             cls,
             subs: "SSAFile",
@@ -109,6 +111,7 @@ class TTMLFormat(FormatBase):
         parser.parse_body(body_elem)
 
     @classmethod
+    @override
     def to_file(cls, subs: "SSAFile", fp: TextIO, format_: str, **kwargs: Unpack[WriterArgs]) -> None:
         """
         TTML writer. Has partial support for styles and override tags.

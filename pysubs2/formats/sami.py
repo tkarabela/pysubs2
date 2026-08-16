@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass
 from html.parser import HTMLParser
-from typing import TYPE_CHECKING, TextIO, TypedDict, Unpack
+from typing import TYPE_CHECKING, TextIO, TypedDict, Unpack, override
 
 from ..ssaevent import SSAEvent
 from .base import FormatBase
@@ -18,6 +18,7 @@ class SAMIFormat(FormatBase):
         pass
 
     @classmethod
+    @override
     def guess_format(cls, text: str) -> str | None:
         """See :meth:`pysubs2.formats.FormatBase.guess_format()`"""
         if text.lstrip().startswith("<SAMI>"):
@@ -26,6 +27,7 @@ class SAMIFormat(FormatBase):
         return None
 
     @classmethod
+    @override
     def from_file(cls, subs: "SSAFile", fp: TextIO, format_: str, **kwargs: Unpack[ReaderArgs]) -> None:
         """
         See :meth:`pysubs2.formats.FormatBase.from_file()`
@@ -91,6 +93,7 @@ class SAMIParser(HTMLParser):
         if self.current_sync_element is not None:
             self.current_sync_element.text += text
 
+    @override
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         if tag == "sync":
             start_ms = int(dict(attrs)["start"] or 0)
@@ -100,11 +103,13 @@ class SAMIParser(HTMLParser):
         elif tag in ("b", "i", "s", "u"):
             self.append_text("{\\" + tag + "1}")
 
+    @override
     def handle_endtag(self, tag: str) -> None:
         if tag in ("sync", "body", "sami"):
             self.close_sync_element()
         elif tag in ("b", "i", "s", "u"):
             self.append_text("{\\" + tag + "0}")
 
+    @override
     def handle_data(self, data: str) -> None:
         self.append_text(data)

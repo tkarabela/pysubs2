@@ -9,7 +9,7 @@ See https://github.com/openai/whisper
 import re
 import warnings
 from collections.abc import Sequence
-from typing import TYPE_CHECKING, Any, TextIO, TypedDict, Unpack
+from typing import TYPE_CHECKING, Any, TextIO, TypedDict, Unpack, override
 
 from ..ssaevent import SSAEvent
 from ..time import make_time, timestamp_to_ms
@@ -74,6 +74,7 @@ class WhisperJAXFormat(FormatBase):
     LINE = re.compile(r"\[([^]]+) -> ([^]]+)] (.*)")
 
     @classmethod
+    @override
     def guess_format(cls, text: str) -> str | None:
         """See :meth:`pysubs2.formats.FormatBase.guess_format()`"""
         for line in text.lstrip().splitlines():
@@ -107,6 +108,7 @@ class WhisperJAXFormat(FormatBase):
         return timestamp_to_ms([x or "0" for x in groups])
 
     @classmethod
+    @override
     def from_file(cls, subs: "SSAFile", fp: TextIO, format_: str, **kwargs: Unpack[ReaderArgs]) -> None:
         """
         See :meth:`pysubs2.formats.FormatBase.from_file()`

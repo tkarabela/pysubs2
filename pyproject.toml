@@ -85,12 +85,8 @@ project-includes = [
 ]
 preset = "strict"
 
-[tool.pyrefly.errors]
-missing-override-decorator = false
-
 [tool.ruff.lint]
 ignore = [
-    "PLW1510",
     "UP012",
     "RUF046",
     "BLE001",

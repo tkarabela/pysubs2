@@ -3,7 +3,7 @@
 import re
 import warnings
 from collections.abc import Sequence
-from typing import TYPE_CHECKING, NotRequired, TextIO, TypedDict, Unpack
+from typing import TYPE_CHECKING, NotRequired, TextIO, TypedDict, Unpack, override
 
 from ..ssaevent import SSAEvent
 from ..ssastyle import SSAStyle
@@ -53,6 +53,7 @@ class SubripFormat(FormatBase):
         return timestamp_to_ms(groups)
 
     @classmethod
+    @override
     def guess_format(cls, text: str) -> str | None:
         """See :meth:`pysubs2.formats.FormatBase.guess_format()`"""
         if "[Script Info]" in text or "[V4+ Styles]" in text:
@@ -74,6 +75,7 @@ class SubripFormat(FormatBase):
         return None
 
     @classmethod
+    @override
     def from_file(cls, subs: "SSAFile", fp: TextIO, format_: str, **kwargs: Unpack[ReaderArgs]) -> None:
         """
         See :meth:`pysubs2.formats.FormatBase.from_file()`
@@ -146,6 +148,7 @@ class SubripFormat(FormatBase):
             subs.append(e)
 
     @classmethod
+    @override
     def to_file(cls, subs: "SSAFile", fp: TextIO, format_: str, **kwargs: Unpack[WriterArgs]) -> None:
         """
         See :meth:`pysubs2.formats.FormatBase.to_file()`

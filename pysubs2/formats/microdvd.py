@@ -4,7 +4,7 @@ import re
 import warnings
 from functools import partial
 from re import Match
-from typing import TYPE_CHECKING, NotRequired, TextIO, TypedDict, Unpack
+from typing import TYPE_CHECKING, NotRequired, TextIO, TypedDict, Unpack, override
 
 from ..exceptions import UnknownFPSError
 from ..ssaevent import SSAEvent
@@ -34,6 +34,7 @@ class MicroDVDFormat(FormatBase):
         apply_styles: NotRequired[bool]
 
     @classmethod
+    @override
     def guess_format(cls, text: str) -> str | None:
         """See :meth:`pysubs2.formats.FormatBase.guess_format()`"""
         if any(map(MICRODVD_LINE.match, text.splitlines())):
@@ -42,6 +43,7 @@ class MicroDVDFormat(FormatBase):
             return None
 
     @classmethod
+    @override
     def from_file(cls, subs: "SSAFile", fp: TextIO, format_: str, **kwargs: Unpack[ReaderArgs]) -> None:
         """
         See :meth:`pysubs2.formats.FormatBase.from_file()`
@@ -116,6 +118,7 @@ class MicroDVDFormat(FormatBase):
             subs.append(ev)
 
     @classmethod
+    @override
     def to_file(cls, subs: "SSAFile", fp: TextIO, format_: str, **kwargs: Unpack[WriterArgs]) -> None:
         """
         See :meth:`pysubs2.formats.FormatBase.to_file()`

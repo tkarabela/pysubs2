@@ -5,7 +5,7 @@ import logging
 from collections.abc import Iterable, Iterator, MutableSequence
 from itertools import chain
 from pathlib import Path
-from typing import Any, ClassVar, Literal, TextIO, Unpack, overload
+from typing import Any, ClassVar, Literal, TextIO, Unpack, overload, override
 
 from .common import IntOrFloat, PathOrStr
 from .formats.jsonformat import JSONFormat
@@ -1170,6 +1170,7 @@ class SSAFile(MutableSequence[SSAEvent]):
         """Sort subtitles time-wise, in-place."""
         self.events.sort()
 
+    @override
     def __iter__(self) -> Iterator[SSAEvent]:
         return iter(self.events)
 
@@ -1181,6 +1182,7 @@ class SSAFile(MutableSequence[SSAEvent]):
     def __getitem__(self, item: slice) -> list[SSAEvent]:
         pass
 
+    @override
     def __getitem__(self, item: Any) -> Any:
         return self.events[item]
 
@@ -1192,6 +1194,7 @@ class SSAFile(MutableSequence[SSAEvent]):
     def __setitem__(self, key: slice, value: Iterable[SSAEvent]) -> None:
         pass
 
+    @override
     def __setitem__(self, key: Any, value: Any) -> None:
         if isinstance(key, int):
             if isinstance(value, SSAEvent):
@@ -1215,12 +1218,15 @@ class SSAFile(MutableSequence[SSAEvent]):
     def __delitem__(self, key: slice) -> None:
         pass
 
+    @override
     def __delitem__(self, key: Any) -> None:
         del self.events[key]
 
+    @override
     def __len__(self) -> int:
         return len(self.events)
 
+    @override
     def insert(self, index: int, value: SSAEvent) -> None:
         if isinstance(value, SSAEvent):
             self.events.insert(index, value)
