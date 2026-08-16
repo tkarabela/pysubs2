@@ -332,6 +332,19 @@ def test_color_parsing() -> None:
     assert color_to_ass_rgba(Color(r=0xDD, g=0xCC, b=0xBB, a=0xAA)) == "&HAABBCCDD"
 
 
+def test_malformed_color_uses_default() -> None:
+    # rgba_to_color on an empty string used to raise IndexError.
+    with pytest.raises(ValueError):
+        rgba_to_color("")
+
+    # A Style whose colour field is empty or otherwise unparseable used to
+    # crash the reader; it should warn and fall back to a default instead.
+    ref = SIMPLE_ASS_REF.replace("&H00FFFFFF", "", 1)
+    with pytest.warns(RuntimeWarning):
+        subs = SSAFile.from_string(ref)
+    assert subs.styles["Default"].primarycolor == Color(255, 255, 255, 0)
+
+
 def test_aegisub_project_garbage() -> None:
     subs = SSAFile.from_string(AEGISUB_PROJECT_GARBAGE_FILE)
     garbage_section = dedent("""

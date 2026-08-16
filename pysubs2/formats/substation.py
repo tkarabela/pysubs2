@@ -72,6 +72,8 @@ def color_to_ssa_rgb(c: Color) -> str:
     return f"{((c.b << 16) | (c.g << 8) | c.r)}"
 
 def rgba_to_color(s: str) -> Color:
+    if not s:
+        raise ValueError("empty color value")
     if s[0] == '&':
         # Example: "&HAABBCCDD" (this is not a typical "0xAABBCCDD" value; lint to replace with base=0 is misplaced)
         x = int(s[2:], base=16)  # noqa: FURB166
@@ -230,7 +232,11 @@ class SubstationFormat(FormatBase):
                 return sign * timestamp_to_ms(m.groups())
             elif "color" in f:
                 v = v.strip()
-                return rgba_to_color(v)
+                try:
+                    return rgba_to_color(v)
+                except ValueError:
+                    warnings.warn(f"Failed to parse {f}, using default", RuntimeWarning)
+                    return Color(255, 255, 255, 0)
             elif f in {"bold", "underline", "italic", "strikeout"}:
                 return v != "0"
             elif f in {"borderstyle", "encoding", "marginl", "marginr", "marginv", "layer", "alphalevel"}:
