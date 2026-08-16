@@ -72,9 +72,7 @@ def color_to_ssa_rgb(c: Color) -> str:
     return f"{((c.b << 16) | (c.g << 8) | c.r)}"
 
 def rgba_to_color(s: str) -> Color:
-    if not s:
-        raise ValueError("empty color value")
-    if s[0] == '&':
+    if s.startswith("&"):
         # Example: "&HAABBCCDD" (this is not a typical "0xAABBCCDD" value; lint to replace with base=0 is misplaced)
         x = int(s[2:], base=16)  # noqa: FURB166
     else:
@@ -207,62 +205,6 @@ class SubstationFormat(FormatBase):
     @classmethod
     def from_file(cls, subs: "SSAFile", fp: TextIO, format_: str, **kwargs: Unpack[ReaderArgs]) -> None:
         """See :meth:`pysubs2.formats.FormatBase.from_file()`"""
-
-        def string_to_field(f: str, v: str) -> Any:
-            # Per issue #45, we should handle the case where there is extra whitespace around the values.
-            # Extra whitespace is removed in non-string fields where it would break the parser otherwise,
-            # and in font name (where it doesn't really make sense). It is preserved in Dialogue string
-            # fields like Text, Name and Effect (to avoid introducing unnecessary change to parser output).
-
-            if f in {"start", "end"}:
-                v = v.strip()
-                if v.startswith("-"):
-                    # handle negative timestamps
-                    v = v[1:]
-                    sign = -1
-                else:
-                    sign = 1
-
-                m = TIMESTAMP.match(v)
-                if m is None:
-                    m = TIMESTAMP_SHORT.match(v)
-                    if m is None:
-                        raise ValueError(f"Failed to parse timestamp: {v!r}")
-
-                return sign * timestamp_to_ms(m.groups())
-            elif "color" in f:
-                v = v.strip()
-                try:
-                    return rgba_to_color(v)
-                except ValueError:
-                    warnings.warn(f"Failed to parse {f}, using default", RuntimeWarning)
-                    return Color(255, 255, 255, 0)
-            elif f in {"bold", "underline", "italic", "strikeout"}:
-                return v != "0"
-            elif f in {"borderstyle", "encoding", "marginl", "marginr", "marginv", "layer", "alphalevel"}:
-                try:
-                    return int(v)
-                except ValueError:
-                    warnings.warn(f"Failed to parse {f}, using default", SubtitleAttributeWarning)
-                    return 0
-            elif f in {"fontsize", "scalex", "scaley", "spacing", "angle", "outline", "shadow"}:
-                return float(v)
-            elif f == "marked":
-                return v.endswith("1")
-            elif f == "alignment":
-                try:
-                    if format_ == "ass":
-                        return Alignment(int(v))
-                    else:
-                        return Alignment.from_ssa_alignment(int(v))
-                except ValueError:
-                    warnings.warn("Failed to parse alignment, using default", SubtitleAttributeWarning)
-                    return Alignment.BOTTOM_CENTER
-            elif f == "fontname":
-                return v.strip()
-            else:
-                return v
-
         subs.info.clear()
         subs.aegisub_project.clear()
         subs.styles.clear()
@@ -325,13 +267,13 @@ class SubstationFormat(FormatBase):
                 _, rest = line.split(":", 1)
                 buf = rest.strip().split(",")
                 name, *raw_fields = buf
-                field_dict = {f: string_to_field(f, v) for f, v in zip(STYLE_FIELDS[format_], raw_fields)}
+                field_dict = {f: cls._string_to_field(f, v, format_) for f, v in zip(STYLE_FIELDS[format_], raw_fields)}
                 sty = SSAStyle(**field_dict)
                 subs.styles[name] = sty
             elif line.startswith(("Dialogue:", "Comment:")):
                 ev_type, rest = line.split(":", 1)
                 raw_fields = rest.strip().split(",", len(EVENT_FIELDS[format_])-1)
-                field_dict = {f: string_to_field(f, v) for f, v in zip(EVENT_FIELDS[format_], raw_fields)}
+                field_dict = {f: cls._string_to_field(f, v, format_) for f, v in zip(EVENT_FIELDS[format_], raw_fields)}
                 field_dict["type"] = ev_type
                 ev = SSAEvent(**field_dict)
                 subs.events.append(ev)
@@ -349,6 +291,76 @@ class SubstationFormat(FormatBase):
             logger.debug("at EOF: finished attachment definition %s", current_attachment_name)
             current_attachment_lines_buffer.clear()
             current_attachment_name = None
+
+    @staticmethod
+    def _string_to_field(field: str, value: str, format_: str) -> Any:
+        """Parse SSAEvent/SSAStyle field value"""
+        # Per issue #45, we should handle the case where there is extra whitespace around the values.
+        # Extra whitespace is removed in non-string fields where it would break the parser otherwise,
+        # and in font name (where it doesn't really make sense). It is preserved in Dialogue string
+        # fields like Text, Name and Effect (to avoid introducing unnecessary change to parser output).
+
+        match field:
+            case "start" | "end":
+                value = value.strip()
+                if value.startswith("-"):
+                    # handle negative timestamps
+                    value = value[1:]
+                    sign = -1
+                else:
+                    sign = 1
+
+                m = TIMESTAMP.match(value)
+                if m is None:
+                    m = TIMESTAMP_SHORT.match(value)
+                    if m is None:
+                        raise ValueError(f"Failed to parse {field} timestamp: {value!r}")
+
+                return sign * timestamp_to_ms(m.groups())
+            case "primarycolor" | "secondarycolor" | "tertiarycolor" | "outlinecolor" | "backcolor":
+                value = value.strip()
+                try:
+                    return rgba_to_color(value)
+                except ValueError:
+                    warnings.warn(f"Failed to parse {field}, using default", SubtitleAttributeWarning)
+                    return getattr(SSAStyle.DEFAULT_STYLE, field)
+            case "bold" | "underline" | "italic" | "strikeout":
+                return value != "0"
+            case "layer":
+                # layer is not an SSAStyle attribute
+                try:
+                    return int(value)
+                except ValueError:
+                    warnings.warn(f"Failed to parse {field}, using default", SubtitleAttributeWarning)
+                    return 0
+            case "borderstyle" | "encoding" | "marginl" | "marginr" | "marginv" | "alphalevel":
+                try:
+                    return int(value)
+                except ValueError:
+                    warnings.warn(f"Failed to parse {field}, using default", SubtitleAttributeWarning)
+                    # TODO - this is not entirely correct, the default for margin should be 0 if we're parsing SSAEvent
+                    return getattr(SSAStyle.DEFAULT_STYLE, field)
+            case "fontsize" | "scalex" | "scaley" | "spacing" | "angle" | "outline" | "shadow":
+                try:
+                    return float(value)
+                except ValueError:
+                    warnings.warn(f"Failed to parse {field}, using default", SubtitleAttributeWarning)
+                    return getattr(SSAStyle.DEFAULT_STYLE, field)
+            case "marked":
+                return value.endswith("1")
+            case "alignment":
+                try:
+                    if format_ == "ass":
+                        return Alignment(int(value))
+                    else:
+                        return Alignment.from_ssa_alignment(int(value))
+                except ValueError:
+                    warnings.warn("Failed to parse alignment, using default", SubtitleAttributeWarning)
+                    return getattr(SSAStyle.DEFAULT_STYLE, field)
+            case "fontname":
+                return value.strip()
+            case _:
+                return value
 
     @classmethod
     def to_file(cls, subs: "SSAFile", fp: TextIO, format_: str, **kwargs: Unpack[WriterArgs]) -> None:
@@ -368,42 +380,10 @@ class SubstationFormat(FormatBase):
             for k, v in subs.aegisub_project.items():
                 print(k, v, sep=": ", file=fp)
 
-        def field_to_string(f: str, v: Any, line: SSAEvent | SSAStyle) -> str:
-            if f in {"start", "end"}:
-                return cls.ms_to_timestamp(v)
-            elif f == "marked":
-                return f"Marked={v:d}"
-            elif f == "alignment":
-                if isinstance(v, Alignment):
-                    alignment = v
-                else:
-                    warnings.warn("The 'alignment' attribute of SSAStyle should be an Alignment instance, using plain int is deprecated", DeprecationWarning)
-                    alignment = Alignment(v)
-
-                if format_ == "ssa":
-                    return str(alignment.to_ssa_alignment())
-                else:
-                    return str(alignment.value)
-            elif isinstance(v, bool):
-                return "-1" if v else "0"
-            elif isinstance(v, int):
-                return str(v)
-            elif isinstance(v, float):
-                return str(int(v) if v.is_integer() else v)
-            elif isinstance(v, str):
-                return v
-            elif isinstance(v, Color):
-                if format_ == "ass":
-                    return color_to_ass_rgba(v)
-                else:
-                    return color_to_ssa_rgb(v)
-            else:
-                raise TypeError(f"Unexpected type when writing a SubStation field {f!r} for line {line!r}")
-
         print("\n[V4+ Styles]" if format_ == "ass" else "\n[V4 Styles]", file=fp)
         print(STYLE_FORMAT_LINE[format_], file=fp)
         for name, sty in subs.styles.items():
-            fields = [field_to_string(f, getattr(sty, f), sty) for f in STYLE_FIELDS[format_]]
+            fields = [cls._field_to_string(f, getattr(sty, f), sty, format_) for f in STYLE_FIELDS[format_]]
             print(f"Style: {name}", *fields, sep=",", file=fp)
 
         if subs.fonts_opaque:
@@ -425,6 +405,43 @@ class SubstationFormat(FormatBase):
         print("\n[Events]", file=fp)
         print(EVENT_FORMAT_LINE[format_], file=fp)
         for ev in subs.events:
-            fields = [field_to_string(f, getattr(ev, f), ev) for f in EVENT_FIELDS[format_]]
+            fields = [cls._field_to_string(f, getattr(ev, f), ev, format_) for f in EVENT_FIELDS[format_]]
             print(ev.type, end=": ", file=fp)
             print(*fields, sep=",", file=fp)
+
+    @classmethod
+    def _field_to_string(cls, field: str, value: Any, line: SSAEvent | SSAStyle, format_: str) -> str:
+        """Format SSAEvent/SSAStyle field value"""
+        match field:
+            case "start" | "end":
+                return cls.ms_to_timestamp(value)
+            case "marked":
+                return f"Marked={value:d}"
+            case "alignment":
+                if isinstance(value, Alignment):
+                    alignment = value
+                else:
+                    warnings.warn("The 'alignment' attribute of SSAStyle should be an Alignment instance, using plain int is deprecated", DeprecationWarning)
+                    alignment = Alignment(value)
+
+                if format_ == "ssa":
+                    return str(alignment.to_ssa_alignment())
+                else:
+                    return str(alignment.value)
+
+        match value:
+            case bool():
+                return "-1" if value else "0"
+            case int():
+                return str(value)
+            case float():
+                return str(int(value) if value.is_integer() else value)
+            case str():
+                return value
+            case Color():
+                if format_ == "ass":
+                    return color_to_ass_rgba(value)
+                else:
+                    return color_to_ssa_rgb(value)
+
+        raise TypeError(f"Unexpected type when writing a SubStation field {field!r} for line {line!r}")

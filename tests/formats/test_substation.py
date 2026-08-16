@@ -340,9 +340,16 @@ def test_malformed_color_uses_default() -> None:
     # A Style whose colour field is empty or otherwise unparseable used to
     # crash the reader; it should warn and fall back to a default instead.
     ref = SIMPLE_ASS_REF.replace("&H00FFFFFF", "", 1)
-    with pytest.warns(RuntimeWarning):
+    with pytest.warns(SubtitleAttributeWarning):
         subs = SSAFile.from_string(ref)
-    assert subs.styles["Default"].primarycolor == Color(255, 255, 255, 0)
+    assert subs.styles["Default"].primarycolor == SSAStyle.DEFAULT_STYLE.primarycolor
+
+    # A Style whose colour field is empty or otherwise unparseable used to
+    # crash the reader; it should warn and fall back to a default instead.
+    ref = SIMPLE_ASS_REF.replace("&H000000FF", "red", 1)
+    with pytest.warns(SubtitleAttributeWarning):
+        subs = SSAFile.from_string(ref)
+    assert subs.styles["Default"].secondarycolor == SSAStyle.DEFAULT_STYLE.secondarycolor
 
 
 def test_aegisub_project_garbage() -> None:
