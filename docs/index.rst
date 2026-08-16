@@ -5,11 +5,12 @@ pysubs2 is a Python library for editing subtitle files. It’s based on *SubStat
 the native format of `Aegisub <http://www.aegisub.org/>`_; it also supports  *SubRip (SRT)*,
 *MicroDVD*, *MPL2*, *TMP*, *WebVTT*, *TTML* and *SAMI* formats. There is a small CLI tool for batch conversion and retiming.
 
-.. code-block:: bash
-
-    pip install pysubs2
-    pysubs2 --shift 0.3s *.srt
-    pysubs2 --to srt *.ass
+Goal of this library is to provide practical, robust handling for subtitle files
+found in the wild (with all their questionable syntax). Internally, everything is converted to
+a representation based on *ASS*, which is relevant if you want to process formatting.
+Support for production/broadcast subtitle formats (or subtitle features beyond what *ASS* can express)
+is not really a goal of the library; however, please open an issue if you have a use-case
+where using this library would make sense to you.
 
 .. code-block:: python
 
@@ -20,11 +21,20 @@ the native format of `Aegisub <http://www.aegisub.org/>`_; it also supports  *Su
         line.text = "{\\be1}" + line.text
     subs.save("my_subtitles_edited.ass")
 
+.. code-block:: bash
+
+    pip install pysubs2
+    pysubs2 --shift 0.3s *.srt
+    pysubs2 --to srt *.ass
+
 The library works in Python 3.12 or newer, with no extra dependencies.
 It’s available under the MIT license (see bottom of the page).
 To get started, simply install it using `uv <https://docs.astral.sh/uv/>`_: ``uv add pysubs2`` or
 `pip <https://pypi.python.org/pypi/pip>`_: ``pip install pysubs2``.
 You can also clone `the GitHub repository <https://github.com/tkarabela/pysubs2/>`_.
+
+Based on code originally created in 2011, in development ever since.
+Thanks to all users and contributors over the years!
 
 If you find a bug or have something to say, please let me know `via GitHub <https://github.com/tkarabela/pysubs2/issues>`_ or
 email (tkarabela at seznam dot cz). Your feedback is much appreciated. Thanks!

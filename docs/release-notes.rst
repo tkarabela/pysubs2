@@ -1,6 +1,45 @@
 Release Notes
 =============
 
+**1.9.0** --- released on 2026-08-16
+
+- The way ``SSAFile`` reader/writer methods are implemented has changed - there are now overloads for every
+  supported subtitle format and its extra arguments. Each format defines its own reader/writer ``TypedDict``
+  of the extra arguments, which is used instead of untyped ``**kwargs``. This should eventually lead to
+  better typed, more robust code with better intellisense, at the cost of more boilerplate inside the library itself.
+
+.. note::
+
+    This leads to a few related **API changes** - the ``fps`` argument has been removed from ``SSAFile``
+    methods and moved into MicroDVD-specific extra arguments ``TypedDict``, and there are now overloads
+    with more precise types.
+
+    Runtime behaviour is largely unchanged (ie., passing ``fps`` as a keyword argument to the formats
+    that don't need it, or even passing a completely unrecognized keyword argument, does not fail;
+    the only thing that fails is passing ``fps`` as a positional argument).
+
+    Typecheck behaviour for library consumers is also largely unchanged - there is still a catch-all
+    overload with untyped ``**kwargs`` (as of Python 3.15, there is no way to do something like
+    ``**kwargs: Unpack[TypedDict1 | TypedDict2]`` which would be needed to narrow down the type).
+
+    The IDE experience should be improved, since it can now surface the possible extra arguments
+    to ``SSAFile`` methods (eg. ``keep_unknown_html_tags`` for SRT reader).
+
+- The library now raises more warnings related to problems during parsing, possible missed subtitles, using default values as fallback, etc. (Issue #112)
+
+.. note::
+
+    This leads to a minor **API change** - previously all such warnings were ``RuntimeWarning``,
+    now there is a proper warning hierarchy starting with ``pysubs2.warnings.Pysubs2Warning``
+    mirroring what we have for exceptions (however, this is subclassed from ``UserWarning``
+    rather than ``RuntimeWarning``).
+
+- MicroDVD writer now properly writes fps header, patch by Vincent Gao (https://github.com/gaoflow)
+- Better handling of unparseable color fields in SSA/ASS, patch by eeshsaxena (https://github.com/eeshsaxena)
+- Added support for Python 3.15, removed support for Python < 3.12
+- Code is now checked with pyrefly as well as mypy and ruff
+- Improved supply chain security - release to PyPI from GitHub Trusted Publisher, pinned CI action hashes
+
 **1.8.1** --- released on 2026-03-19
 
 - TMP subtitle writer now supports newlines, patch by CK-Explorer (https://github.com/CK-Explorer)
