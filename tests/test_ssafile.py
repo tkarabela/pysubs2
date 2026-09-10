@@ -3,6 +3,50 @@ import pytest
 from pysubs2 import SSAEvent, SSAFile, SSAStyle, make_time
 
 
+@pytest.fixture
+def isolated_default_style(monkeypatch: pytest.MonkeyPatch) -> None:
+    # Protect the real defaults even when a broken copy() shares its colors.
+    monkeypatch.setattr(SSAStyle, "DEFAULT_STYLE", SSAStyle())
+
+
+@pytest.mark.usefixtures("isolated_default_style")
+@pytest.mark.parametrize("color_field", [
+    "primarycolor", "secondarycolor", "tertiarycolor", "outlinecolor", "backcolor",
+])
+@pytest.mark.parametrize("create_after_edit", [False, True], ids=["existing-file", "new-file"])
+def test_default_style_colors_are_independent(color_field: str, create_after_edit: bool) -> None:
+    expected = SSAStyle()
+    first = SSAFile()
+    second = None if create_after_edit else SSAFile()
+
+    color = getattr(first.styles["Default"], color_field)
+    color.r = (color.r + 1) % 256
+
+    if second is None:
+        second = SSAFile()
+    assert second.styles["Default"] == expected
+    assert SSAStyle.DEFAULT_STYLE == expected
+
+
+@pytest.mark.usefixtures("isolated_default_style")
+@pytest.mark.parametrize(("format_", "color_field"), [
+    ("ass", "primarycolor"), ("ass", "secondarycolor"),
+    ("ass", "outlinecolor"), ("ass", "backcolor"),
+    ("ssa", "primarycolor"), ("ssa", "secondarycolor"),
+    ("ssa", "tertiarycolor"), ("ssa", "backcolor"),
+])
+def test_default_style_export_is_independent(format_: str, color_field: str) -> None:
+    first = SSAFile()
+    second = SSAFile()
+    second.append(SSAEvent(start=0, end=1000, text="Untouched subtitle"))
+    before = second.to_string(format_)
+
+    color = getattr(first.styles["Default"], color_field)
+    color.r = (color.r + 1) % 256
+
+    assert second.to_string(format_) == before
+
+
 def test_repr_default() -> None:
     subs = SSAFile()
     ref = "<SSAFile with 0 events and 1 styles>"

@@ -1,5 +1,6 @@
 import dataclasses
 import warnings
+from copy import copy
 from typing import Any, ClassVar
 
 from .common import Alignment, Color
@@ -90,7 +91,12 @@ class SSAStyle:
     drawing: bool = False
 
     def copy(self) -> "SSAStyle":
-        return SSAStyle(**self.as_dict())
+        """Return a copy of the style with independent colors."""
+        fields = self.as_dict()
+        for name, value in fields.items():
+            if isinstance(value, Color):
+                fields[name] = copy(value)
+        return SSAStyle(**fields)
 
     def as_dict(self) -> dict[str, Any]:
         # dataclasses.asdict() would recursively dictify Color objects, which we don't want
