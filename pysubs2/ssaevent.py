@@ -7,6 +7,19 @@ from .common import IntOrFloat
 from .time import make_time, ms_to_str
 
 
+def split_unclosed_tail(text: str) -> tuple[str, str]:
+    """
+    Split text after its last ``}``.
+
+    :attr:`SSAEvent.OVERRIDE_SEQUENCE` cannot match in the tail, since every
+    match ends with ``}``. Running the regex on the head only gives the same
+    matches, but avoids rescanning the tail from every ``{`` in it, which is
+    quadratic in the length of a long unclosed run like ``{{{{...``.
+    """
+    end = text.rfind("}") + 1
+    return text[:end], text[end:]
+
+
 @dataclasses.dataclass(repr=False, eq=False, order=False)
 class SSAEvent:
     """
@@ -117,8 +130,8 @@ class SSAEvent:
         Writing to this property replaces :attr:`SSAEvent.text` with given plain
         text. Newlines are converted to ``\\N`` tags.
         """
-        text = self.text
-        text = self.OVERRIDE_SEQUENCE.sub("", text)
+        head, tail = split_unclosed_tail(self.text)
+        text = self.OVERRIDE_SEQUENCE.sub("", head) + tail
         text = text.replace(r"\h", " ")
         text = text.replace(r"\n", "\n")
         text = text.replace(r"\N", "\n")

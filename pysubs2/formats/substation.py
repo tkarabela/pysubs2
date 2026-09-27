@@ -6,7 +6,7 @@ import warnings
 from typing import TYPE_CHECKING, Any, NotRequired, TextIO, TypedDict, Unpack, override
 
 from ..common import SSA_ALIGNMENT, Alignment, Color
-from ..ssaevent import SSAEvent
+from ..ssaevent import SSAEvent, split_unclosed_tail
 from ..ssastyle import SSAStyle
 from ..time import TIMESTAMP, TIMESTAMP_SHORT, make_time, ms_to_times, timestamp_to_ms
 from ..warnings import SubtitleAttributeWarning, TimestampOverflow, TimestampUnderflow
@@ -117,16 +117,18 @@ def parse_tags(text: str, style: SSAStyle = SSAStyle.DEFAULT_STYLE,
     if styles is None:
         styles = {}
     
-    fragments = SSAEvent.OVERRIDE_SEQUENCE.split(text)
+    head, tail = split_unclosed_tail(text)
+    fragments = SSAEvent.OVERRIDE_SEQUENCE.split(head)
+    fragments[-1] += tail
     if len(fragments) == 1:
         if skip_empty_fragments and not text:
             return []
         else:
             return [(text, style)]
     
-    def apply_overrides(all_overrides: str) -> SSAStyle:
-        s = style.copy()
-        for tag in re.findall(r"\\[ibusp][0-9]|\\r[a-zA-Z_0-9 ]*|\\fn[a-zA-Z_0-9 ]+", all_overrides):
+    def apply_overrides(s: SSAStyle, overrides: str) -> SSAStyle:
+        s = s.copy()
+        for tag in re.findall(r"\\[ibusp][0-9]|\\r[a-zA-Z_0-9 ]*|\\fn[a-zA-Z_0-9 ]+", overrides):
             if tag == r"\r":
                 s = style.copy() # reset to original line style
             elif tag.startswith(r"\r"):
@@ -155,9 +157,13 @@ def parse_tags(text: str, style: SSAStyle = SSAStyle.DEFAULT_STYLE,
                     s.drawing = scale > 0
         return s
     
-    overrides = SSAEvent.OVERRIDE_SEQUENCE.findall(text)
-    overrides_prefix_sum = ["".join(overrides[:i]) for i in range(len(overrides) + 1)]
-    computed_styles = map(apply_overrides, overrides_prefix_sum)
+    # Each fragment's style is the previous fragment's style with one more
+    # override sequence applied. (Tags cannot span two sequences, so this is
+    # the same as applying all preceding sequences to the original style, but
+    # linear rather than quadratic in the number of sequences.)
+    computed_styles = [style.copy()]
+    for sequence in SSAEvent.OVERRIDE_SEQUENCE.findall(head):
+        computed_styles.append(apply_overrides(computed_styles[-1], sequence))
     output = list(zip(fragments, computed_styles))
     if skip_empty_fragments:
         output = [(fragment, sty) for fragment, sty in output if fragment]
