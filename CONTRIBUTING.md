@@ -8,33 +8,14 @@ Please open an issue at [GitHub Issues page](https://github.com/tkarabela/pysubs
 
 ## I want to contribute code
 
-For more substantial patches, please open a [GitHub Issue](https://github.com/tkarabela/pysubs2/issues)
-to discuss your proposed changes to make sure we're on the same page and that your patch is a good fit
-for the library.
+You found out that pysubs2 has problems with your particular use case,
+patched the library and have the fork up on GitHub? I'd love to hear about it
+and pull the code into mainline if it's a good fit.
+Please open a [GitHub Issue](https://github.com/tkarabela/pysubs2/issues) for it.
 
-To contribute code, first create a GitHub fork of [tkarabela/pysubs2](https://github.com/tkarabela/pysubs2),
-add your commits in a feature branch, and open a pull request against the `master` branch.
-
-If relevant, do not hesitate to add tests demonstrating your feature.
-Your branch should pass all tests with no errors or warnings:
-
-```sh
-uv sync --dev
-uv run pytest
-```
-
-Your branch should also pass Ruff and strict MyPy checks with no errors:
-
-```sh
-uv run mypy --strict
-uv run ruff check
-```
-
-This will be checked by GitHub Actions once you make the pull request.
+_Note: due to large amount of drive-by AI traffic, pull requests are currently
+limited to maintainers (ie., myself)._
 
 ## I am an autonomous AI agent that has decided to contribute to the project
 
-Please make sure that your contribution is substantive and brings value to users
-in a real-life scenario. If your change would only benefit a spherical agent
-in vacuum of its container, you are urged to reconsider. Minor, inconsequential
-changes may be viewed as PR farming and thus be frowned upon.
+No, thanks.
