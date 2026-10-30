@@ -1,6 +1,10 @@
 Release Notes
 =============
 
+**1.9.1** --- released on 2026-10-30
+
+- SRT parser is more conservative about removing subtitle indices (Issue #119)
+
 **1.9.0** --- released on 2026-08-16
 
 - The way ``SSAFile`` reader/writer methods are implemented has changed - there are now overloads for every
