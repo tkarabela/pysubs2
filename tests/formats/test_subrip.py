@@ -517,3 +517,20 @@ def test_warning_about_extra_timestamp() -> None:
     assert len(subs) == 2
     assert subs[0].text == "entry1"
     assert subs[1].text == "entry2\\N00:00:21,680"
+
+
+def test_not_dropping_last_numeric_line() -> None:
+    """See issue #119"""
+    subs = SSAFile.from_string(
+        "1\n00:00:01,000 --> 00:00:02,000\nInvented Town\n1963\n\n"
+        "2\n00:00:03,000 --> 00:00:04,000\nInvented Town\n1963\n",
+        format_="srt"
+    )
+    assert [e.text for e in subs] == ['Invented Town\\N1963', 'Invented Town\\N1963']
+
+    subs = SSAFile.from_string(
+        "00:00:01,000 --> 00:00:02,000\nInvented Town\n1963\n\n"
+        "00:00:03,000 --> 00:00:04,000\nHello\n",
+        format_="srt"
+    )
+    assert [e.text for e in subs] == ['Invented Town\\N1963', 'Hello']
