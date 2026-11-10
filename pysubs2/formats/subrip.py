@@ -1,5 +1,5 @@
 # mypy: disable-error-code="override"
-
+import html
 import re
 import warnings
 from collections.abc import Sequence
@@ -31,6 +31,7 @@ class SubripFormat(FormatBase):
     class ReaderArgs(TypedDict):
         keep_html_tags: NotRequired[bool]
         keep_unknown_html_tags: NotRequired[bool]
+        decode_html_entities: NotRequired[bool]
 
     class WriterArgs(TypedDict):
         apply_styles: NotRequired[bool]
@@ -96,9 +97,12 @@ class SubripFormat(FormatBase):
                 (eg. you would get ``<blink>example {\\i1}text{\\i0}</blink>``).
                 If False, these other HTML tags will be stripped from output
                 (in the previous example, you would get only ``example {\\i1}text{\\i0}``).
+            decode_html_entities: If True, HTML entities will be replaced with corresponding
+                characters (eg. ``&lt;`` will be replaced with ``<``).
         """
         keep_html_tags: bool = kwargs.get("keep_html_tags", False)
         keep_unknown_html_tags: bool = kwargs.get("keep_unknown_html_tags", False)
+        decode_html_entities: bool = kwargs.get("decode_html_entities", False)
 
         timestamps: list[tuple[int, int]] = [] # (start, end)
         following_lines: list[list[str]] = [] # contains lists of lines following each timestamp
@@ -125,6 +129,8 @@ class SubripFormat(FormatBase):
 
             # Handle the general case.
             s = "".join(lines).strip()
+            if decode_html_entities:
+                s = html.unescape(s)
             if not keep_html_tags:
                 s = re.sub(r"< *i *>", r"{\\i1}", s)
                 s = re.sub(r"< */ *i *>", r"{\\i0}", s)

@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+**1.9.2** --- released on 2026-x-x
+
+- SRT/VTT parser can handle HTML entities via new ``decode_html_entities`` reader parameter,
+  which defaults to ``True`` for VTT and ``False`` for SRT (Issue #123)
+
 **1.9.1** --- released on 2026-10-30
 
 - SRT parser is more conservative about removing subtitle indices (Issue #119)

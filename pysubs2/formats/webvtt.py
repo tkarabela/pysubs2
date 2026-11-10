@@ -57,7 +57,11 @@ class WebVTTFormat(SubripFormat):
     def from_file(cls, subs: "SSAFile", fp: TextIO, format_: str, **kwargs: Unpack[ReaderArgs]) -> None:
         """
         See :meth:`pysubs2.formats.SubripFormat.from_file()`, additional SRT options are supported by VTT as well
+
+        Notes:
+            - ``decode_html_entities`` defaults to True
         """
+        kwargs.setdefault("decode_html_entities", True)
         return super().from_file(subs, fp, format_, **kwargs)
 
     @classmethod

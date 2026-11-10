@@ -5,6 +5,8 @@ pysubs2.formats.vtt tests
 
 from textwrap import dedent
 
+import pytest
+
 from pysubs2 import SSAEvent, SSAFile, make_time
 
 
@@ -129,4 +131,34 @@ def test_read_complex() -> None:
                         text="E, parem!"))
 
     subs = SSAFile.from_string(text)
+    assert subs.equals(ref)
+
+
+@pytest.mark.parametrize(["decode_html_entities", "ref_text"], [
+    [None, "Q&A at 5 < 6"],
+    [False, "Q&amp;A at 5 &lt; 6"],
+    [True, "Q&A at 5 < 6"],
+])
+def test_read_html_entities(decode_html_entities: bool | None, ref_text: str) -> None:
+    # regression test for #123
+    text = dedent("""\
+    WEBVTT
+    
+    00:01:02.500 --> 00:01:05.000
+    Q&amp;A at 5 &lt; 6
+    """)
+
+    ref = SSAFile()
+    ref.append(
+        SSAEvent(
+            start=make_time(m=1, s=2, ms=500),
+            end=make_time(m=1, s=5),
+            text=ref_text,
+        )
+    )
+
+    if decode_html_entities is not None:
+        subs = SSAFile.from_string(text, decode_html_entities=decode_html_entities)
+    else:
+        subs = SSAFile.from_string(text)
     assert subs.equals(ref)
